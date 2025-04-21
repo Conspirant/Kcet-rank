@@ -1,25 +1,184 @@
-import telegram
-import time
-from instabot import Bot
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KCET 2025 Rank Predictor</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #3a6186, #89253e);
+      color: #fff;
+      padding: 2rem;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-# Initialize the Telegram and Instabot modules
-telegram_bot = telegram.Bot(token='your_telegram_bot_token')
-instabot = Bot()
-instabot.login(username='your_instagram_username', password='your_instagram_password')
+    .container {
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
 
-# Loop indefinitely
-while True:
-    # Get the latest message from the Telegram channel
-    messages = telegram_bot.get_updates(offset=None, limit=None, timeout=30)
-    latest_message = messages[-1]
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: none;
+    }
 
-    # Check if the latest message contains an image and a caption
-    if 'photo' in latest_message and 'caption' in latest_message:
-        # Download the image and post it on Instagram
-        image_url = latest_message['photo'][0]['file_id']
-        image_file = telegram_bot.get_file(image_url)
-        image_data = image_file.download()
-        instabot.upload_photo(image_data, caption=latest_message['caption'])
+    input {
+      background-color: #fff;
+      color: #000;
+    }
 
-    # Wait for 10 seconds before checking for new messages
-    time.sleep(10)
+    button {
+      background-color: #ff5e57;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #e04848;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      color: #000;
+      padding: 1.5rem;
+      border-radius: 10px;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .modal button {
+      background-color: #3a6186;
+      color: white;
+      margin-top: 15px;
+    }
+
+    .disclaimer-text {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>KCET 2025 Rank Predictor</h1>
+    <input type="number" id="boardMarks" placeholder="Enter Board Marks (out of 300)" />
+    <input type="number" id="kcetMarks" placeholder="Enter KCET Marks (out of 180)" />
+    <button onclick="showDisclaimer()">Predict My Rank</button>
+    <div id="result"></div>
+    <div class="disclaimer-text">
+      * This prediction is based on KCET 2024 data and may vary.
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="disclaimerModal">
+    <div class="modal-content">
+      <h3>Disclaimer</h3>
+      <p>This tool provides only an estimated rank based on KCET 2024 data and should not be considered as official or final. The actual rank depends on multiple factors and may vary.</p>
+      <button onclick="predictRank()">I Understand</button>
+    </div>
+  </div>
+
+  <script>
+    const dataPoints = [
+      { avgScore: 88.833, rank: 322 },
+      { avgScore: 87.944, rank: 409 },
+      { avgScore: 85.944, rank: 745 },
+      { avgScore: 84.722, rank: 980 },
+      { avgScore: 83.722, rank: 1249 },
+      { avgScore: 83.000, rank: 1484 },
+      { avgScore: 82.611, rank: 1653 },
+      { avgScore: 80.222, rank: 2792 },
+      { avgScore: 77.444, rank: 4872 },
+      { avgScore: 75.444, rank: 7007 },
+      { avgScore: 73.389, rank: 10084 },
+      { avgScore: 71.778, rank: 12948 },
+      { avgScore: 69.833, rank: 17514 },
+      { avgScore: 67.667, rank: 24846 },
+      { avgScore: 66.444, rank: 29961 },
+      { avgScore: 64.333, rank: 40702 },
+      { avgScore: 62.889, rank: 49806 },
+      { avgScore: 61.278, rank: 61134 },
+      { avgScore: 58.278, rank: 93040 },
+      { avgScore: 57.222, rank: 115885 }
+    ];
+
+    function showDisclaimer() {
+      document.getElementById('disclaimerModal').style.display = 'flex';
+    }
+
+    function predictRank() {
+      document.getElementById('disclaimerModal').style.display = 'none';
+      const board = parseFloat(document.getElementById("boardMarks").value);
+      const kcet = parseFloat(document.getElementById("kcetMarks").value);
+      const resultDiv = document.getElementById("result");
+
+      if (isNaN(board) || isNaN(kcet) || board < 0 || board > 300 || kcet < 0 || kcet > 180) {
+        resultDiv.innerText = "Please enter valid marks.";
+        return;
+      }
+
+      const boardPercent = (board / 300) * 100;
+      const kcetPercent = (kcet / 180) * 100;
+      const avgScore = (boardPercent + kcetPercent) / 2;
+
+      let lower = null, upper = null;
+
+      for (let i = 0; i < dataPoints.length - 1; i++) {
+        if (avgScore >= dataPoints[i + 1].avgScore && avgScore <= dataPoints[i].avgScore) {
+          lower = dataPoints[i + 1];
+          upper = dataPoints[i];
+          break;
+        }
+      }
+
+      let rank;
+
+      if (lower && upper) {
+        const slope = (upper.rank - lower.rank) / (upper.avgScore - lower.avgScore);
+        rank = Math.round(upper.rank - slope * (avgScore - upper.avgScore));
+      } else if (avgScore > dataPoints[0].avgScore) {
+        rank = dataPoints[0].rank;
+      } else {
+        rank = dataPoints[dataPoints.length - 1].rank;
+      }
+
+      resultDiv.innerHTML = `Your estimated KCET 2025 rank is: <br><strong>#${rank}</strong>`;
+    }
+  </script>
+</body>
+</html>
