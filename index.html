@@ -1,0 +1,25 @@
+import telegram
+import time
+from instabot import Bot
+
+# Initialize the Telegram and Instabot modules
+telegram_bot = telegram.Bot(token='your_telegram_bot_token')
+instabot = Bot()
+instabot.login(username='your_instagram_username', password='your_instagram_password')
+
+# Loop indefinitely
+while True:
+    # Get the latest message from the Telegram channel
+    messages = telegram_bot.get_updates(offset=None, limit=None, timeout=30)
+    latest_message = messages[-1]
+
+    # Check if the latest message contains an image and a caption
+    if 'photo' in latest_message and 'caption' in latest_message:
+        # Download the image and post it on Instagram
+        image_url = latest_message['photo'][0]['file_id']
+        image_file = telegram_bot.get_file(image_url)
+        image_data = image_file.download()
+        instabot.upload_photo(image_data, caption=latest_message['caption'])
+
+    # Wait for 10 seconds before checking for new messages
+    time.sleep(10)
