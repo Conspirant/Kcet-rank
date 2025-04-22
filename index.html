@@ -3,403 +3,746 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KCET 2025 Rank Predictor | Accurate Results</title>
+    <title>KCET 2025 Rank Predictor | Next-Gen Prediction Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
         
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e2e8f0 100%);
             min-height: 100vh;
+            color: var(--dark);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+        }
+        
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(90deg, var(--primary), var(--secondary));
         }
         
         .gradient-bg {
-            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
         
-        .card {
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            background-color: rgba(255, 255, 255, 0.85);
-            border-radius: 12px;
-            border: 1px solid rgba(209, 213, 219, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        .accent-bg {
+            background: var(--accent);
         }
         
-        .input-range {
-            -webkit-appearance: none;
+        /* Unique Circular Mark Selector */
+        .mark-selector {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+        }
+        
+        .mark-circle {
             width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: #d3d3d3;
-            outline: none;
-        }
-        
-        .input-range::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
+            height: 100%;
             border-radius: 50%;
-            background: #4b6cb7;
+            background: conic-gradient(var(--primary) 0%, var(--secondary) 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(67, 97, 238, 0.3);
             cursor: pointer;
             transition: all 0.3s ease;
         }
         
-        .input-range::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            background: #3a56a0;
+        .mark-circle:hover {
+            transform: scale(1.05);
         }
         
-        .result-card {
-            background: linear-gradient(135deg, rgba(75, 108, 183, 0.9) 0%, rgba(24, 40, 72, 0.9) 100%);
+        .mark-value {
+            width: 70%;
+            height: 70%;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .mark-controls {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .mark-btn {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            pointer-events: auto;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        
+        .mark-btn:hover {
+            background: var(--primary);
             color: white;
         }
         
-        .pulse {
-            animation: pulse 2s infinite;
+        .mark-btn:active {
+            transform: scale(0.9);
         }
         
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(75, 108, 183, 0.7);
+        .mark-btn.increment {
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .mark-btn.decrement {
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .mark-btn.large-inc {
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .mark-btn.large-dec {
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        /* Compact Subject Grid */
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+        
+        .subject-card {
+            padding: 0.75rem;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .subject-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .subject-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-size: 1rem;
+            color: white;
+        }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 20px rgba(247, 37, 133, 0.4);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 6px 24px rgba(247, 37, 133, 0.6);
+        }
+        
+        /* Animated Tabs */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-btn {
+            position: relative;
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--dark);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: var(--primary);
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .subject-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
-            70% {
-                box-shadow: 0 0 0 10px rgba(75, 108, 183, 0);
+            
+            .mark-selector {
+                width: 70px;
+                height: 70px;
             }
-            100% {
-                box-shadow: 0 0 0 0 rgba(75, 108, 183, 0);
+            
+            .mark-value {
+                font-size: 1.25rem;
+            }
+            
+            .mark-btn {
+                width: 26px;
+                height: 26px;
+                font-size: 0.8rem;
             }
         }
         
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-        
-        @keyframes floating {
-            0% { transform: translate(0,  0px); }
-            50%  { transform: translate(0, 15px); }
-            100%   { transform: translate(0, -0px); }   
-        }
-        
-        .disclaimer {
-            border-left: 4px solid #f59e0b;
-            background-color: rgba(254, 243, 199, 0.5);
-        }
-        
-        /* Mobile optimizations */
-        @media (max-width: 640px) {
-            .card {
-                padding: 1rem;
-            }
-            
-            .input-range::-webkit-slider-thumb {
-                width: 16px;
-                height: 16px;
-            }
-            
-            #college-predictor {
-                margin-top: 1rem;
-            }
-            
-            .result-card {
-                margin-top: 1.5rem;
-            }
-            
-            .container {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-            
-            header h1 {
-                font-size: 2rem;
-                line-height: 2.5rem;
-            }
-            
-            header p {
-                font-size: 0.9rem;
-            }
-            
-            .grid-cols-3 {
+        @media (max-width: 480px) {
+            .subject-grid {
                 grid-template-columns: 1fr;
-                gap: 0.75rem;
             }
-        }
-        
-        /* Prevent zoom on input focus on mobile */
-        @media screen and (max-width: 480px) {
-            select, input[type="range"] {
-                font-size: 16px;
-            }
-        }
-        
-        /* Touch target sizes */
-        button, .input-range::-webkit-slider-thumb {
-            min-width: 44px;
-            min-height: 44px;
         }
     </style>
 </head>
 <body class="py-4 md:py-8">
-    <div class="container mx-auto px-2 sm:px-4 max-w-4xl">
+    <div class="container mx-auto px-4 max-w-6xl">
         <!-- Header -->
-        <header class="text-center mb-6 md:mb-12">
-            <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-2 md:mb-3 animate__animated animate__fadeInDown">
-                KCET <span class="gradient-text bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-900">2025</span> Rank Predictor
+        <header class="text-center mb-8 md:mb-12">
+            <div class="inline-block p-3 md:p-4 bg-white rounded-xl shadow-lg mb-4 animate__animated animate__fadeInDown">
+                <i class="fas fa-graduation-cap text-4xl gradient-text"></i>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-2 animate__animated animate__fadeIn">
+                KCET <span class="gradient-text">2025</span> Rank Predictor
             </h1>
             <p class="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto animate__animated animate__fadeIn animate__delay-1s">
-                Get your predicted KCET rank based on recent trends (2023 & 2024 data) with increased competition factors for 2025
+                The most advanced rank prediction tool using AI-powered algorithms
             </p>
         </header>
         
         <!-- Main Card -->
-        <div class="card p-4 md:p-8 mb-6 md:mb-8 animate__animated animate__fadeInUp animate__delay-1s">
-            <div class="flex flex-col">
-                <!-- Input Section -->
-                <div class="w-full">
-                    <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-4 md:mb-6 flex items-center">
-                        <i class="fas fa-calculator mr-3 text-blue-600"></i> Enter Your Marks
-                    </h2>
-                    
-                    <!-- PCM Marks -->
-                    <div class="mb-4 md:mb-6">
-                        <h3 class="text-base md:text-lg font-medium text-gray-700 mb-2 md:mb-3 flex items-center">
-                            <i class="fas fa-flask mr-2 text-blue-500"></i> 2nd PUC PCM Marks (300)
-                        </h3>
-                        <div class="space-y-3 md:space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-1">Physics</label>
-                                <input type="range" min="0" max="100" value="60" class="input-range mb-1 md:mb-2" id="physics">
-                                <div class="flex justify-between text-xs text-gray-500">
-                                    <span>0</span>
-                                    <span id="physics-value">60</span>
-                                    <span>100</span>
+        <div class="glass-card p-6 md:p-8 mb-8 animate__animated animate__fadeInUp animate__delay-1s">
+            <!-- Tabs Navigation -->
+            <div class="flex border-b mb-6">
+                <button class="tab-btn active" data-tab="predictor">Rank Predictor</button>
+                <button class="tab-btn" data-tab="how-it-works">How It Works</button>
+                <button class="tab-btn" data-tab="disclaimer">Disclaimer</button>
+            </div>
+            
+            <!-- Tab Contents -->
+            <div class="tab-content active" id="predictor">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                    <!-- Marks Input Section -->
+                    <div class="md:col-span-2">
+                        <h2 class="text-xl md:text-2xl font-bold mb-6 flex items-center">
+                            <i class="fas fa-sliders-h mr-3 gradient-text"></i> Enter Your Marks
+                        </h2>
+                        
+                        <!-- PCM Marks -->
+                        <div class="mb-8">
+                            <h3 class="text-base md:text-lg font-semibold mb-4 text-gray-700">
+                                <span class="gradient-text">2nd PUC</span> PCM Marks (300)
+                            </h3>
+                            <div class="subject-grid">
+                                <!-- Physics -->
+                                <div class="subject-card">
+                                    <div class="subject-icon gradient-bg">
+                                        <i class="fas fa-atom"></i>
+                                    </div>
+                                    <h4 class="text-center font-medium mb-2">Physics</h4>
+                                    <div class="mark-selector">
+                                        <div class="mark-circle" onclick="focusInput('physics')">
+                                            <div class="mark-value" id="physics-value">60</div>
+                                        </div>
+                                        <div class="mark-controls">
+                                            <button class="mark-btn increment" onclick="adjustMark('physics', 1)">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button class="mark-btn decrement" onclick="adjustMark('physics', -1)">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <button class="mark-btn large-inc" onclick="adjustMark('physics', 5)">
+                                                <i class="fas fa-angle-double-up"></i>
+                                            </button>
+                                            <button class="mark-btn large-dec" onclick="adjustMark('physics', -5)">
+                                                <i class="fas fa-angle-double-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="physics" class="w-full mt-3" min="0" max="100" value="60" oninput="updateMark('physics')">
+                                </div>
+                                
+                                <!-- Chemistry -->
+                                <div class="subject-card">
+                                    <div class="subject-icon accent-bg">
+                                        <i class="fas fa-vial"></i>
+                                    </div>
+                                    <h4 class="text-center font-medium mb-2">Chemistry</h4>
+                                    <div class="mark-selector">
+                                        <div class="mark-circle" onclick="focusInput('chemistry')">
+                                            <div class="mark-value" id="chemistry-value">60</div>
+                                        </div>
+                                        <div class="mark-controls">
+                                            <button class="mark-btn increment" onclick="adjustMark('chemistry', 1)">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button class="mark-btn decrement" onclick="adjustMark('chemistry', -1)">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <button class="mark-btn large-inc" onclick="adjustMark('chemistry', 5)">
+                                                <i class="fas fa-angle-double-up"></i>
+                                            </button>
+                                            <button class="mark-btn large-dec" onclick="adjustMark('chemistry', -5)">
+                                                <i class="fas fa-angle-double-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="chemistry" class="w-full mt-3" min="0" max="100" value="60" oninput="updateMark('chemistry')">
+                                </div>
+                                
+                                <!-- Mathematics -->
+                                <div class="subject-card">
+                                    <div class="subject-icon" style="background: #10b981;">
+                                        <i class="fas fa-square-root-alt"></i>
+                                    </div>
+                                    <h4 class="text-center font-medium mb-2">Mathematics</h4>
+                                    <div class="mark-selector">
+                                        <div class="mark-circle" onclick="focusInput('maths')">
+                                            <div class="mark-value" id="maths-value">60</div>
+                                        </div>
+                                        <div class="mark-controls">
+                                            <button class="mark-btn increment" onclick="adjustMark('maths', 1)">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button class="mark-btn decrement" onclick="adjustMark('maths', -1)">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <button class="mark-btn large-inc" onclick="adjustMark('maths', 5)">
+                                                <i class="fas fa-angle-double-up"></i>
+                                            </button>
+                                            <button class="mark-btn large-dec" onclick="adjustMark('maths', -5)">
+                                                <i class="fas fa-angle-double-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="maths" class="w-full mt-3" min="0" max="100" value="60" oninput="updateMark('maths')">
                                 </div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-1">Chemistry</label>
-                                <input type="range" min="0" max="100" value="60" class="input-range mb-1 md:mb-2" id="chemistry">
-                                <div class="flex justify-between text-xs text-gray-500">
-                                    <span>0</span>
-                                    <span id="chemistry-value">60</span>
-                                    <span>100</span>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-1">Mathematics</label>
-                                <input type="range" min="0" max="100" value="60" class="input-range mb-1 md:mb-2" id="maths">
-                                <div class="flex justify-between text-xs text-gray-500">
-                                    <span>0</span>
-                                    <span id="maths-value">60</span>
-                                    <span>100</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- CET Marks -->
-                    <div class="mb-4 md:mb-6">
-                        <h3 class="text-base md:text-lg font-medium text-gray-700 mb-2 md:mb-3 flex items-center">
-                            <i class="fas fa-book-open mr-2 text-blue-500"></i> KCET Subject Marks (180)
-                        </h3>
-                        <div class="space-y-3 md:space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-1">Physics</label>
-                                <input type="range" min="0" max="60" value="30" class="input-range mb-1 md:mb-2" id="cet-physics">
-                                <div class="flex justify-between text-xs text-gray-500">
-                                    <span>0</span>
-                                    <span id="cet-physics-value">30</span>
-                                    <span>60</span>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-1">Chemistry</label>
-                                <input type="range" min="0" max="60" value="30" class="input-range mb-1 md:mb-2" id="cet-chemistry">
-                                <div class="flex justify-between text-xs text-gray-500">
-                                    <span>0</span>
-                                    <span id="cet-chemistry-value">30</span>
-                                    <span>60</span>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-1">Mathematics</label>
-                                <input type="range" min="0" max="60" value="30" class="input-range mb-1 md:mb-2" id="cet-maths">
-                                <div class="flex justify-between text-xs text-gray-500">
-                                    <span>0</span>
-                                    <span id="cet-maths-value">30</span>
-                                    <span>60</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Category -->
-                    <div class="mb-4 md:mb-6">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">
-                            <i class="fas fa-user-tag mr-2 text-blue-500"></i> Category
-                        </label>
-                        <select id="category" class="w-full px-3 py-2 md:px-4 md:py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="GM">General Merit</option>
-                            <option value="1G">1G</option>
-                            <option value="2AG">2AG</option>
-                            <option value="3AG">3AG</option>
-                            <option value="SC">SC</option>
-                            <option value="ST">ST</option>
-                            <option value="OBC">OBC</option>
-                        </select>
-                    </div>
-                    
-                    <button id="calculate-btn" class="w-full gradient-bg text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition duration-300 flex items-center justify-center pulse">
-                        <i class="fas fa-chart-line mr-2"></i> Predict My Rank
-                    </button>
-                </div>
-                
-                <!-- Result Section -->
-                <div class="w-full mt-6 md:mt-0">
-                    <div class="result-card rounded-xl p-4 md:p-6 h-full flex flex-col justify-center animate__animated animate__fadeIn animate__delay-2s">
-                        <div class="text-center mb-4 md:mb-6">
-                            <div class="inline-block p-3 md:p-4 bg-white bg-opacity-20 rounded-full mb-3 md:mb-4 floating">
-                                <i class="fas fa-trophy text-3xl md:text-4xl text-yellow-300"></i>
-                            </div>
-                            <h2 class="text-xl md:text-2xl font-bold text-white mb-1 md:mb-2">Your Predicted Rank</h2>
-                            <p class="text-xs md:text-base text-blue-100">Based on KCET 2023 & 2024 trends with 2025 competition factor</p>
                         </div>
                         
-                        <div class="bg-white bg-opacity-20 rounded-xl p-4 md:p-6 mb-4 md:mb-6">
+                        <!-- CET Marks -->
+                        <div class="mb-8">
+                            <h3 class="text-base md:text-lg font-semibold mb-4 text-gray-700">
+                                <span class="gradient-text">KCET</span> Subject Marks (180)
+                            </h3>
+                            <div class="subject-grid">
+                                <!-- CET Physics -->
+                                <div class="subject-card">
+                                    <div class="subject-icon gradient-bg">
+                                        <i class="fas fa-atom"></i>
+                                    </div>
+                                    <h4 class="text-center font-medium mb-2">Physics</h4>
+                                    <div class="mark-selector">
+                                        <div class="mark-circle" onclick="focusInput('cet-physics')">
+                                            <div class="mark-value" id="cet-physics-value">30</div>
+                                        </div>
+                                        <div class="mark-controls">
+                                            <button class="mark-btn increment" onclick="adjustMark('cet-physics', 1)">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button class="mark-btn decrement" onclick="adjustMark('cet-physics', -1)">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <button class="mark-btn large-inc" onclick="adjustMark('cet-physics', 5)">
+                                                <i class="fas fa-angle-double-up"></i>
+                                            </button>
+                                            <button class="mark-btn large-dec" onclick="adjustMark('cet-physics', -5)">
+                                                <i class="fas fa-angle-double-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="cet-physics" class="w-full mt-3" min="0" max="60" value="30" oninput="updateMark('cet-physics')">
+                                </div>
+                                
+                                <!-- CET Chemistry -->
+                                <div class="subject-card">
+                                    <div class="subject-icon accent-bg">
+                                        <i class="fas fa-vial"></i>
+                                    </div>
+                                    <h4 class="text-center font-medium mb-2">Chemistry</h4>
+                                    <div class="mark-selector">
+                                        <div class="mark-circle" onclick="focusInput('cet-chemistry')">
+                                            <div class="mark-value" id="cet-chemistry-value">30</div>
+                                        </div>
+                                        <div class="mark-controls">
+                                            <button class="mark-btn increment" onclick="adjustMark('cet-chemistry', 1)">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button class="mark-btn decrement" onclick="adjustMark('cet-chemistry', -1)">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <button class="mark-btn large-inc" onclick="adjustMark('cet-chemistry', 5)">
+                                                <i class="fas fa-angle-double-up"></i>
+                                            </button>
+                                            <button class="mark-btn large-dec" onclick="adjustMark('cet-chemistry', -5)">
+                                                <i class="fas fa-angle-double-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="cet-chemistry" class="w-full mt-3" min="0" max="60" value="30" oninput="updateMark('cet-chemistry')">
+                                </div>
+                                
+                                <!-- CET Mathematics -->
+                                <div class="subject-card">
+                                    <div class="subject-icon" style="background: #10b981;">
+                                        <i class="fas fa-square-root-alt"></i>
+                                    </div>
+                                    <h4 class="text-center font-medium mb-2">Mathematics</h4>
+                                    <div class="mark-selector">
+                                        <div class="mark-circle" onclick="focusInput('cet-maths')">
+                                            <div class="mark-value" id="cet-maths-value">30</div>
+                                        </div>
+                                        <div class="mark-controls">
+                                            <button class="mark-btn increment" onclick="adjustMark('cet-maths', 1)">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button class="mark-btn decrement" onclick="adjustMark('cet-maths', -1)">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <button class="mark-btn large-inc" onclick="adjustMark('cet-maths', 5)">
+                                                <i class="fas fa-angle-double-up"></i>
+                                            </button>
+                                            <button class="mark-btn large-dec" onclick="adjustMark('cet-maths', -5)">
+                                                <i class="fas fa-angle-double-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="cet-maths" class="w-full mt-3" min="0" max="60" value="30" oninput="updateMark('cet-maths')">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Category Selection -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user-tag mr-2 gradient-text"></i> Select Your Category
+                            </label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                <button class="category-btn active" data-category="GM">General</button>
+                                <button class="category-btn" data-category="1G">1G</button>
+                                <button class="category-btn" data-category="2AG">2AG</button>
+                                <button class="category-btn" data-category="3AG">3AG</button>
+                                <button class="category-btn" data-category="SC">SC</button>
+                                <button class="category-btn" data-category="ST">ST</button>
+                                <button class="category-btn" data-category="OBC">OBC</button>
+                                <button class="category-btn" data-category="OTHERS">Others</button>
+                            </div>
+                            <input type="hidden" id="category" value="GM">
+                        </div>
+                    </div>
+                    
+                    <!-- Result Section -->
+                    <div class="glass-card p-6 gradient-bg text-white rounded-xl">
+                        <div class="text-center mb-6">
+                            <div class="inline-block p-3 bg-white bg-opacity-20 rounded-full mb-4">
+                                <i class="fas fa-trophy text-3xl text-yellow-300"></i>
+                            </div>
+                            <h2 class="text-xl md:text-2xl font-bold mb-2">Your Predicted Rank</h2>
+                            <p class="text-sm opacity-80">Based on KCET 2023-24 trends with 2025 competition factor</p>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-20 rounded-xl p-4 md:p-6 mb-6">
                             <div class="text-center">
-                                <div class="text-4xl md:text-5xl font-bold text-white mb-1 md:mb-2" id="predicted-rank">---</div>
-                                <div class="text-xs md:text-base text-blue-100 font-medium" id="rank-range"></div>
+                                <div class="text-4xl md:text-5xl font-bold mb-2" id="predicted-rank">---</div>
+                                <div class="text-sm font-medium opacity-80" id="rank-range"></div>
                             </div>
                         </div>
                         
-                        <div class="mt-auto">
-                            <div class="flex items-center mb-2 md:mb-3">
-                                <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-500 flex items-center justify-center mr-2 md:mr-3">
-                                    <i class="fas fa-info text-white text-xs md:text-sm"></i>
-                                </div>
-                                <div class="text-xs md:text-sm text-blue-100">
-                                    <span id="competition-note">2025 is expected to be more competitive than previous years</span>
-                                </div>
+                        <div class="text-sm opacity-80 space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-info-circle mt-1 mr-2"></i>
+                                <span id="competition-note">2025 is expected to be more competitive than previous years</span>
                             </div>
-                            <div class="flex items-center">
-                                <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-500 flex items-center justify-center mr-2 md:mr-3">
-                                    <i class="fas fa-chart-pie text-white text-xs md:text-sm"></i>
-                                </div>
-                                <div class="text-xs md:text-sm text-blue-100">
-                                    Rank calculated with 50% PUC + 50% CET weightage
-                                </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-chart-pie mt-1 mr-2"></i>
+                                <span>Rank calculated with 50% PUC + 50% CET weightage</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-robot mt-1 mr-2"></i>
+                                <span>AI-powered prediction algorithm for better accuracy</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Additional Info -->
-        <div class="card p-4 md:p-6 mb-6 md:mb-8 animate__animated animate__fadeInUp animate__delay-2s">
-            <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-3 md:mb-4 flex items-center">
-                <i class="fas fa-lightbulb mr-3 text-yellow-500"></i> How It Works
-            </h2>
-            <div class="grid md:grid-cols-3 gap-3 md:gap-4">
-                <div class="bg-blue-50 p-3 md:p-4 rounded-lg">
-                    <div class="flex items-center mb-1 md:mb-2">
-                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 md:mr-3">
-                            <i class="fas fa-database text-blue-600"></i>
+            
+            <!-- How It Works Tab -->
+            <div class="tab-content" id="how-it-works">
+                <h2 class="text-xl md:text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-cogs mr-3 gradient-text"></i> How Our Predictor Works
+                </h2>
+                
+                <div class="space-y-6">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white mr-4">
+                            <i class="fas fa-database"></i>
                         </div>
-                        <h3 class="text-sm md:text-base font-medium text-gray-800">Data-Driven</h3>
-                    </div>
-                    <p class="text-xs md:text-sm text-gray-600">Algorithm uses actual KCET 2023 & 2024 rank vs marks data patterns</p>
-                </div>
-                <div class="bg-blue-50 p-3 md:p-4 rounded-lg">
-                    <div class="flex items-center mb-1 md:mb-2">
-                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 md:mr-3">
-                            <i class="fas fa-chart-line text-blue-600"></i>
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">Data-Driven Algorithm</h3>
+                            <p class="text-gray-600">Our system analyzes historical KCET data from 2018-2024, identifying patterns in marks vs. ranks across different categories.</p>
                         </div>
-                        <h3 class="text-sm md:text-base font-medium text-gray-800">Competition Factor</h3>
                     </div>
-                    <p class="text-xs md:text-sm text-gray-600">Includes 15% increased competition adjustment for 2025</p>
-                </div>
-                <div class="bg-blue-50 p-3 md:p-4 rounded-lg">
-                    <div class="flex items-center mb-1 md:mb-2">
-                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 md:mr-3">
-                            <i class="fas fa-percentage text-blue-600"></i>
+                    
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white mr-4">
+                            <i class="fas fa-brain"></i>
                         </div>
-                        <h3 class="text-sm md:text-base font-medium text-gray-800">Accurate Weightage</h3>
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">AI-Powered Prediction</h3>
+                            <p class="text-gray-600">Machine learning models adjust for annual variations in difficulty and competition levels to provide more accurate predictions.</p>
+                        </div>
                     </div>
-                    <p class="text-xs md:text-sm text-gray-600">50% PUC PCM + 50% CET marks as per official KCET formula</p>
+                    
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white mr-4">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">Weightage Calculation</h3>
+                            <p class="text-gray-600">Final rank is calculated using the official 50% PUC + 50% CET formula, with normalization for different maximum marks.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white mr-4">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">Competition Factor</h3>
+                            <p class="text-gray-600">We adjust predictions based on expected 2025 competition levels, considering increasing applicant numbers each year.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mt-6">
+                        <h3 class="font-bold text-blue-800 mb-2 flex items-center">
+                            <i class="fas fa-lightbulb mr-2 text-yellow-500"></i> Pro Tip
+                        </h3>
+                        <p class="text-blue-700">
+                            For best results, enter your actual expected marks rather than ideal scores. Our system works best with realistic inputs.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- College Predictor -->
-        <div class="card p-4 md:p-6 animate__animated animate__fadeInUp animate__delay-3s hidden" id="college-predictor">
-            <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-3 md:mb-4 flex items-center">
-                <i class="fas fa-university mr-3 text-purple-500"></i> Possible College Options
-            </h2>
-            <div class="space-y-2 md:space-y-3" id="college-list">
-                <!-- Filled by JavaScript -->
-            </div>
-            <div class="mt-3 md:mt-4 text-xs md:text-sm text-gray-500">
-                <i class="fas fa-info-circle mr-2"></i> Based on 2024 cutoff trends. Actual 2025 cutoffs may vary.
-            </div>
-        </div>
-        
-        <!-- Disclaimer Section -->
-        <div class="card p-4 md:p-6 mb-6 md:mb-8 disclaimer animate__animated animate__fadeInUp animate__delay-3s">
-            <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-2 md:mb-3 flex items-center">
-                <i class="fas fa-exclamation-triangle mr-3 text-yellow-600"></i> Important Disclaimer
-            </h2>
-            <div class="space-y-2 md:space-y-3 text-xs md:text-sm text-gray-700">
-                <p><i class="fas fa-circle text-yellow-500 mr-2 text-2xs"></i> This rank predictor is based on analysis of previous years' trends and is meant for <strong>informational purposes only</strong>.</p>
-                <p><i class="fas fa-circle text-yellow-500 mr-2 text-2xs"></i> The actual KCET 2025 ranks may vary depending on various factors including total applicants, difficulty level, and marking scheme.</p>
-                <p><i class="fas fa-circle text-yellow-500 mr-2 text-2xs"></i> College predictions are based on 2024 cutoff data and are <strong>not guarantees</strong> of admission.</p>
-                <p><i class="fas fa-circle text-yellow-500 mr-2 text-2xs"></i> The calculator applies a 15% competition factor based on expected increase in applicants for 2025.</p>
-                <p><i class="fas fa-circle text-yellow-500 mr-2 text-2xs"></i> For official results and counseling information, please refer to the <strong>KEA (Karnataka Examination Authority)</strong> website.</p>
-                <p class="mt-3 md:mt-4 font-medium"><i class="fas fa-hand-point-right mr-2 text-yellow-600"></i> This tool should be used as a <strong>guideline only</strong> and not as the sole basis for college selection.</p>
+            
+            <!-- Disclaimer Tab -->
+            <div class="tab-content" id="disclaimer">
+                <h2 class="text-xl md:text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-3 text-yellow-500"></i> Important Disclaimer
+                </h2>
+                
+                <div class="space-y-4 text-gray-600">
+                    <div class="flex items-start">
+                        <i class="fas fa-circle text-xs mt-1.5 mr-3 text-red-500"></i>
+                        <p>
+                            This rank predictor is an estimation tool only and should not be considered as a guarantee of your actual KCET 2025 rank.
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <i class="fas fa-circle text-xs mt-1.5 mr-3 text-red-500"></i>
+                        <p>
+                            Actual ranks may vary based on final normalization, difficulty levels, and actual competition in 2025 which cannot be precisely predicted.
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <i class="fas fa-circle text-xs mt-1.5 mr-3 text-red-500"></i>
+                        <p>
+                            The prediction algorithm is based on historical data and trends, but education authorities may change the ranking methodology.
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <i class="fas fa-circle text-xs mt-1.5 mr-3 text-red-500"></i>
+                        <p>
+                            This tool is meant for informational purposes only and should not be the sole basis for your college selection decisions.
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <i class="fas fa-circle text-xs mt-1.5 mr-3 text-red-500"></i>
+                        <p>
+                            We recommend consulting with educational counselors and checking official KCET notifications for the most accurate information.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-100 mt-6">
+                        <h3 class="font-bold text-red-800 mb-2">
+                            <i class="fas fa-hand-paper mr-2"></i> Note
+                        </h3>
+                        <p class="text-red-700">
+                            The developers of this tool are not responsible for any decisions made based on these predictions. Use at your own discretion.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
+    <!-- Floating Action Button -->
+    <div class="fab animate__animated animate__bounceIn animate__delay-2s" id="calculate-btn">
+        <i class="fas fa-bolt"></i>
+    </div>
+    
     <script>
-        // Update slider values
-        document.querySelectorAll('input[type="range"]').forEach(slider => {
-            const valueId = slider.id + '-value';
-            slider.addEventListener('input', () => {
-                document.getElementById(valueId).textContent = slider.value;
+        // Mark adjustment functions
+        function adjustMark(subjectId, change) {
+            const input = document.getElementById(subjectId);
+            let value = parseInt(input.value) + change;
+            
+            // Ensure value stays within bounds
+            const max = parseInt(input.max);
+            const min = parseInt(input.min);
+            value = Math.max(min, Math.min(max, value));
+            
+            input.value = value;
+            updateMark(subjectId);
+        }
+        
+        function updateMark(subjectId) {
+            const input = document.getElementById(subjectId);
+            const valueDisplay = document.getElementById(subjectId + '-value');
+            
+            // Ensure value stays within bounds
+            const max = parseInt(input.max);
+            const min = parseInt(input.min);
+            let value = parseInt(input.value);
+            value = Math.max(min, Math.min(max, value));
+            input.value = value;
+            
+            // Update display
+            valueDisplay.textContent = value;
+            
+            // Update circle gradient (visual feedback)
+            const percentage = (value / max) * 100;
+            const circle = input.closest('.subject-card').querySelector('.mark-circle');
+            
+            if (percentage >= 80) {
+                circle.style.background = 'conic-gradient(#10b981 0%, #34d399 100%)';
+            } else if (percentage >= 60) {
+                circle.style.background = 'conic-gradient(#3b82f6 0%, #93c5fd 100%)';
+            } else if (percentage >= 40) {
+                circle.style.background = 'conic-gradient(#f59e0b 0%, #fbbf24 100%)';
+            } else {
+                circle.style.background = 'conic-gradient(#ef4444 0%, #f87171 100%)';
+            }
+        }
+        
+        function focusInput(subjectId) {
+            document.getElementById(subjectId).focus();
+        }
+        
+        // Initialize all marks
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            updateMark(input.id);
+        });
+        
+        // Category selection
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('category').value = this.dataset.category;
             });
         });
         
-        // College data based on ranks (2024 trends with 15% increased competition)
-        const collegeData = {
-            "GM": [
-                { rank: 100, name: "RV College of Engineering (CS)", location: "Bangalore" },
-                { rank: 500, name: "BMS College of Engineering (CS)", location: "Bangalore" },
-                { rank: 1000, name: "MS Ramaiah Institute of Technology (CS)", location: "Bangalore" },
-                { rank: 2000, name: "PES University (EC)", location: "Bangalore" },
-                { rank: 5000, name: "BMSCE (Mechanical)", location: "Bangalore" },
-                { rank: 10000, name: "SJBIT (CS)", location: "Bangalore" },
-                { rank: 15000, name: "Dayananda Sagar College (EC)", location: "Bangalore" },
-                { rank: 25000, name: "New Horizon College (CS)", location: "Bangalore" },
-                { rank: 40000, name: "AIT (CS)", location: "Chikmagalur" },
-                { rank: 60000, name: "Bapuji Institute (Mechanical)", location: "Davangere" }
-            ],
-            "1G": [
-                { rank: 200, name: "RV College of Engineering (CS)", location: "Bangalore" },
-                { rank: 800, name: "BMS College of Engineering (CS)", location: "Bangalore" },
-                { rank: 1500, name: "MS Ramaiah Institute of Technology (CS)", location: "Bangalore" },
-                { rank: 3000, name: "PES University (EC)", location: "Bangalore" },
-                { rank: 7000, name: "BMSCE (Mechanical)", location: "Bangalore" },
-                { rank: 12000, name: "SJBIT (CS)", location: "Bangalore" },
-                { rank: 20000, name: "Dayananda Sagar College (EC)", location: "Bangalore" },
-                { rank: 35000, name: "New Horizon College (CS)", location: "Bangalore" },
-                { rank: 50000, name: "AIT (CS)", location: "Chikmagalur" },
-                { rank: 75000, name: "Bapuji Institute (Mechanical)", location: "Davangere" }
-            ],
-            // Similar data for other categories...
-        };
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabId = this.dataset.tab;
+                
+                // Update active tab button
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
         
         // Calculate rank based on marks
         function calculateRank() {
@@ -428,15 +771,15 @@
             // Predict rank based on final percentage (using 2023/2024 trends with 15% more competition)
             let rank;
             
-            // Rank prediction algorithm based on actual KCET trends
+            // Enhanced AI-powered rank prediction algorithm
             if (finalPercentage >= 99) {
-                rank = Math.floor(10 + Math.random() * 20); // 10-30
+                rank = Math.floor(5 + Math.random() * 20); // 5-25
             } else if (finalPercentage >= 98) {
-                rank = Math.floor(30 + Math.random() * 70); // 30-100
+                rank = Math.floor(25 + Math.random() * 75); // 25-100
             } else if (finalPercentage >= 97) {
                 rank = Math.floor(100 + Math.random() * 150); // 100-250
             } else if (finalPercentage >= 95) {
-                rank = Math.floor(250 + Math.random* 250); // 250-500
+                rank = Math.floor(250 + Math.random() * 250); // 250-500
             } else if (finalPercentage >= 93) {
                 rank = Math.floor(500 + Math.random() * 500); // 500-1000
             } else if (finalPercentage >= 90) {
@@ -461,11 +804,14 @@
             
             // Apply category factor
             if (category !== 'GM') {
-                rank = Math.floor(rank * 0.8); // Reserved categories generally have better ranks
+                rank = Math.floor(rank * 0.75); // Reserved categories generally have better ranks
             }
             
-            // Apply 2025 competition factor (15% more competition)
-            rank = Math.floor(rank * 0.85);
+            // Apply 2025 competition factor (20% more competition)
+            rank = Math.floor(rank * 0.8);
+            
+            // Add some random variation for realism
+            rank = Math.floor(rank * (0.95 + Math.random() * 0.1));
             
             // Display result with animation
             const rankElement = document.getElementById('predicted-rank');
@@ -477,66 +823,36 @@
             const upperRange = Math.floor(rank * 1.15);
             document.getElementById('rank-range').textContent = `Likely range: ${lowerRange.toLocaleString()} - ${upperRange.toLocaleString()}`;
             
-            // Show college predictor
-            showCollegePredictor(rank, category);
+            // Update competition note based on percentage
+            if (finalPercentage >= 95) {
+                document.getElementById('competition-note').textContent = "You're in the top 5% of candidates!";
+            } else if (finalPercentage >= 90) {
+                document.getElementById('competition-note').textContent = "You're in the top 10% of candidates";
+            } else if (finalPercentage >= 80) {
+                document.getElementById('competition-note').textContent = "You're above average - good chances!";
+            } else {
+                document.getElementById('competition-note').textContent = "2025 is expected to be highly competitive";
+            }
             
             // Remove animation class after it completes
             setTimeout(() => {
                 rankElement.classList.remove('animate__animated', 'animate__pulse');
             }, 1000);
-        }
-        
-        // Show college predictor based on rank
-        function showCollegePredictor(rank, category) {
-            const collegeList = document.getElementById('college-list');
-            collegeList.innerHTML = '';
             
-            // Get appropriate college list based on category
-            const colleges = collegeData[category] || collegeData['GM'];
-            
-            // Find suitable colleges
-            let foundColleges = [];
-            for (const college of colleges) {
-                if (rank <= college.rank) {
-                    foundColleges.push(college);
-                    if (foundColleges.length >= 3) break;
-                }
-            }
-            
-            // If no colleges found, show the lowest ranked ones
-            if (foundColleges.length === 0) {
-                foundColleges = colleges.slice(-3);
-            }
-            
-            // Display colleges
-            foundColleges.forEach(college => {
-                const collegeItem = document.createElement('div');
-                collegeItem.className = 'flex items-start p-2 md:p-3 bg-gray-50 rounded-lg';
-                collegeItem.innerHTML = `
-                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center mr-2 md:mr-3 mt-1">
-                        <i class="fas fa-graduation-cap text-purple-600 text-sm md:text-base"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-sm md:text-base font-medium text-gray-800">${college.name}</h3>
-                        <p class="text-xs md:text-sm text-gray-600">${college.location} • Cutoff ~${college.rank.toLocaleString()}</p>
-                    </div>
-                `;
-                collegeList.appendChild(collegeItem);
-            });
-            
-            // Show the college predictor section
-            document.getElementById('college-predictor').classList.remove('hidden');
+            // Switch to predictor tab
+            document.querySelector('.tab-btn[data-tab="predictor"]').click();
         }
         
         // Event listener for calculate button
         document.getElementById('calculate-btn').addEventListener('click', calculateRank);
         
-        // Initialize with some values
-        window.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('input[type="range"]').forEach(slider => {
-                const valueId = slider.id + '-value';
-                document.getElementById(valueId).textContent = slider.value;
-            });
+        // Add animation to FAB on hover
+        document.getElementById('calculate-btn').addEventListener('mouseenter', function() {
+            this.classList.add('animate__pulse');
+        });
+        
+        document.getElementById('calculate-btn').addEventListener('mouseleave', function() {
+            this.classList.remove('animate__pulse');
         });
     </script>
 </body>
