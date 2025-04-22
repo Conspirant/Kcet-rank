@@ -273,6 +273,48 @@
             transform: translateY(-1px);
         }
         
+        /* College Cards */
+        .college-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .college-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        
+        .college-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .college-tier-1 {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .college-tier-2 {
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .college-tier-3 {
+            border-left: 4px solid #10b981;
+        }
+        
+        .college-tier-4 {
+            border-left: 4px solid #64748b;
+        }
+        
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .subject-grid {
@@ -318,15 +360,16 @@
                 KCET <span class="gradient-text">2025</span> Rank Predictor
             </h1>
             <p class="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto animate__animated animate__fadeIn animate__delay-1s">
-                The most advanced rank prediction tool using AI-powered algorithms
+                The most advanced rank prediction tool with college recommendations
             </p>
         </header>
         
         <!-- Main Card -->
         <div class="glass-card p-6 md:p-8 mb-8 animate__animated animate__fadeInUp animate__delay-1s">
             <!-- Tabs Navigation -->
-            <div class="flex border-b mb-6">
+            <div class="flex border-b mb-6 overflow-x-auto">
                 <button class="tab-btn active" data-tab="predictor">Rank Predictor</button>
+                <button class="tab-btn" data-tab="colleges">College Recommendations</button>
                 <button class="tab-btn" data-tab="how-it-works">How It Works</button>
                 <button class="tab-btn" data-tab="disclaimer">Disclaimer</button>
             </div>
@@ -566,7 +609,7 @@
                                 <span id="competition-note">2025 is expected to be more competitive than previous years</span>
                             </div>
                             <div class="flex items-start">
-                                <i class="fas fa-chart-pie mt-1 mr-2"></i>
+                                <i class="fas fa-chart-pie mt=1 mr-2"></i>
                                 <span>Rank calculated with 50% PUC + 50% CET weightage</span>
                             </div>
                             <div class="flex items-start">
@@ -574,6 +617,23 @@
                                 <span>AI-powered prediction algorithm for better accuracy</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- College Recommendations Tab -->
+            <div class="tab-content" id="colleges">
+                <h2 class="text-xl md:text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-university mr-3 gradient-text"></i> College Recommendations
+                </h2>
+                
+                <div id="college-recommendations">
+                    <div class="text-center py-12">
+                        <div class="inline-block p-4 bg-blue-50 rounded-full mb-4">
+                            <i class="fas fa-search text-3xl text-blue-500"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-600 mb-2">Calculate your rank to see college recommendations</h3>
+                        <p class="text-sm text-gray-500">Your personalized college list will appear here after prediction</p>
                     </div>
                 </div>
             </div>
@@ -586,7 +646,7 @@
                 
                 <div class="space-y-6">
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white mr-4">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white mr=4">
                             <i class="fas fa-database"></i>
                         </div>
                         <div>
@@ -780,6 +840,145 @@
             });
         });
         
+        // College database (simplified for demo)
+        const collegeDatabase = {
+            // Tier 1 Colleges (Top Government)
+            tier1: [
+                {
+                    name: "PES University, Bangalore",
+                    branches: ["CSE", "ECE", "EEE", "ME", "Civil"],
+                    cutoff: { GM: 500, SC: 2000, ST: 2500, OBC: 1500 },
+                    location: "Bangalore",
+                    rating: 4.8,
+                    image: "https://via.placeholder.com/400x200?text=PES+University",
+                    website: "https://www.pes.edu",
+                    highlights: ["NAAC A++", "Top placements", "Excellent faculty"]
+                },
+                {
+                    name: "RV College of Engineering, Bangalore",
+                    branches: ["CSE", "ISE", "ECE", "EEE", "ME"],
+                    cutoff: { GM: 1000, SC: 4000, ST: 5000, OBC: 3000 },
+                    location: "Bangalore",
+                    rating: 4.7,
+                    image: "https://via.placeholder.com/400x200?text=RVCE",
+                    website: "https://www.rvce.edu.in",
+                    highlights: ["Autonomous", "Strong alumni", "Great infrastructure"]
+                },
+                {
+                    name: "BMS College of Engineering, Bangalore",
+                    branches: ["CSE", "ECE", "EEE", "ME", "Civil"],
+                    cutoff: { GM: 2000, SC: 8000, ST: 10000, OBC: 6000 },
+                    location: "Bangalore",
+                    rating: 4.6,
+                    image: "https://via.placeholder.com/400x200?text=BMSCE",
+                    website: "https://www.bmsce.ac.in",
+                    highlights: ["VTU Affiliated", "Oldest in Karnataka", "Good placements"]
+                }
+            ],
+            
+            // Tier 2 Colleges (Good Government/Private)
+            tier2: [
+                {
+                    name: "MS Ramaiah Institute of Technology, Bangalore",
+                    branches: ["CSE", "ECE", "EEE", "ME", "Aerospace"],
+                    cutoff: { GM: 5000, SC: 15000, ST: 18000, OBC: 12000 },
+                    location: "Bangalore",
+                    rating: 4.5,
+                    image: "https://via.placeholder.com/400x200?text=MSRIT",
+                    website: "https://www.msrit.edu",
+                    highlights: ["Autonomous", "Good placements", "Modern labs"]
+                },
+                {
+                    name: "Nitte Meenakshi Institute of Technology, Bangalore",
+                    branches: ["CSE", "ISE", "ECE", "EEE", "ME"],
+                    cutoff: { GM: 8000, SC: 20000, ST: 25000, OBC: 18000 },
+                    location: "Bangalore",
+                    rating: 4.3,
+                    image: "https://via.placeholder.com/400x200?text=NMIT",
+                    website: "https://www.nmit.ac.in",
+                    highlights: ["VTU Affiliated", "Good infrastructure", "Decent placements"]
+                },
+                {
+                    name: "Siddaganga Institute of Technology, Tumkur",
+                    branches: ["CSE", "ECE", "EEE", "ME", "Civil"],
+                    cutoff: { GM: 10000, SC: 25000, ST: 30000, OBC: 20000 },
+                    location: "Tumkur",
+                    rating: 4.2,
+                    image: "https://via.placeholder.com/400x200?text=SIT",
+                    website: "https://www.sit.ac.in",
+                    highlights: ["Autonomous", "Low fees", "Peaceful campus"]
+                }
+            ],
+            
+            // Tier 3 Colleges (Average Private)
+            tier3: [
+                {
+                    name: "Dayananda Sagar College of Engineering, Bangalore",
+                    branches: ["CSE", "ISE", "ECE", "EEE", "ME"],
+                    cutoff: { GM: 15000, SC: 35000, ST: 40000, OBC: 30000 },
+                    location: "Bangalore",
+                    rating: 4.0,
+                    image: "https://via.placeholder.com/400x200?text=DSI",
+                    website: "https://www.dsce.edu.in",
+                    highlights: ["VTU Affiliated", "Multiple campuses", "Average placements"]
+                },
+                {
+                    name: "BMS Institute of Technology, Bangalore",
+                    branches: ["CSE", "ECE", "EEE", "ME", "Civil"],
+                    cutoff: { GM: 20000, SC: 45000, ST: 50000, OBC: 40000 },
+                    location: "Bangalore",
+                    rating: 3.9,
+                    image: "https://via.placeholder.com/400x200?text=BMSIT",
+                    website: "https://www.bmsit.ac.in",
+                    highlights: ["VTU Affiliated", "Good faculty", "Affordable"]
+                },
+                {
+                    name: "New Horizon College of Engineering, Bangalore",
+                    branches: ["CSE", "ISE", "ECE", "EEE", "ME"],
+                    cutoff: { GM: 25000, SC: 55000, ST: 60000, OBC: 50000 },
+                    location: "Bangalore",
+                    rating: 3.8,
+                    image: "https://via.placeholder.com/400x200?text=NHCE",
+                    website: "https://www.newhorizonindia.edu",
+                    highlights: ["Autonomous", "Modern campus", "Industry connections"]
+                }
+            ],
+            
+            // Tier 4 Colleges (Other Private)
+            tier4: [
+                {
+                    name: "Acharya Institute of Technology, Bangalore",
+                    branches: ["CSE", "ECE", "EEE", "ME", "Civil"],
+                    cutoff: { GM: 35000, SC: 70000, ST: 80000, OBC: 60000 },
+                    location: "Bangalore",
+                    rating: 3.5,
+                    image: "https://via.placeholder.com/400x200?text=AIT",
+                    website: "https://www.acharya.ac.in",
+                    highlights: ["VTU Affiliated", "Large campus", "Various courses"]
+                },
+                {
+                    name: "East West Institute of Technology, Bangalore",
+                    branches: ["CSE", "ECE", "EEE", "ME", "Civil"],
+                    cutoff: { GM: 50000, SC: 90000, ST: 100000, OBC: 80000 },
+                    location: "Bangalore",
+                    rating: 3.3,
+                    image: "https://via.placeholder.com/400x200?text=EWIT",
+                    website: "https://www.ewit.edu.in",
+                    highlights: ["VTU Affiliated", "Affordable", "Decent infrastructure"]
+                },
+                {
+                    name: "Global Academy of Technology, Bangalore",
+                    branches: ["CSE", "ECE", "EEE", "ME", "Civil"],
+                    cutoff: { GM: 70000, SC: 120000, ST: 150000, OBC: 100000 },
+                    location: "Bangalore",
+                    rating: 3.0,
+                    image: "https://via.placeholder.com/400x200?text=GAT",
+                    website: "https://www.gat.ac.in",
+                    highlights: ["VTU Affiliated", "Various activities", "Flexible curriculum"]
+                }
+            ]
+        };
+        
         // Calculate rank based on marks
         function calculateRank() {
             // Get all input values
@@ -870,6 +1069,9 @@
                 document.getElementById('competition-note').textContent = "2025 is expected to be highly competitive";
             }
             
+            // Generate college recommendations
+            generateCollegeRecommendations(rank, category);
+            
             // Remove animation class after it completes
             setTimeout(() => {
                 rankElement.classList.remove('animate__animated', 'animate__pulse');
@@ -877,6 +1079,160 @@
             
             // Switch to predictor tab
             document.querySelector('.tab-btn[data-tab="predictor"]').click();
+        }
+        
+        // Generate college recommendations based on rank and category
+        function generateCollegeRecommendations(rank, category) {
+            const container = document.getElementById('college-recommendations');
+            container.innerHTML = '';
+            
+            // Determine which colleges are suitable based on rank
+            let suitableColleges = [];
+            
+            // Check each tier and add colleges where cutoff is higher than rank
+            Object.keys(collegeDatabase).forEach(tier => {
+                collegeDatabase[tier].forEach(college => {
+                    // Get cutoff for this category (default to GM if specific category not found)
+                    const cutoff = college.cutoff[category] || college.cutoff.GM;
+                    
+                    // If rank is better than cutoff, add to recommendations
+                    if (rank <= cutoff * 1.5) { // 1.5x buffer for safety
+                        suitableColleges.push({
+                            ...college,
+                            tier: tier,
+                            matchScore: cutoff - rank // Higher is better
+                        });
+                    }
+                });
+            });
+            
+            // Sort by match score (best matches first)
+            suitableColleges.sort((a, b) => a.matchScore - b.matchScore);
+            
+            // Limit to top 6 recommendations
+            suitableColleges = suitableColleges.slice(0, 6);
+            
+            if (suitableColleges.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="inline-block p-4 bg-red-50 rounded-full mb-4">
+                            <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-600 mb-2">No colleges found for your rank range</h3>
+                        <p class="text-sm text-gray-500">Consider improving your marks or exploring other options</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'mb-6';
+            header.innerHTML = `
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Based on your predicted rank of <span class="font-bold text-blue-600">${rank.toLocaleString()}</span> (${category})</h3>
+                <p class="text-sm text-gray-500">These colleges might be within your reach based on previous year cutoffs</p>
+            `;
+            container.appendChild(header);
+            
+            // Create college grid
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+            
+            // Add college cards
+            suitableColleges.forEach(college => {
+                const card = document.createElement('div');
+                card.className = `college-card college-${college.tier} relative`;
+                
+                // Determine tier badge color and text
+                let tierBadge = '';
+                let tierText = '';
+                switch(college.tier) {
+                    case 'tier1':
+                        tierBadge = 'bg-yellow-500';
+                        tierText = 'Tier 1 (Top)';
+                        break;
+                    case 'tier2':
+                        tierBadge = 'bg-blue-500';
+                        tierText = 'Tier 2 (Good)';
+                        break;
+                    case 'tier3':
+                        tierBadge = 'bg-green-500';
+                        tierText = 'Tier 3 (Average)';
+                        break;
+                    case 'tier4':
+                        tierBadge = 'bg-gray-500';
+                        tierText = 'Tier 4 (Other)';
+                        break;
+                }
+                
+                // Get cutoff for this category
+                const cutoff = college.cutoff[category] || college.cutoff.GM;
+                const chance = rank <= cutoff ? 'High Chance' : 'Possible Chance';
+                
+                card.innerHTML = `
+                    <div class="college-badge ${tierBadge}">${tierText}</div>
+                    <img src="${college.image}" alt="${college.name}" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1">${college.name}</h3>
+                        <div class="flex items-center mb-2">
+                            <span class="text-sm font-medium ${rank <= cutoff ? 'text-green-600' : 'text-yellow-600'}">${chance}</span>
+                            <span class="mx-2 text-gray-400">•</span>
+                            <span class="text-sm text-gray-600">Cutoff: ${cutoff.toLocaleString()}</span>
+                        </div>
+                        <div class="flex items-center mb-3">
+                            <div class="flex items-center mr-4">
+                                <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
+                                <span class="text-sm text-gray-600">${college.location}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span class="text-sm text-gray-600">${college.rating}/5</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <h4 class="text-sm font-medium text-gray-700 mb-1">Available Branches:</h4>
+                            <div class="flex flex-wrap gap-1">
+                                ${college.branches.map(branch => `
+                                    <span class="text-xs px-2 py-1 bg-gray-100 rounded">${branch}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <h4 class="text-sm font-medium text-gray-700 mb-1">Highlights:</h4>
+                            <ul class="text-xs text-gray-600 space-y-1">
+                                ${college.highlights.map(highlight => `
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mr-1 mt-0.5"></i>
+                                        <span>${highlight}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                        <a href="${college.website}" target="_blank" class="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center">
+                            <i class="fas fa-external-link-alt mr-1"></i> Visit Website
+                        </a>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            container.appendChild(grid);
+            
+            // Add disclaimer
+            const disclaimer = document.createElement('div');
+            disclaimer.className = 'mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200';
+            disclaimer.innerHTML = `
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-yellow-500 mt-0.5 mr-2"></i>
+                    <div>
+                        <p class="text-sm text-yellow-800">
+                            College cutoffs are based on previous year trends and may vary. Always check official KCET counseling for accurate cutoff ranks.
+                        </p>
+                    </div>
+                </div>
+            `;
+            container.appendChild(disclaimer);
         }
         
         // Event listener for calculate button
