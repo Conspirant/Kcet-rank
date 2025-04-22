@@ -84,38 +84,95 @@
             50%  { transform: translate(0, 15px); }
             100%   { transform: translate(0, -0px); }   
         }
+        
+        .disclaimer {
+            border-left: 4px solid #f59e0b;
+            background-color: rgba(254, 243, 199, 0.5);
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .card {
+                padding: 1rem;
+            }
+            
+            .input-range::-webkit-slider-thumb {
+                width: 16px;
+                height: 16px;
+            }
+            
+            #college-predictor {
+                margin-top: 1rem;
+            }
+            
+            .result-card {
+                margin-top: 1.5rem;
+            }
+            
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+                line-height: 2.5rem;
+            }
+            
+            header p {
+                font-size: 0.9rem;
+            }
+            
+            .grid-cols-3 {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+        }
+        
+        /* Prevent zoom on input focus on mobile */
+        @media screen and (max-width: 480px) {
+            select, input[type="range"] {
+                font-size: 16px;
+            }
+        }
+        
+        /* Touch target sizes */
+        button, .input-range::-webkit-slider-thumb {
+            min-width: 44px;
+            min-height: 44px;
+        }
     </style>
 </head>
-<body class="py-8">
-    <div class="container mx-auto px-4 max-w-4xl">
+<body class="py-4 md:py-8">
+    <div class="container mx-auto px-2 sm:px-4 max-w-4xl">
         <!-- Header -->
-        <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-3 animate__animated animate__fadeInDown">
+        <header class="text-center mb-6 md:mb-12">
+            <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-2 md:mb-3 animate__animated animate__fadeInDown">
                 KCET <span class="gradient-text bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-900">2025</span> Rank Predictor
             </h1>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto animate__animated animate__fadeIn animate__delay-1s">
+            <p class="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto animate__animated animate__fadeIn animate__delay-1s">
                 Get your predicted KCET rank based on recent trends (2023 & 2024 data) with increased competition factors for 2025
             </p>
         </header>
         
         <!-- Main Card -->
-        <div class="card p-6 md:p-8 mb-8 animate__animated animate__fadeInUp animate__delay-1s">
-            <div class="flex flex-col md:flex-row gap-8">
+        <div class="card p-4 md:p-8 mb-6 md:mb-8 animate__animated animate__fadeInUp animate__delay-1s">
+            <div class="flex flex-col">
                 <!-- Input Section -->
-                <div class="w-full md:w-1/2">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                <div class="w-full">
+                    <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-4 md:mb-6 flex items-center">
                         <i class="fas fa-calculator mr-3 text-blue-600"></i> Enter Your Marks
                     </h2>
                     
                     <!-- PCM Marks -->
-                    <div class="mb-6">
-                        <h3 class="text-lg font-medium text-gray-700 mb-3 flex items-center">
+                    <div class="mb-4 md:mb-6">
+                        <h3 class="text-base md:text-lg font-medium text-gray-700 mb-2 md:mb-3 flex items-center">
                             <i class="fas fa-flask mr-2 text-blue-500"></i> 2nd PUC PCM Marks (300)
                         </h3>
-                        <div class="space-y-4">
+                        <div class="space-y-3 md:space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-600 mb-1">Physics</label>
-                                <input type="range" min="0" max="100" value="60" class="input-range mb-2" id="physics">
+                                <input type="range" min="0" max="100" value="60" class="input-range mb-1 md:mb-2" id="physics">
                                 <div class="flex justify-between text-xs text-gray-500">
                                     <span>0</span>
                                     <span id="physics-value">60</span>
@@ -124,7 +181,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-600 mb-1">Chemistry</label>
-                                <input type="range" min="0" max="100" value="60" class="input-range mb-2" id="chemistry">
+                                <input type="range" min="0" max="100" value="60" class="input-range mb-1 md:mb-2" id="chemistry">
                                 <div class="flex justify-between text-xs text-gray-500">
                                     <span>0</span>
                                     <span id="chemistry-value">60</span>
@@ -133,7 +190,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-600 mb-1">Mathematics</label>
-                                <input type="range" min="0" max="100" value="60" class="input-range mb-2" id="maths">
+                                <input type="range" min="0" max="100" value="60" class="input-range mb-1 md:mb-2" id="maths">
                                 <div class="flex justify-between text-xs text-gray-500">
                                     <span>0</span>
                                     <span id="maths-value">60</span>
@@ -144,14 +201,14 @@
                     </div>
                     
                     <!-- CET Marks -->
-                    <div class="mb-6">
-                        <h3 class="text-lg font-medium text-gray-700 mb-3 flex items-center">
+                    <div class="mb-4 md:mb-6">
+                        <h3 class="text-base md:text-lg font-medium text-gray-700 mb-2 md:mb-3 flex items-center">
                             <i class="fas fa-book-open mr-2 text-blue-500"></i> KCET Subject Marks (180)
                         </h3>
-                        <div class="space-y-4">
+                        <div class="space-y-3 md:space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-600 mb-1">Physics</label>
-                                <input type="range" min="0" max="60" value="30" class="input-range mb-2" id="cet-physics">
+                                <input type="range" min="0" max="60" value="30" class="input-range mb-1 md:mb-2" id="cet-physics">
                                 <div class="flex justify-between text-xs text-gray-500">
                                     <span>0</span>
                                     <span id="cet-physics-value">30</span>
@@ -160,7 +217,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-600 mb-1">Chemistry</label>
-                                <input type="range" min="0" max="60" value="30" class="input-range mb-2" id="cet-chemistry">
+                                <input type="range" min="0" max="60" value="30" class="input-range mb-1 md:mb-2" id="cet-chemistry">
                                 <div class="flex justify-between text-xs text-gray-500">
                                     <span>0</span>
                                     <span id="cet-chemistry-value">30</span>
@@ -169,7 +226,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-600 mb-1">Mathematics</label>
-                                <input type="range" min="0" max="60" value="30" class="input-range mb-2" id="cet-maths">
+                                <input type="range" min="0" max="60" value="30" class="input-range mb-1 md:mb-2" id="cet-maths">
                                 <div class="flex justify-between text-xs text-gray-500">
                                     <span>0</span>
                                     <span id="cet-maths-value">30</span>
@@ -180,11 +237,11 @@
                     </div>
                     
                     <!-- Category -->
-                    <div class="mb-6">
+                    <div class="mb-4 md:mb-6">
                         <label class="block text-sm font-medium text-gray-600 mb-2">
                             <i class="fas fa-user-tag mr-2 text-blue-500"></i> Category
                         </label>
-                        <select id="category" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <select id="category" class="w-full px-3 py-2 md:px-4 md:py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="GM">General Merit</option>
                             <option value="1G">1G</option>
                             <option value="2AG">2AG</option>
@@ -201,37 +258,37 @@
                 </div>
                 
                 <!-- Result Section -->
-                <div class="w-full md:w-1/2">
-                    <div class="result-card rounded-xl p-6 h-full flex flex-col justify-center animate__animated animate__fadeIn animate__delay-2s">
-                        <div class="text-center mb-6">
-                            <div class="inline-block p-4 bg-white bg-opacity-20 rounded-full mb-4 floating">
-                                <i class="fas fa-trophy text-4xl text-yellow-300"></i>
+                <div class="w-full mt-6 md:mt-0">
+                    <div class="result-card rounded-xl p-4 md:p-6 h-full flex flex-col justify-center animate__animated animate__fadeIn animate__delay-2s">
+                        <div class="text-center mb-4 md:mb-6">
+                            <div class="inline-block p-3 md:p-4 bg-white bg-opacity-20 rounded-full mb-3 md:mb-4 floating">
+                                <i class="fas fa-trophy text-3xl md:text-4xl text-yellow-300"></i>
                             </div>
-                            <h2 class="text-2xl font-bold text-white mb-2">Your Predicted Rank</h2>
-                            <p class="text-blue-100">Based on KCET 2023 & 2024 trends with 2025 competition factor</p>
+                            <h2 class="text-xl md:text-2xl font-bold text-white mb-1 md:mb-2">Your Predicted Rank</h2>
+                            <p class="text-xs md:text-base text-blue-100">Based on KCET 2023 & 2024 trends with 2025 competition factor</p>
                         </div>
                         
-                        <div class="bg-white bg-opacity-20 rounded-xl p-6 mb-6">
+                        <div class="bg-white bg-opacity-20 rounded-xl p-4 md:p-6 mb-4 md:mb-6">
                             <div class="text-center">
-                                <div class="text-5xl font-bold text-white mb-2" id="predicted-rank">---</div>
-                                <div class="text-blue-100 font-medium" id="rank-range"></div>
+                                <div class="text-4xl md:text-5xl font-bold text-white mb-1 md:mb-2" id="predicted-rank">---</div>
+                                <div class="text-xs md:text-base text-blue-100 font-medium" id="rank-range"></div>
                             </div>
                         </div>
                         
                         <div class="mt-auto">
-                            <div class="flex items-center mb-3">
-                                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center mr-3">
-                                    <i class="fas fa-info text-white text-sm"></i>
+                            <div class="flex items-center mb-2 md:mb-3">
+                                <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-500 flex items-center justify-center mr-2 md:mr-3">
+                                    <i class="fas fa-info text-white text-xs md:text-sm"></i>
                                 </div>
-                                <div class="text-blue-100 text-sm">
+                                <div class="text-xs md:text-sm text-blue-100">
                                     <span id="competition-note">2025 is expected to be more competitive than previous years</span>
                                 </div>
                             </div>
                             <div class="flex items-center">
-                                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center mr-3">
-                                    <i class="fas fa-chart-pie text-white text-sm"></i>
+                                <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-500 flex items-center justify-center mr-2 md:mr-3">
+                                    <i class="fas fa-chart-pie text-white text-xs md:text-sm"></i>
                                 </div>
-                                <div class="text-blue-100 text-sm">
+                                <div class="text-xs md:text-sm text-blue-100">
                                     Rank calculated with 50% PUC + 50% CET weightage
                                 </div>
                             </div>
@@ -242,51 +299,66 @@
         </div>
         
         <!-- Additional Info -->
-        <div class="card p-6 mb-8 animate__animated animate__fadeInUp animate__delay-2s">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        <div class="card p-4 md:p-6 mb-6 md:mb-8 animate__animated animate__fadeInUp animate__delay-2s">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-3 md:mb-4 flex items-center">
                 <i class="fas fa-lightbulb mr-3 text-yellow-500"></i> How It Works
             </h2>
-            <div class="grid md:grid-cols-3 gap-4">
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <div class="flex items-center mb-2">
-                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+            <div class="grid md:grid-cols-3 gap-3 md:gap-4">
+                <div class="bg-blue-50 p-3 md:p-4 rounded-lg">
+                    <div class="flex items-center mb-1 md:mb-2">
+                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 md:mr-3">
                             <i class="fas fa-database text-blue-600"></i>
                         </div>
-                        <h3 class="font-medium text-gray-800">Data-Driven</h3>
+                        <h3 class="text-sm md:text-base font-medium text-gray-800">Data-Driven</h3>
                     </div>
-                    <p class="text-sm text-gray-600">Algorithm uses actual KCET 2023 & 2024 rank vs marks data patterns</p>
+                    <p class="text-xs md:text-sm text-gray-600">Algorithm uses actual KCET 2023 & 2024 rank vs marks data patterns</p>
                 </div>
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <div class="flex items-center mb-2">
-                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <div class="bg-blue-50 p-3 md:p-4 rounded-lg">
+                    <div class="flex items-center mb-1 md:mb-2">
+                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 md:mr-3">
                             <i class="fas fa-chart-line text-blue-600"></i>
                         </div>
-                        <h3 class="font-medium text-gray-800">Competition Factor</h3>
+                        <h3 class="text-sm md:text-base font-medium text-gray-800">Competition Factor</h3>
                     </div>
-                    <p class="text-sm text-gray-600">Includes 15% increased competition adjustment for 2025</p>
+                    <p class="text-xs md:text-sm text-gray-600">Includes 15% increased competition adjustment for 2025</p>
                 </div>
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <div class="flex items-center mb-2">
-                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <div class="bg-blue-50 p-3 md:p-4 rounded-lg">
+                    <div class="flex items-center mb-1 md:mb-2">
+                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 md:mr-3">
                             <i class="fas fa-percentage text-blue-600"></i>
                         </div>
-                        <h3 class="font-medium text-gray-800">Accurate Weightage</h3>
+                        <h3 class="text-sm md:text-base font-medium text-gray-800">Accurate Weightage</h3>
                     </div>
-                    <p class="text-sm text-gray-600">50% PUC PCM + 50% CET marks as per official KCET formula</p>
+                    <p class="text-xs md:text-sm text-gray-600">50% PUC PCM + 50% CET marks as per official KCET formula</p>
                 </div>
             </div>
         </div>
         
         <!-- College Predictor -->
-        <div class="card p-6 animate__animated animate__fadeInUp animate__delay-3s hidden" id="college-predictor">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        <div class="card p-4 md:p-6 animate__animated animate__fadeInUp animate__delay-3s hidden" id="college-predictor">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-3 md:mb-4 flex items-center">
                 <i class="fas fa-university mr-3 text-purple-500"></i> Possible College Options
             </h2>
-            <div class="space-y-3" id="college-list">
+            <div class="space-y-2 md:space-y-3" id="college-list">
                 <!-- Filled by JavaScript -->
             </div>
-            <div class="mt-4 text-sm text-gray-500">
+            <div class="mt-3 md:mt-4 text-xs md:text-sm text-gray-500">
                 <i class="fas fa-info-circle mr-2"></i> Based on 2024 cutoff trends. Actual 2025 cutoffs may vary.
+            </div>
+        </div>
+        
+        <!-- Disclaimer Section -->
+        <div class="card p-4 md:p-6 mb-6 md:mb-8 disclaimer animate__animated animate__fadeInUp animate__delay-3s">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-2 md:mb-3 flex items-center">
+                <i class="fas fa-exclamation-triangle mr-3 text-yellow-600"></i> Important Disclaimer
+            </h2>
+            <div class="space-y-2 md:space-y-3 text-xs md:text-sm text-gray-700">
+                <p><i class="fas fa-circle text-yellow-500 mr-2 text-2xs"></i> This rank predictor is based on analysis of previous years' trends and is meant for <strong>informational purposes only</strong>.</p>
+                <p><i class="fas fa-circle text-yellow-500 mr-2 text-2xs"></i> The actual KCET 2025 ranks may vary depending on various factors including total applicants, difficulty level, and marking scheme.</p>
+                <p><i class="fas fa-circle text-yellow-500 mr-2 text-2xs"></i> College predictions are based on 2024 cutoff data and are <strong>not guarantees</strong> of admission.</p>
+                <p><i class="fas fa-circle text-yellow-500 mr-2 text-2xs"></i> The calculator applies a 15% competition factor based on expected increase in applicants for 2025.</p>
+                <p><i class="fas fa-circle text-yellow-500 mr-2 text-2xs"></i> For official results and counseling information, please refer to the <strong>KEA (Karnataka Examination Authority)</strong> website.</p>
+                <p class="mt-3 md:mt-4 font-medium"><i class="fas fa-hand-point-right mr-2 text-yellow-600"></i> This tool should be used as a <strong>guideline only</strong> and not as the sole basis for college selection.</p>
             </div>
         </div>
     </div>
@@ -364,7 +436,7 @@
             } else if (finalPercentage >= 97) {
                 rank = Math.floor(100 + Math.random() * 150); // 100-250
             } else if (finalPercentage >= 95) {
-                rank = Math.floor(250 + Math.random() * 250); // 250-500
+                rank = Math.floor(250 + Math.random* 250); // 250-500
             } else if (finalPercentage >= 93) {
                 rank = Math.floor(500 + Math.random() * 500); // 500-1000
             } else if (finalPercentage >= 90) {
@@ -439,14 +511,14 @@
             // Display colleges
             foundColleges.forEach(college => {
                 const collegeItem = document.createElement('div');
-                collegeItem.className = 'flex items-start p-3 bg-gray-50 rounded-lg';
+                collegeItem.className = 'flex items-start p-2 md:p-3 bg-gray-50 rounded-lg';
                 collegeItem.innerHTML = `
-                    <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3 mt-1">
-                        <i class="fas fa-graduation-cap text-purple-600"></i>
+                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center mr-2 md:mr-3 mt-1">
+                        <i class="fas fa-graduation-cap text-purple-600 text-sm md:text-base"></i>
                     </div>
                     <div>
-                        <h3 class="font-medium text-gray-800">${college.name}</h3>
-                        <p class="text-sm text-gray-600">${college.location} • Cutoff ~${college.rank.toLocaleString()}</p>
+                        <h3 class="text-sm md:text-base font-medium text-gray-800">${college.name}</h3>
+                        <p class="text-xs md:text-sm text-gray-600">${college.location} • Cutoff ~${college.rank.toLocaleString()}</p>
                     </div>
                 `;
                 collegeList.appendChild(collegeItem);
