@@ -1013,99 +1013,315 @@
         <i class="fas fa-bolt"></i>
     </div>
     
-    <script>
-        // Mark adjustment functions
-        function adjustMark(subjectId, change) {
-            const input = document.getElementById(subjectId);
-            let value = parseInt(input.value) + change;
-            
-            // Ensure value stays within bounds
-            const max = parseInt(input.max);
-            const min = parseInt(input.min);
-            value = Math.max(min, Math.min(max, value));
-            
-            input.value = value;
-            updateMark(subjectId);
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Mark adjustment functions
+    function adjustMark(subjectId, change) {
+        const input = document.getElementById(subjectId);
+        let value = parseInt(input.value) + change;
+
+        const max = parseInt(input.max);
+        const min = parseInt(input.min);
+        value = Math.max(min, Math.min(max, value));
+
+        input.value = value;
+        updateMark(subjectId);
+    }
+
+    function updateMark(subjectId) {
+        const input = document.getElementById(subjectId);
+        const valueDisplay = document.getElementById(subjectId + '-value');
+
+        const max = parseInt(input.max);
+        const min = parseInt(input.min);
+        let value = parseInt(input.value);
+        value = Math.max(min, Math.min(max, value));
+        input.value = value;
+
+        valueDisplay.textContent = value;
+
+        const percentage = (value / max) * 100;
+        const circle = input.closest('.subject-card').querySelector('.mark-circle');
+
+        if (percentage >= 80) {
+            circle.style.background = 'conic-gradient(var(--success) 0%, #34d399 100%)';
+        } else if (percentage >= 60) {
+            circle.style.background = 'conic-gradient(var(--info) 0%, #93c5fd 100%)';
+        } else if (percentage >= 40) {
+            circle.style.background = 'conic-gradient(var(--warning) 0%, #fbbf24 100%)';
+        } else {
+            circle.style.background = 'conic-gradient(var(--danger) 0%, #f87171 100%)';
         }
-        
-        function updateMark(subjectId) {
-            const input = document.getElementById(subjectId);
-            const valueDisplay = document.getElementById(subjectId + '-value');
-            
-            // Ensure value stays within bounds
-            const max = parseInt(input.max);
-            const min = parseInt(input.min);
-            let value = parseInt(input.value);
-            value = Math.max(min, Math.min(max, value));
-            input.value = value;
-            
-            // Update display
-            valueDisplay.textContent = value;
-            
-            // Update circle gradient (visual feedback)
-            const percentage = (value / max) * 100;
-            const circle = input.closest('.subject-card').querySelector('.mark-circle');
-            
-            if (percentage >= 80) {
-                circle.style.background = 'conic-gradient(var(--success) 0%, #34d399 100%)';
-            } else if (percentage >= 60) {
-                circle.style.background = 'conic-gradient(var(--info) 0%, #93c5fd 100%)';
-            } else if (percentage >= 40) {
-                circle.style.background = 'conic-gradient(var(--warning) 0%, #fbbf24 100%)';
-            } else {
-                circle.style.background = 'conic-gradient(var(--danger) 0%, #f87171 100%)';
-            }
-        }
-        
-        function focusInput(subjectId) {
-            document.getElementById(subjectId).focus();
-        }
-        
-        // Category selection function
-        function selectCategory(button) {
-            // Remove active class from all buttons
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Add active class to clicked button
-            button.classList.add('active');
-            
-            // Update hidden input value
-            document.getElementById('category').value = button.dataset.category;
-        }
-        
-        // Toggle advanced options
-        function toggleAdvancedOptions() {
-            const options = document.getElementById('advanced-options');
-            options.classList.toggle('hidden');
-        }
-        
-        // Initialize all marks
-        document.querySelectorAll('input[type="range"]').forEach(input => {
-            updateMark(input.id);
+    }
+
+    function focusInput(subjectId) {
+        document.getElementById(subjectId).focus();
+    }
+
+    function selectCategory(button) {
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.remove('active');
         });
-        
-        // Tab switching
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tabId = this.dataset.tab;
-                
-                // Update active tab button
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Show corresponding tab content
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                document.getElementById(tabId).classList.add('active');
+        button.classList.add('active');
+        document.getElementById('category').value = button.dataset.category;
+    }
+
+    function toggleAdvancedOptions() {
+        const options = document.getElementById('advanced-options');
+        options.classList.toggle('hidden');
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const tabId = this.dataset.tab;
+
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
             });
+            document.getElementById(tabId).classList.add('active');
         });
-        
-        // College database (simplified for demo)
-        const collegeDatabase = {
-            // Tier 1 Colleges (Top Government)
+    });
+
+    // Add calculateRank, showDisclaimerTab, showBreakdownTab,
+    // generateResultBreakdown, generateCollegeRecommendations etc.
+    // Paste your full functions from your existing script here.
+});
+</script><script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Mark adjustment functions
+    function adjustMark(subjectId, change) {
+        const input = document.getElementById(subjectId);
+        let value = parseInt(input.value) + change;
+
+        const max = parseInt(input.max);
+        const min = parseInt(input.min);
+        value = Math.max(min, Math.min(max, value));
+
+        input.value = value;
+        updateMark(subjectId);
+    }
+
+    function updateMark(subjectId) {
+        const input = document.getElementById(subjectId);
+        const valueDisplay = document.getElementById(subjectId + '-value');
+
+        const max = parseInt(input.max);
+        const min = parseInt(input.min);
+        let value = parseInt(input.value);
+        value = Math.max(min, Math.min(max, value));
+        input.value = value;
+
+        valueDisplay.textContent = value;
+
+        const percentage = (value / max) * 100;
+        const circle = input.closest('.subject-card').querySelector('.mark-circle');
+
+        if (percentage >= 80) {
+            circle.style.background = 'conic-gradient(var(--success) 0%, #34d399 100%)';
+        } else if (percentage >= 60) {
+            circle.style.background = 'conic-gradient(var(--info) 0%, #93c5fd 100%)';
+        } else if (percentage >= 40) {
+            circle.style.background = 'conic-gradient(var(--warning) 0%, #fbbf24 100%)';
+        } else {
+            circle.style.background = 'conic-gradient(var(--danger) 0%, #f87171 100%)';
+        }
+    }
+
+    function focusInput(subjectId) {
+        document.getElementById(subjectId).focus();
+    }
+
+    function selectCategory(button) {
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+        document.getElementById('category').value = button.dataset.category;
+    }
+
+    function toggleAdvancedOptions() {
+        const options = document.getElementById('advanced-options');
+        options.classList.toggle('hidden');
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const tabId = this.dataset.tab;
+
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // Add calculateRank, showDisclaimerTab, showBreakdownTab,
+    // generateResultBreakdown, generateCollegeRecommendations etc.
+    // Paste your full functions from your existing script here.
+});
+</script><script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Mark adjustment functions
+    function adjustMark(subjectId, change) {
+        const input = document.getElementById(subjectId);
+        let value = parseInt(input.value) + change;
+
+        const max = parseInt(input.max);
+        const min = parseInt(input.min);
+        value = Math.max(min, Math.min(max, value));
+
+        input.value = value;
+        updateMark(subjectId);
+    }
+
+    function updateMark(subjectId) {
+        const input = document.getElementById(subjectId);
+        const valueDisplay = document.getElementById(subjectId + '-value');
+
+        const max = parseInt(input.max);
+        const min = parseInt(input.min);
+        let value = parseInt(input.value);
+        value = Math.max(min, Math.min(max, value));
+        input.value = value;
+
+        valueDisplay.textContent = value;
+
+        const percentage = (value / max) * 100;
+        const circle = input.closest('.subject-card').querySelector('.mark-circle');
+
+        if (percentage >= 80) {
+            circle.style.background = 'conic-gradient(var(--success) 0%, #34d399 100%)';
+        } else if (percentage >= 60) {
+            circle.style.background = 'conic-gradient(var(--info) 0%, #93c5fd 100%)';
+        } else if (percentage >= 40) {
+            circle.style.background = 'conic-gradient(var(--warning) 0%, #fbbf24 100%)';
+        } else {
+            circle.style.background = 'conic-gradient(var(--danger) 0%, #f87171 100%)';
+        }
+    }
+
+    function focusInput(subjectId) {
+        document.getElementById(subjectId).focus();
+    }
+
+    function selectCategory(button) {
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+        document.getElementById('category').value = button.dataset.category;
+    }
+
+    function toggleAdvancedOptions() {
+        const options = document.getElementById('advanced-options');
+        options.classList.toggle('hidden');
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const tabId = this.dataset.tab;
+
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // Add calculateRank, showDisclaimerTab, showBreakdownTab,
+    // generateResultBreakdown, generateCollegeRecommendations etc.
+    // Paste your full functions from your existing script here.
+});
+</script><script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Mark adjustment functions
+    function adjustMark(subjectId, change) {
+        const input = document.getElementById(subjectId);
+        let value = parseInt(input.value) + change;
+
+        const max = parseInt(input.max);
+        const min = parseInt(input.min);
+        value = Math.max(min, Math.min(max, value));
+
+        input.value = value;
+        updateMark(subjectId);
+    }
+
+    function updateMark(subjectId) {
+        const input = document.getElementById(subjectId);
+        const valueDisplay = document.getElementById(subjectId + '-value');
+
+        const max = parseInt(input.max);
+        const min = parseInt(input.min);
+        let value = parseInt(input.value);
+        value = Math.max(min, Math.min(max, value));
+        input.value = value;
+
+        valueDisplay.textContent = value;
+
+        const percentage = (value / max) * 100;
+        const circle = input.closest('.subject-card').querySelector('.mark-circle');
+
+        if (percentage >= 80) {
+            circle.style.background = 'conic-gradient(var(--success) 0%, #34d399 100%)';
+        } else if (percentage >= 60) {
+            circle.style.background = 'conic-gradient(var(--info) 0%, #93c5fd 100%)';
+        } else if (percentage >= 40) {
+            circle.style.background = 'conic-gradient(var(--warning) 0%, #fbbf24 100%)';
+        } else {
+            circle.style.background = 'conic-gradient(var(--danger) 0%, #f87171 100%)';
+        }
+    }
+
+    function focusInput(subjectId) {
+        document.getElementById(subjectId).focus();
+    }
+
+    function selectCategory(button) {
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+        document.getElementById('category').value = button.dataset.category;
+    }
+
+    function toggleAdvancedOptions() {
+        const options = document.getElementById('advanced-options');
+        options.classList.toggle('hidden');
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const tabId = this.dataset.tab;
+
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // Add calculateRank, showDisclaimerTab, showBreakdownTab,
+    // generateResultBreakdown, generateCollegeRecommendations etc.
+    // Paste your full functions from your existing script here.
+});
+</script>)
             tier1: [
                 {
                     name: "PES University, Bangalore",
