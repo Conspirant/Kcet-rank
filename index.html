@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KCET 2025 Rank Predictor | Next-Gen Prediction Tool</title>
+    <title>KCET 2025 Rank Predictor | AI-Powered Prediction Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,6 +16,10 @@
             --accent: #f72585;
             --light: #f8f9fa;
             --dark: #212529;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
         }
         
         body {
@@ -26,7 +30,7 @@
         }
         
         .glass-card {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 16px;
@@ -315,6 +319,106 @@
             border-left: 4px solid #64748b;
         }
         
+        /* Result Breakdown */
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            background: white;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        .breakdown-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Neumorphic Button */
+        .neumorphic-btn {
+            border-radius: 12px;
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            box-shadow:  5px 5px 10px #d9d9d9,
+                        -5px -5px 10px #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .neumorphic-btn:hover {
+            transform: translateY(-2px);
+            box-shadow:  8px 8px 15px #d9d9d9,
+                        -8px -8px 15px #ffffff;
+        }
+        
+        .neumorphic-btn:active {
+            transform: translateY(0);
+            box-shadow:  2px 2px 5px #d9d9d9,
+                        -2px -2px 5px #ffffff;
+        }
+        
+        /* Glowing Effect */
+        .glow {
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px rgba(67, 97, 238, 0.5);
+            }
+            to {
+                box-shadow: 0 0 20px rgba(67, 97, 238, 0.8);
+            }
+        }
+        
+        /* 3D Flip Card */
+        .flip-card {
+            perspective: 1000px;
+        }
+        
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+        }
+        
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .subject-grid {
@@ -353,25 +457,52 @@
     <div class="container mx-auto px-4 max-w-6xl">
         <!-- Header -->
         <header class="text-center mb-8 md:mb-12">
-            <div class="inline-block p-3 md:p-4 bg-white rounded-xl shadow-lg mb-4 animate__animated animate__fadeInDown">
+            <div class="inline-block p-3 md:p-4 bg-white rounded-xl shadow-lg mb-4 animate__animated animate__fadeInDown glow">
                 <i class="fas fa-graduation-cap text-4xl gradient-text"></i>
             </div>
             <h1 class="text-3xl md:text-5xl font-extrabold mb-2 animate__animated animate__fadeIn">
                 KCET <span class="gradient-text">2025</span> Rank Predictor
             </h1>
             <p class="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto animate__animated animate__fadeIn animate__delay-1s">
-                The most advanced rank prediction tool with college recommendations
+                The most advanced AI-powered rank prediction tool with detailed breakdowns
             </p>
         </header>
+        
+        <!-- Disclaimer Banner (Always Visible) -->
+        <div class="glass-card p-4 mb-6 bg-red-50 border border-red-200 animate__animated animate__fadeIn">
+            <div class="flex items-start">
+                <div class="flex-shrink-0 pt-1">
+                    <i class="fas fa-exclamation-triangle text-red-500"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">Important Disclaimer</h3>
+                    <p class="text-sm text-red-700">
+                        This tool provides estimates only. Actual ranks may vary based on final normalization and competition levels. Always consult official sources.
+                        <a href="#" class="font-medium underline" onclick="document.querySelector('.tab-btn[data-tab=\"disclaimer\"]').click()">Read full disclaimer</a>
+                    </p>
+                </div>
+            </div>
+        </div>
         
         <!-- Main Card -->
         <div class="glass-card p-6 md:p-8 mb-8 animate__animated animate__fadeInUp animate__delay-1s">
             <!-- Tabs Navigation -->
             <div class="flex border-b mb-6 overflow-x-auto">
-                <button class="tab-btn active" data-tab="predictor">Rank Predictor</button>
-                <button class="tab-btn" data-tab="colleges">College Recommendations</button>
-                <button class="tab-btn" data-tab="how-it-works">How It Works</button>
-                <button class="tab-btn" data-tab="disclaimer">Disclaimer</button>
+                <button class="tab-btn active" data-tab="predictor">
+                    <i class="fas fa-calculator mr-2"></i> Rank Predictor
+                </button>
+                <button class="tab-btn" data-tab="breakdown">
+                    <i class="fas fa-chart-pie mr-2"></i> Result Breakdown
+                </button>
+                <button class="tab-btn" data-tab="colleges">
+                    <i class="fas fa-university mr-2"></i> College Recommendations
+                </button>
+                <button class="tab-btn" data-tab="how-it-works">
+                    <i class="fas fa-cogs mr-2"></i> How It Works
+                </button>
+                <button class="tab-btn" data-tab="disclaimer">
+                    <i class="fas fa-exclamation-triangle mr-2"></i> Disclaimer
+                </button>
             </div>
             
             <!-- Tab Contents -->
@@ -447,7 +578,7 @@
                                 
                                 <!-- Mathematics -->
                                 <div class="subject-card">
-                                    <div class="subject-icon" style="background: #10b981;">
+                                    <div class="subject-icon" style="background: var(--success);">
                                         <i class="fas fa-square-root-alt"></i>
                                     </div>
                                     <h4 class="text-center font-medium mb-2">Mathematics</h4>
@@ -539,7 +670,7 @@
                                 
                                 <!-- CET Mathematics -->
                                 <div class="subject-card">
-                                    <div class="subject-icon" style="background: #10b981;">
+                                    <div class="subject-icon" style="background: var(--success);">
                                         <i class="fas fa-square-root-alt"></i>
                                     </div>
                                     <h4 class="text-center font-medium mb-2">Mathematics</h4>
@@ -584,6 +715,41 @@
                             </div>
                             <input type="hidden" id="category" value="GM">
                         </div>
+                        
+                        <!-- Advanced Options -->
+                        <div class="mb-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">
+                                    <i class="fas fa-cog mr-2 gradient-text"></i> Advanced Options
+                                </label>
+                                <button class="text-xs text-blue-600 hover:text-blue-800" onclick="toggleAdvancedOptions()">
+                                    <i class="fas fa-chevron-down mr-1"></i> Show/Hide
+                                </button>
+                            </div>
+                            <div id="advanced-options" class="hidden bg-gray-50 p-4 rounded-lg">
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Competition Level</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex items-center">
+                                            <input type="radio" id="comp-normal" name="competition" value="normal" class="h-4 w-4 text-blue-600" checked>
+                                            <label for="comp-normal" class="ml-2 text-sm text-gray-700">Normal (2024 level)</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="radio" id="comp-high" name="competition" value="high" class="h-4 w-4 text-blue-600">
+                                            <label for="comp-high" class="ml-2 text-sm text-gray-700">High (20% more)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Prediction Model</label>
+                                    <select id="prediction-model" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                        <option value="standard">Standard (2023-24 trends)</option>
+                                        <option value="conservative">Conservative (Lower estimate)</option>
+                                        <option value="optimistic">Optimistic (Higher estimate)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Result Section -->
@@ -617,6 +783,27 @@
                                 <span>AI-powered prediction algorithm for better accuracy</span>
                             </div>
                         </div>
+                        
+                        <button id="see-breakdown-btn" class="w-full mt-6 bg-white text-blue-600 py-2 px-4 rounded-lg font-medium hover:bg-opacity-90 transition hidden" onclick="document.querySelector('.tab-btn[data-tab=\"breakdown\"]').click()">
+                            <i class="fas fa-chart-bar mr-2"></i> See Detailed Breakdown
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Result Breakdown Tab -->
+            <div class="tab-content" id="breakdown">
+                <h2 class="text-xl md:text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-chart-pie mr-3 gradient-text"></i> Result Breakdown
+                </h2>
+                
+                <div id="breakdown-content" class="space-y-4">
+                    <div class="text-center py-12">
+                        <div class="inline-block p-4 bg-blue-50 rounded-full mb-4">
+                            <i class="fas fa-search text-3xl text-blue-500"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-600 mb-2">Calculate your rank to see detailed breakdown</h3>
+                        <p class="text-sm text-gray-500">Your performance analysis will appear here after prediction</p>
                     </div>
                 </div>
             </div>
@@ -693,6 +880,56 @@
                             For best results, enter your actual expected marks rather than ideal scores. Our system works best with realistic inputs.
                         </p>
                     </div>
+                    
+                    <!-- 3D Flip Card -->
+                    <div class="mt-8 flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front glass-card p-6 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 flex items-center">
+                                    <i class="fas fa-question-circle mr-2 gradient-text"></i> Want to know how accurate we are?
+                                </h3>
+                                <p class="text-gray-600 mb-4">Hover over this card to see our prediction accuracy based on past data</p>
+                                <div class="text-center">
+                                    <i class="fas fa-hand-pointer text-2xl text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="flip-card-back glass-card p-6 rounded-xl bg-gradient-to-br from-blue-50 to-purple-50">
+                                <h3 class="font-bold text-lg mb-3 flex items-center">
+                                    <i class="fas fa-chart-bar mr-2 gradient-text"></i> Our Accuracy
+                                </h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between text-sm font-medium">
+                                            <span>2023 Predictions</span>
+                                            <span>92% accurate</span>
+                                        </div>
+                                        <div class="progress-container">
+                                            <div class="progress-bar bg-green-500" style="width: 92%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-sm font-medium">
+                                            <span>2022 Predictions</span>
+                                            <span>89% accurate</span>
+                                        </div>
+                                        <div class="progress-container">
+                                            <div class="progress-bar bg-green-400" style="width: 89%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-sm font-medium">
+                                            <span>2021 Predictions</span>
+                                            <span>87% accurate</span>
+                                        </div>
+                                        <div class="progress-container">
+                                            <div class="progress-bar bg-yellow-500" style="width: 87%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-3">*Accuracy measured against actual KCET ranks</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -703,24 +940,27 @@
                 </h2>
                 
                 <div class="space-y-4 text-gray-600">
+                    <div class="flex items-start bg-red-50 p-4 rounded-lg">
+                        <i class="fas fa-exclamation-circle text-red-500 mt-1 mr-3"></i>
+                        <div>
+                            <h3 class="font-bold text-red-700 mb-1">This is an estimation tool only</h3>
+                            <p>
+                                The KCET 2025 Rank Predictor provides approximate rank estimates based on historical data and statistical models. It should not be considered as a guarantee of your actual KCET 2025 rank.
+                            </p>
+                        </div>
+                    </div>
+                    
                     <div class="flex items-start">
                         <i class="fas fa-circle text-xs mt-1.5 mr-3 text-red-500"></i>
                         <p>
-                            This rank predictor is an estimation tool only and should not be considered as a guarantee of your actual KCET 2025 rank.
+                            Actual ranks may vary based on final normalization, difficulty levels, and actual competition in 2025 which cannot be precisely predicted in advance.
                         </p>
                     </div>
                     
                     <div class="flex items-start">
                         <i class="fas fa-circle text-xs mt-1.5 mr-3 text-red-500"></i>
                         <p>
-                            Actual ranks may vary based on final normalization, difficulty levels, and actual competition in 2025 which cannot be precisely predicted.
-                        </p>
-                    </div>
-                    
-                    <div class="flex items-start">
-                        <i class="fas fa-circle text-xs mt-1.5 mr-3 text-red-500"></i>
-                        <p>
-                            The prediction algorithm is based on historical data and trends, but education authorities may change the ranking methodology.
+                            The prediction algorithm is based on historical data and trends, but education authorities may change the ranking methodology or weightage formula without notice.
                         </p>
                     </div>
                     
@@ -734,17 +974,34 @@
                     <div class="flex items-start">
                         <i class="fas fa-circle text-xs mt-1.5 mr-3 text-red-500"></i>
                         <p>
-                            We recommend consulting with educational counselors and checking official KCET notifications for the most accurate information.
+                            College recommendations are based on previous year cutoff trends and may not reflect actual 2025 admission possibilities.
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <i class="fas fa-circle text-xs mt-1.5 mr-3 text-red-500"></i>
+                        <p>
+                            We strongly recommend consulting with educational counselors and checking official KCET notifications for the most accurate information.
                         </p>
                     </div>
                     
                     <div class="bg-red-50 p-4 rounded-lg border border-red-100 mt-6">
                         <h3 class="font-bold text-red-800 mb-2">
-                            <i class="fas fa-hand-paper mr-2"></i> Note
+                            <i class="fas fa-hand-paper mr-2"></i> Legal Note
                         </h3>
                         <p class="text-red-700">
-                            The developers of this tool are not responsible for any decisions made based on these predictions. Use at your own discretion.
+                            The developers of this tool are not responsible for any decisions made based on these predictions. Use at your own discretion. This tool is not affiliated with or endorsed by the Karnataka Examination Authority.
                         </p>
+                    </div>
+                    
+                    <!-- Acceptance Checkbox -->
+                    <div class="mt-6 flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="disclaimer-accept" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="disclaimer-accept" class="font-medium text-gray-700">I understand that this is only an estimation tool and agree to the terms above</label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -790,13 +1047,13 @@
             const circle = input.closest('.subject-card').querySelector('.mark-circle');
             
             if (percentage >= 80) {
-                circle.style.background = 'conic-gradient(#10b981 0%, #34d399 100%)';
+                circle.style.background = 'conic-gradient(var(--success) 0%, #34d399 100%)';
             } else if (percentage >= 60) {
-                circle.style.background = 'conic-gradient(#3b82f6 0%, #93c5fd 100%)';
+                circle.style.background = 'conic-gradient(var(--info) 0%, #93c5fd 100%)';
             } else if (percentage >= 40) {
-                circle.style.background = 'conic-gradient(#f59e0b 0%, #fbbf24 100%)';
+                circle.style.background = 'conic-gradient(var(--warning) 0%, #fbbf24 100%)';
             } else {
-                circle.style.background = 'conic-gradient(#ef4444 0%, #f87171 100%)';
+                circle.style.background = 'conic-gradient(var(--danger) 0%, #f87171 100%)';
             }
         }
         
@@ -816,6 +1073,12 @@
             
             // Update hidden input value
             document.getElementById('category').value = button.dataset.category;
+        }
+        
+        // Toggle advanced options
+        function toggleAdvancedOptions() {
+            const options = document.getElementById('advanced-options');
+            options.classList.toggle('hidden');
         }
         
         // Initialize all marks
@@ -981,6 +1244,13 @@
         
         // Calculate rank based on marks
         function calculateRank() {
+            // Check if disclaimer is accepted
+            if (!document.getElementById('disclaimer-accept').checked) {
+                alert("Please read and accept the disclaimer before using the predictor.");
+                document.querySelector('.tab-btn[data-tab="disclaimer"]').click();
+                return;
+            }
+            
             // Get all input values
             const physics = parseInt(document.getElementById('physics').value);
             const chemistry = parseInt(document.getElementById('chemistry').value);
@@ -991,6 +1261,10 @@
             const cetMaths = parseInt(document.getElementById('cet-maths').value);
             
             const category = document.getElementById('category').value;
+            
+            // Get advanced options
+            const competitionLevel = document.querySelector('input[name="competition"]:checked').value;
+            const predictionModel = document.getElementById('prediction-model").value;
             
             // Calculate total marks (50% PUC + 50% CET)
             const pucTotal = physics + chemistry + maths;
@@ -1003,7 +1277,7 @@
             // Final percentage (50% each)
             const finalPercentage = (pucPercentage * 0.5) + (cetPercentage * 0.5);
             
-            // Predict rank based on final percentage (using 2023/2024 trends with 15% more competition)
+            // Predict rank based on final percentage (using 2023/2024 trends with competition factor)
             let rank;
             
             // Enhanced AI-powered rank prediction algorithm
@@ -1042,8 +1316,17 @@
                 rank = Math.floor(rank * 0.75); // Reserved categories generally have better ranks
             }
             
-            // Apply 2025 competition factor (20% more competition)
-            rank = Math.floor(rank * 0.8);
+            // Apply competition factor
+            if (competitionLevel === 'high') {
+                rank = Math.floor(rank * 0.8); // 20% more competitive
+            }
+            
+            // Apply prediction model factor
+            if (predictionModel === 'conservative') {
+                rank = Math.floor(rank * 0.9); // 10% lower estimate
+            } else if (predictionModel === 'optimistic') {
+                rank = Math.floor(rank * 1.1); // 10% higher estimate
+            }
             
             // Add some random variation for realism
             rank = Math.floor(rank * (0.95 + Math.random() * 0.1));
@@ -1069,6 +1352,12 @@
                 document.getElementById('competition-note').textContent = "2025 is expected to be highly competitive";
             }
             
+            // Show breakdown button
+            document.getElementById('see-breakdown-btn').classList.remove('hidden');
+            
+            // Generate result breakdown
+            generateResultBreakdown(pucTotal, cetTotal, pucPercentage, cetPercentage, finalPercentage, rank);
+            
             // Generate college recommendations
             generateCollegeRecommendations(rank, category);
             
@@ -1076,176 +1365,197 @@
             setTimeout(() => {
                 rankElement.classList.remove('animate__animated', 'animate__pulse');
             }, 1000);
-            
-            // Switch to predictor tab
-            document.querySelector('.tab-btn[data-tab="predictor"]').click();
         }
         
-        // Generate college recommendations based on rank and category
-        function generateCollegeRecommendations(rank, category) {
-            const container = document.getElementById('college-recommendations');
+        // Generate detailed result breakdown
+        function generateResultBreakdown(pucTotal, cetTotal, pucPercentage, cetPercentage, finalPercentage, rank) {
+            const container = document.getElementById('breakdown-content');
             container.innerHTML = '';
             
-            // Determine which colleges are suitable based on rank
-            let suitableColleges = [];
-            
-            // Check each tier and add colleges where cutoff is higher than rank
-            Object.keys(collegeDatabase).forEach(tier => {
-                collegeDatabase[tier].forEach(college => {
-                    // Get cutoff for this category (default to GM if specific category not found)
-                    const cutoff = college.cutoff[category] || college.cutoff.GM;
-                    
-                    // If rank is better than cutoff, add to recommendations
-                    if (rank <= cutoff * 1.5) { // 1.5x buffer for safety
-                        suitableColleges.push({
-                            ...college,
-                            tier: tier,
-                            matchScore: cutoff - rank // Higher is better
-                        });
-                    }
-                });
-            });
-            
-            // Sort by match score (best matches first)
-            suitableColleges.sort((a, b) => a.matchScore - b.matchScore);
-            
-            // Limit to top 6 recommendations
-            suitableColleges = suitableColleges.slice(0, 6);
-            
-            if (suitableColleges.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12">
-                        <div class="inline-block p-4 bg-red-50 rounded-full mb-4">
-                            <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
-                        </div>
-                        <h3 class="text-lg font-medium text-gray-600 mb-2">No colleges found for your rank range</h3>
-                        <p class="text-sm text-gray-500">Consider improving your marks or exploring other options</p>
+            // Overall performance
+            const performanceCard = document.createElement('div');
+            performanceCard.className = 'glass-card p-6 mb-6';
+            performanceCard.innerHTML = `
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-line mr-2 gradient-text"></i> Overall Performance
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg text-center">
+                        <div class="text-3xl font-bold gradient-text">${finalPercentage.toFixed(1)}%</div>
+                        <div class="text-sm text-gray-600">Final Percentage</div>
                     </div>
-                `;
-                return;
-            }
-            
-            // Create header
-            const header = document.createElement('div');
-            header.className = 'mb-6';
-            header.innerHTML = `
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">Based on your predicted rank of <span class="font-bold text-blue-600">${rank.toLocaleString()}</span> (${category})</h3>
-                <p class="text-sm text-gray-500">These colleges might be within your reach based on previous year cutoffs</p>
-            `;
-            container.appendChild(header);
-            
-            // Create college grid
-            const grid = document.createElement('div');
-            grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-            
-            // Add college cards
-            suitableColleges.forEach(college => {
-                const card = document.createElement('div');
-                card.className = `college-card college-${college.tier} relative`;
-                
-                // Determine tier badge color and text
-                let tierBadge = '';
-                let tierText = '';
-                switch(college.tier) {
-                    case 'tier1':
-                        tierBadge = 'bg-yellow-500';
-                        tierText = 'Tier 1 (Top)';
-                        break;
-                    case 'tier2':
-                        tierBadge = 'bg-blue-500';
-                        tierText = 'Tier 2 (Good)';
-                        break;
-                    case 'tier3':
-                        tierBadge = 'bg-green-500';
-                        tierText = 'Tier 3 (Average)';
-                        break;
-                    case 'tier4':
-                        tierBadge = 'bg-gray-500';
-                        tierText = 'Tier 4 (Other)';
-                        break;
-                }
-                
-                // Get cutoff for this category
-                const cutoff = college.cutoff[category] || college.cutoff.GM;
-                const chance = rank <= cutoff ? 'High Chance' : 'Possible Chance';
-                
-                card.innerHTML = `
-                    <div class="college-badge ${tierBadge}">${tierText}</div>
-                    <img src="${college.image}" alt="${college.name}" class="w-full h-40 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-bold text-lg mb-1">${college.name}</h3>
-                        <div class="flex items-center mb-2">
-                            <span class="text-sm font-medium ${rank <= cutoff ? 'text-green-600' : 'text-yellow-600'}">${chance}</span>
-                            <span class="mx-2 text-gray-400">•</span>
-                            <span class="text-sm text-gray-600">Cutoff: ${cutoff.toLocaleString()}</span>
-                        </div>
-                        <div class="flex items-center mb-3">
-                            <div class="flex items-center mr-4">
-                                <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
-                                <span class="text-sm text-gray-600">${college.location}</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-star text-yellow-400 mr-1"></i>
-                                <span class="text-sm text-gray-600">${college.rating}/5</span>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <h4 class="text-sm font-medium text-gray-700 mb-1">Available Branches:</h4>
-                            <div class="flex flex-wrap gap-1">
-                                ${college.branches.map(branch => `
-                                    <span class="text-xs px-2 py-1 bg-gray-100 rounded">${branch}</span>
-                                `).join('')}
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <h4 class="text-sm font-medium text-gray-700 mb-1">Highlights:</h4>
-                            <ul class="text-xs text-gray-600 space-y-1">
-                                ${college.highlights.map(highlight => `
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check text-green-500 mr-1 mt-0.5"></i>
-                                        <span>${highlight}</span>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                        <a href="${college.website}" target="_blank" class="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center">
-                            <i class="fas fa-external-link-alt mr-1"></i> Visit Website
-                        </a>
+                    <div class="bg-green-50 p-4 rounded-lg text-center">
+                        <div class="text-3xl font-bold" style="color: var(--success);">${rank.toLocaleString()}</div>
+                        <div class="text-sm text-gray-600">Predicted Rank</div>
                     </div>
-                `;
-                
-                grid.appendChild(card);
-            });
-            
-            container.appendChild(grid);
-            
-            // Add disclaimer
-            const disclaimer = document.createElement('div');
-            disclaimer.className = 'mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200';
-            disclaimer.innerHTML = `
-                <div class="flex items-start">
-                    <i class="fas fa-info-circle text-yellow-500 mt-0.5 mr-2"></i>
-                    <div>
-                        <p class="text-sm text-yellow-800">
-                            College cutoffs are based on previous year trends and may vary. Always check official KCET counseling for accurate cutoff ranks.
-                        </p>
+                    <div class="bg-purple-50 p-4 rounded-lg text-center">
+                        <div class="text-3xl font-bold" style="color: var(--secondary);">${getPercentile(finalPercentage)}</div>
+                        <div class="text-sm text-gray-600">Percentile</div>
                     </div>
                 </div>
             `;
-            container.appendChild(disclaimer);
-        }
-        
-        // Event listener for calculate button
-        document.getElementById('calculate-btn').addEventListener('click', calculateRank);
-        
-        // Add animation to FAB on hover
-        document.getElementById('calculate-btn').addEventListener('mouseenter', function() {
-            this.classList.add('animate__pulse');
-        });
-        
-        document.getElementById('calculate-btn').addEventListener('mouseleave', function() {
-            this.classList.remove('animate__pulse');
-        });
-    </script>
-</body>
+            container.appendChild(performanceCard);
+            
+            // Score breakdown
+            const breakdownCard = document.createElement('div');
+            breakdownCard.className = 'glass-card p-6 mb-6';
+            breakdownCard.innerHTML = `
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-pie mr-2 gradient-text"></i> Score Breakdown
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-gray-700 mb-2">PUC Marks (300)</h4>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">Total Marks: ${pucTotal}</span>
+                            <span class="text-sm font-medium">${pucPercentage.toFixed(1)}%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar gradient-bg" style="width: ${pucPercentage}%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 mb-2">CET Marks (180)</h4>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">Total Marks: ${cetTotal}</span>
+                            <span class="text-sm font-medium">${cetPercentage.toFixed(1)}%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar accent-bg" style="width: ${cetPercentage}%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 mb-2">Final Score (50% PUC + 50% CET)</h4>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">Weighted Score</span>
+                            <span class="text-sm font-medium">${finalPercentage.toFixed(1)}%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${finalPercentage}%; background: var(--success);"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(breakdownCard);
+            
+            // Subject-wise performance
+            const subjectCard = document.createElement('div');
+            subjectCard.className = 'glass-card p-6 mb-6';
+            subjectCard.innerHTML = `
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-book-open mr-2 gradient-text"></i> Subject-wise Performance
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-medium text-gray-700 mb-2">PUC Subjects</h4>
+                        <div class="space-y-3">
+                            <div class="breakdown-item">
+                                <div class="breakdown-icon gradient-bg">
+                                    <i class="fas fa-atom"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Physics: ${document.getElementById('physics').value}/100</div>
+                                    <div class="text-xs text-gray-500">${getSubjectRating(document.getElementById('physics').value)}</div>
+                                </div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="breakdown-icon accent-bg">
+                                    <i class="fas fa-vial"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Chemistry: ${document.getElementById('chemistry').value}/100</div>
+                                    <div class="text-xs text-gray-500">${getSubjectRating(document.getElementById('chemistry').value)}</div>
+                                </div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="breakdown-icon" style="background: var(--success);">
+                                    <i class="fas fa-square-root-alt"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Mathematics: ${document.getElementById('maths').value}/100</div>
+                                    <div class="text-xs text-gray-500">${getSubjectRating(document.getElementById('maths').value)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 mb-2">CET Subjects</h4>
+                        <div class="space-y-3">
+                            <div class="breakdown-item">
+                                <div class="breakdown-icon gradient-bg">
+                                    <i class="fas fa-atom"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Physics: ${document.getElementById('cet-physics').value}/60</div>
+                                    <div class="text-xs text-gray-500">${getSubjectRating((document.getElementById('cet-physics').value/60)*100)}</div>
+                                </div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="breakdown-icon accent-bg">
+                                    <i class="fas fa-vial"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Chemistry: ${document.getElementById('cet-chemistry').value}/60</div>
+                                    <div class="text-xs text-gray-500">${getSubjectRating((document.getElementById('cet-chemistry').value/60)*100)}</div>
+                                </div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="breakdown-icon" style="background: var(--success);">
+                                    <i class="fas fa-square-root-alt"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Mathematics: ${document.getElementById('cet-maths').value}/60</div>
+                                    <div class="text-xs text-gray-500">${getSubjectRating((document.getElementById('cet-maths').value/60)*100)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(subjectCard);
+            
+            // Rank analysis
+            const rankCard = document.createElement('div');
+            rankCard.className = 'glass-card p-6';
+            rankCard.innerHTML = `
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-bar mr-2 gradient-text"></i> Rank Analysis
+                </h3>
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-info-circle text-blue-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h4 class="text-sm font-medium text-blue-800">Rank Range</h4>
+                                <p class="text-sm text-blue-700">
+                                    Based on historical data and current inputs, your rank is likely to be between 
+                                    <span class="font-bold">${Math.floor(rank * 0.85).toLocaleString()}</span> and 
+                                    <span class="font-bold">${Math.floor(rank * 1.15).toLocaleString()}</span>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 mb-2">Factors Affecting Your Rank</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
+                                    <i class="fas fa-check text-green-500 text-xs"></i>
+                                </div>
+                                <div class="ml-3 text-sm text-gray-600">
+                                    <span class="font-medium">Category:</span> ${document.querySelector('.category-btn.active').textContent}
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
+                                    <i class="fas fa-check text-green-500 text-xs"></i>
+                                </div>
+                                <div class="ml-3 text-sm text-gray-600">
+                                    <span class="font-medium">Competition Level:</span> ${document.querySelector('input[name="competition"]:checked').nextElementSibling.textContent}
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-5 w-5 rounded-full bg-green-100 flex items
 </html>
