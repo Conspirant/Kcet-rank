@@ -1,1408 +1,791 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KCET 2025 Rank Predictor | Advanced Calculator</title>
+    <title>KCET 2025 Rank Predictor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Futura&display=swap');
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: #f8fafc;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            color: #e2e8f0;
             min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
         }
-        
-        .glow-box {
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        .card {
+            background: linear-gradient(145deg, #1e293b, #334155);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(59, 130, 246, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
-        .progress-ring__circle {
-            transition: stroke-dashoffset 0.5s;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(59, 130, 246, 0.3);
         }
-        
-        .tab-active {
-            border-bottom: 3px solid #3b82f6;
-            color: #3b82f6;
-            font-weight: 600;
+        .error {
+            color: #f87171;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
         }
-        
-        .college-card {
-            transition: all 0.3s ease;
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+            background: linear-gradient(90deg, #3b82f6, #a855f7);
         }
-        
-        .college-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
         }
-        
-        .rank-counter {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-        }
-        
-        .disclaimer-modal {
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .mark-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-        
-        .mark-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-        
-        .subject-indicator {
-            transition: all 0.3s ease;
-        }
-        
-        .subject-indicator:hover {
+        .btn:hover {
             transform: scale(1.05);
+        }
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+        .btn:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+        .disclaimer {
+            background: rgba(234, 179, 8, 0.15);
+            border-left: 4px solid #eab308;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        canvas#particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        @media (max-width: 768px) {
+            .card { padding: 1.5rem; }
+            h1 { font-size: 2rem; }
         }
     </style>
 </head>
-<body class="antialiased">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-3">KCET 2025 Rank Predictor</h1>
-            <p class="text-lg text-gray-300">Advanced calculator with AI-powered predictions and college recommendations</p>
+<body>
+    <!-- Particle Background -->
+    <canvas id="particles"></canvas>
+
+    <div class="max-w-6xl mx-auto relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12 slide-in">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-white glow-text mb-3">KCET 2025 Rank Predictor</h1>
+            <p class="text-lg text-gray-300">Unlock Your Future with Precision and Style</p>
         </header>
 
-        <div id="mainContent">
-            <!-- Tabs Navigation -->
-            <div class="flex border-b border-gray-700 mb-8">
-                <button data-tab="input" class="tab-active py-3 px-6 text-center font-medium">Input Marks</button>
-                <button data-tab="result" class="py-3 px-6 text-center font-medium text-gray-400 hover:text-white">Predicted Rank</button>
-                <button data-tab="breakdown" class="py-3 px-6 text-center font-medium text-gray-400 hover:text-white">Score Breakdown</button>
-                <button data-tab="colleges" class="py-3 px-6 text-center font-medium text-gray-400 hover:text-white">College Suggestions</button>
-            </div>
+        <!-- Disclaimer -->
+        <div class="disclaimer mb-10 slide-in">
+            <p>
+                <strong>Disclaimer:</strong> This KCET 2025 Rank Predictor provides estimates based on historical data and simplified models. Actual ranks and cutoffs may vary due to exam changes, candidate performance, or KEA policies. Use for guidance only and verify with official KEA sources.
+            </p>
+        </div>
 
-            <!-- Tab Content -->
-            <div class="tab-content">
-                <!-- Input Tab -->
-                <div id="input" class="tab-pane active">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <!-- PUC Marks Section -->
-                        <div class="bg-gray-800 rounded-xl p-6 glow-box">
-                            <h2 class="text-xl font-bold mb-6 flex items-center">
-                                <i class="fas fa-graduation-cap mr-2 text-blue-400"></i>
-                                <span>PUC Marks (Out of 300)</span>
-                            </h2>
-                                                        
-                            <div class="space-y-6">
-                                <!-- Physics -->
-                                <div>
-                                    <div class="flex justify-between mb-2">
-                                        <label class="font-medium">Physics</label>
-                                        <div class="flex items-center">
-                                            <button class="decrement-btn px-2 py-1 bg-gray-700 rounded-l-md" data-subject="pucPhysics" data-decrement="5">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                            <input type="number" id="pucPhysics" value="60" min="0" max="100" class="w-16 text-center bg-gray-700 py-1">
-                                            <button class="increment-btn px-2 py-1 bg-gray-700 rounded-r-md" data-subject="pucPhysics" data-increment="5">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <input type="range" min="0" max="100" value="60" class="w-full mark-slider" id="pucPhysicsSlider">
-                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
-                                        <span>0%</span>
-                                        <span>100%</span>
-                                    </div>
-                                </div>
-                                                                
-                                <!-- Chemistry -->
-                                <div>
-                                    <div class="flex justify-between mb-2">
-                                        <label class="font-medium">Chemistry</label>
-                                        <div class="flex items-center">
-                                            <button class="decrement-btn px-2 py-1 bg-gray-700 rounded-l-md" data-subject="pucChemistry" data-decrement="5">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                            <input type="number" id="pucChemistry" value="60" min="0" max="100" class="w-16 text-center bg-gray-700 py-1">
-                                            <button class="increment-btn px-2 py-1 bg-gray-700 rounded-r-md" data-subject="pucChemistry" data-increment="5">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <input type="range" min="0" max="100" value="60" class="w-full mark-slider" id="pucChemistrySlider">
-                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
-                                        <span>0%</span>
-                                        <span>100%</span>
-                                    </div>
-                                </div>
-                                                                
-                                <!-- Mathematics -->
-                                <div>
-                                    <div class="flex justify-between mb-2">
-                                        <label class="font-medium">Mathematics</label>
-                                        <div class="flex items-center">
-                                            <button class="decrement-btn px-2 py-1 bg-gray-700 rounded-l-md" data-subject="pucMath" data-decrement="5">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                            <input type="number" id="pucMath" value="60" min="0" max="100" class="w-16 text-center bg-gray-700 py-1">
-                                            <button class="increment-btn px-2 py-1 bg-gray-700 rounded-r-md" data-subject="pucMath" data-increment="5">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <input type="range" min="0" max="100" value="60" class="w-full mark-slider" id="pucMathSlider">
-                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
-                                        <span>0%</span>
-                                        <span>100%</span>
-                                    </div>
-                                </div>
-                            </div>
-                                                        
-                            <div class="mt-6 pt-4 border-t border-gray-700">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-medium">PUC Total %</span>
-                                    <span id="pucTotalPercent" class="text-xl font-bold">60%</span>
-                                </div>
-                                <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
-                                    <div id="pucProgressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 60%"></div>
-                                </div>
-                            </div>
-                        </div>
-                                                
-                        <!-- KCET Marks Section -->
-                        <div class="bg-gray-800 rounded-xl p-6 glow-box">
-                            <h2 class="text-xl font-bold mb-6 flex items-center">
-                                <i class="fas fa-pencil-alt mr-2 text-purple-400"></i>
-                                <span>KCET Marks (Out of 180)</span>
-                            </h2>
-                                                        
-                            <div class="space-y-6">
-                                <!-- Physics -->
-                                <div>
-                                    <div class="flex justify-between mb-2">
-                                        <label class="font-medium">Physics</label>
-                                        <div class="flex items-center">
-                                            <button class="decrement-btn px-2 py-1 bg-gray-700 rounded-l-md" data-subject="kcetPhysics" data-decrement="5">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                            <input type="number" id="kcetPhysics" value="40" min="0" max="60" class="w-16 text-center bg-gray-700 py-1">
-                                            <button class="increment-btn px-2 py-1 bg-gray-700 rounded-r-md" data-subject="kcetPhysics" data-increment="5">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <input type="range" min="0" max="60" value="40" class="w-full mark-slider" id="kcetPhysicsSlider">
-                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
-                                        <span>0</span>
-                                        <span>60</span>
-                                    </div>
-                                </div>
-                                                                
-                                <!-- Chemistry -->
-                                <div>
-                                    <div class="flex justify-between mb-2">
-                                        <label class="font-medium">Chemistry</label>
-                                        <div class="flex items-center">
-                                            <button class="decrement-btn px-2 py-1 bg-gray-700 rounded-l-md" data-subject="kcetChemistry" data-decrement="5">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                            <input type="number" id="kcetChemistry" value="40" min="0" max="60" class="w-16 text-center bg-gray-700 py-1">
-                                            <button class="increment-btn px-2 py-1 bg-gray-700 rounded-r-md" data-subject="kcetChemistry" data-increment="5">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <input type="range" min="0" max="60" value="40" class="w-full mark-slider" id="kcetChemistrySlider">
-                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
-                                        <span>0</span>
-                                        <span>60</span>
-                                    </div>
-                                </div>
-                                                                
-                                <!-- Mathematics -->
-                                <div>
-                                    <div class="flex justify-between mb-2">
-                                        <label class="font-medium">Mathematics</label>
-                                        <div class="flex items-center">
-                                            <button class="decrement-btn px-2 py-1 bg-gray-700 rounded-l-md" data-subject="kcetMath" data-decrement="5">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                            <input type="number" id="kcetMath" value="40" min="0" max="60" class="w-16 text-center bg-gray-700 py-1">
-                                            <button class="increment-btn px-2 py-1 bg-gray-700 rounded-r-md" data-subject="kcetMath" data-increment="5">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <input type="range" min="0" max="60" value="40" class="w-full mark-slider" id="kcetMathSlider">
-                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
-                                        <span>0</span>
-                                        <span>60</span>
-                                    </div>
-                                </div>
-                            </div>
-                                                        
-                            <div class="mt-6 pt-4 border-t border-gray-700">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-medium">KCET Total %</span>
-                                    <span id="kcetTotalPercent" class="text-xl font-bold">66.67%</span>
-                                </div>
-                                <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
-                                    <div id="kcetProgressBar" class="bg-purple-600 h-2.5 rounded-full" style="width: 66.67%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                                        
-                    <!-- Additional Options -->
-                    <div class="grid md:grid-cols-3 gap-6 mt-8">
-                        <!-- Category Selection -->
-                        <div class="bg-gray-800 rounded-xl p-6 glow-box">
-                            <h2 class="text-xl font-bold mb-4 flex items-center">
-                                <i class="fas fa-users mr-2 text-green-400"></i>
-                                <span>Category</span>
-                            </h2>
-                            <select id="category" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="GM">General Merit (GM)</option>
-                                <option value="OBC">Other Backward Classes (OBC)</option>
-                                <option value="SC">Scheduled Caste (SC)</option>
-                                <option value="ST">Scheduled Tribe (ST)</option>
-                                <option value="Cat-1">Category-1</option>
-                                <option value="Cat-2A">Category-2A</option>
-                                <option value="Cat-2B">Category-2B</option>
-                                <option value="Cat-3A">Category-3A</option>
-                                <option value="Cat-3B">Category-3B</option>
-                            </select>
-                            <div class="mt-3 text-sm text-yellow-400 flex items-start">
-                                <i class="fas fa-exclamation-circle mr-2 mt-1"></i>
-                                <span>Category-based adjustments are estimates only. Refer to official KEA data for accurate cutoffs.</span>
-                            </div>
-                        </div>
-                                                
-                        <!-- Competition Level -->
-                        <div class="bg-gray-800 rounded-xl p-6 glow-box">
-                            <h2 class="text-xl font-bold mb-4 flex items-center">
-                                <i class="fas fa-trophy mr-2 text-yellow-400"></i>
-                                <span>Competition Level</span>
-                            </h2>
-                            <div class="space-y-3">
-                                <div class="flex items-center">
-                                    <input type="radio" id="normalComp" name="competition" value="normal" class="mr-2" checked>
-                                    <label for="normalComp">Normal (Based on 2024 trends)</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="highComp" name="competition" value="high" class="mr-2">
-                                    <label for="highComp">High (Increased competition for 2025)</label>
-                                </div>
-                            </div>
-                            <div class="mt-3 text-sm text-gray-400">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                High competition increases predicted rank by 10-15%
-                            </div>
-                        </div>
-                                                
-                        <!-- Prediction Mode -->
-                        <div class="bg-gray-800 rounded-xl p-6 glow-box">
-                            <h2 class="text-xl font-bold mb-4 flex items-center">
-                                <i class="fas fa-chart-line mr-2 text-red-400"></i>
-                                <span>Prediction Mode</span>
-                            </h2>
-                            <div class="space-y-3">
-                                <div class="flex items-center">
-                                    <input type="radio" id="standardMode" name="predictionMode" value="standard" class="mr-2" checked>
-                                    <label for="standardMode">Standard (Most likely scenario)</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="optimisticMode" name="predictionMode" value="optimistic" class="mr-2">
-                                    <label for="optimisticMode">Optimistic (Best case scenario)</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="conservativeMode" name="predictionMode" value="conservative" class="mr-2">
-                                    <label for="conservativeMode">Conservative (Worst case scenario)</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                                        
-                    <!-- Calculate Button -->
-                    <div class="mt-10 text-center">
-                        <button id="calculateBtn" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all transform hover:scale-105">
-                            <i class="fas fa-calculator mr-2"></i> Calculate My Rank
-                        </button>
-                    </div>
-                </div>
-                                
-                <!-- Result Tab -->
-                <div id="result" class="tab-pane hidden">
-                    <div class="bg-gray-800 rounded-xl p-8 glow-box">
-                        <div class="text-center mb-8">
-                            <h2 class="text-2xl font-bold mb-2">Your Predicted KCET 2025 Rank</h2>
-                            <p class="text-gray-400">Based on current marks and selected parameters</p>
-                        </div>
-                                                
-                        <div class="flex flex-col md:flex-row items-center justify-around">
-                            <!-- Rank Display -->
-                            <div class="text-center mb-8 md:mb-0">
-                                <div class="text-5xl md:text-7xl font-bold rank-counter text-blue-400" id="finalRank">
-                                    --
-                                </div>
-                                <div class="text-lg mt-2">Approximate Rank</div>
-                                <div class="text-sm text-gray-400 mt-1">Range: <span id="rankRange">-- to --</span></div>
-                            </div>
-                                                        
-                            <!-- Rank Quality Indicator -->
-                            <div class="relative w-48 h-48">
-                                <svg class="w-full h-full" viewBox="0 0 100 100">
-                                    <circle class="text-gray-700" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
-                                    <circle class="progress-ring__circle text-blue-500" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" id="rankQualityCircle" />
-                                </svg>
-                                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                    <div id="rankQualityText" class="text-xl font-bold">--</div>
-                                    <div id="rankPercentile" class="text-sm text-gray-400">Top --%</div>
-                                </div>
-                            </div>
-                                                        
-                            <!-- Category Adjusted Rank -->
-                            <div class="text-center mt-8 md:mt-0">
-                                <div class="text-3xl md:text-5xl font-bold rank-counter text-purple-400" id="categoryRank">
-                                    --
-                                </div>
-                                <div class="text-lg mt-2">Category Adjusted Rank</div>
-                                <div class="text-sm text-gray-400 mt-1" id="categoryInfo">For <span id="selectedCategory">GM</span> candidates</div>
-                            </div>
-                        </div>
-                                                
-                        <div class="mt-10 pt-6 border-t border-gray-700">
-                            <h3 class="text-lg font-bold mb-4">What This Rank Means</h3>
-                            <div id="rankInterpretation" class="text-gray-300">
-                                Enter your marks and click "Calculate My Rank" to see your predicted KCET 2025 rank and what it means for your college options.
-                            </div>
-                        </div>
-                                                
-                        <div class="mt-8 flex justify-center">
-                            <button id="backToInput" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg mr-4">
-                                <i class="fas fa-edit mr-2"></i> Edit Inputs
-                            </button>
-                            <button id="viewBreakdown" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg">
-                                <i class="fas fa-chart-pie mr-2"></i> View Breakdown
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                                
-                <!-- Breakdown Tab -->
-                <div id="breakdown" class="tab-pane hidden">
-                    <div class="bg-gray-800 rounded-xl p-8 glow-box">
-                        <div class="text-center mb-8">
-                            <h2 class="text-2xl font-bold mb-2">Score Breakdown</h2>
-                            <p class="text-gray-400">Detailed analysis of your predicted performance</p>
-                        </div>
-                                                
-                        <div class="grid md:grid-cols-2 gap-8 mb-10">
-                            <!-- Final Score Breakdown -->
-                            <div>
-                                <h3 class="text-lg font-bold mb-4 flex items-center">
-                                    <i class="fas fa-percentage mr-2 text-blue-400"></i>
-                                    <span>Final Score Calculation</span>
-                                </h3>
-                                <div class="bg-gray-700 rounded-lg p-4">
-                                    <div class="flex justify-between py-2 border-b border-gray-600">
-                                        <span>PUC Score (50%)</span>
-                                        <span id="breakdownPucScore">30.00%</span>
-                                    </div>
-                                    <div class="flex justify-between py-2 border-b border-gray-600">
-                                        <span>KCET Score (50%)</span>
-                                        <span id="breakdownKcetScore">33.33%</span>
-                                    </div>
-                                    <div class="flex justify-between py-2 font-bold text-lg">
-                                        <span>Final Composite Score</span>
-                                        <span id="breakdownFinalScore">63.33%</span>
-                                    </div>
-                                </div>
-                                                                
-                                <div class="mt-6">
-                                    <canvas id="scoreChart" height="200"></canvas>
-                                </div>
-                            </div>
-                                                        
-                            <!-- Subject Performance -->
-                            <div>
-                                <h3 class="text-lg font-bold mb-4 flex items-center">
-                                    <i class="fas fa-book-open mr-2 text-purple-400"></i>
-                                    <span>Subject Performance</span>
-                                </h3>
-                                                                
-                                <div class="grid grid-cols-2 gap-4">
-                                    <!-- PUC Subjects -->
-                                    <div class="bg-gray-700 rounded-lg p-4">
-                                        <div class="text-center font-medium mb-3 text-blue-300">PUC Subjects</div>
-                                        <div class="space-y-4">
-                                            <div class="subject-indicator">
-                                                <div class="flex justify-between mb-1">
-                                                    <span class="text-sm">Physics</span>
-                                                    <span class="text-sm font-medium" id="breakdownPucPhysics">60%</span>
-                                                </div>
-                                                <div class="w-full bg-gray-600 rounded-full h-2">
-                                                    <div class="bg-blue-500 h-2 rounded-full" id="pucPhysicsBar"></div>
-                                                </div>
-                                                <div class="text-xs text-right mt-1" id="pucPhysicsLabel">Good</div>
-                                            </div>
-                                            <div class="subject-indicator">
-                                                <div class="flex justify-between mb-1">
-                                                    <span class="text-sm">Chemistry</span>
-                                                    <span class="text-sm font-medium" id="breakdownPucChemistry">60%</span>
-                                                </div>
-                                                <div class="w-full bg-gray-600 rounded-full h-2">
-                                                    <div class="bg-blue-500 h-2 rounded-full" id="pucChemistryBar"></div>
-                                                </div>
-                                                <div class="text-xs text-right mt-1" id="pucChemistryLabel">Good</div>
-                                            </div>
-                                            <div class="subject-indicator">
-                                                <div class="flex justify-between mb-1">
-                                                    <span class="text-sm">Mathematics</span>
-                                                    <span class="text-sm font-medium" id="breakdownPucMath">60%</span>
-                                                </div>
-                                                <div class="w-full bg-gray-600 rounded-full h-2">
-                                                    <div class="bg-blue-500 h-2 rounded-full" id="pucMathBar"></div>
-                                                </div>
-                                                <div class="text-xs text-right mt-1" id="pucMathLabel">Good</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                                                        
-                                    <!-- KCET Subjects -->
-                                    <div class="bg-gray-700 rounded-lg p-4">
-                                        <div class="text-center font-medium mb-3 text-purple-300">KCET Subjects</div>
-                                        <div class="space-y-4">
-                                            <div class="subject-indicator">
-                                                <div class="flex justify-between mb-1">
-                                                    <span class="text-sm">Physics</span>
-                                                    <span class="text-sm font-medium" id="breakdownKcetPhysics">66.67%</span>
-                                                </div>
-                                                <div class="w-full bg-gray-600 rounded-full h-2">
-                                                    <div class="bg-purple-500 h-2 rounded-full" id="kcetPhysicsBar"></div>
-                                                </div>
-                                                <div class="text-xs text-right mt-1" id="kcetPhysicsLabel">Good</div>
-                                            </div>
-                                            <div class="subject-indicator">
-                                                <div class="flex justify-between mb-1">
-                                                    <span class="text-sm">Chemistry</span>
-                                                    <span class="text-sm font-medium" id="breakdownKcetChemistry">66.67%</span>
-                                                </div>
-                                                <div class="w-full bg-gray-600 rounded-full h-2">
-                                                    <div class="bg-purple-500 h-2 rounded-full" id="kcetChemistryBar"></div>
-                                                </div>
-                                                <div class="text-xs text-right mt-1" id="kcetChemistryLabel">Good</div>
-                                            </div>
-                                            <div class="subject-indicator">
-                                                <div class="flex justify-between mb-1">
-                                                    <span class="text-sm">Mathematics</span>
-                                                    <span class="text-sm font-medium" id="breakdownKcetMath">66.67%</span>
-                                                </div>
-                                                <div class="w-full bg-gray-600 rounded-full h-2">
-                                                    <div class="bg-purple-500 h-2 rounded-full" id="kcetMathBar"></div>
-                                                </div>
-                                                <div class="text-xs text-right mt-1" id="kcetMathLabel">Good</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                                                
-                        <!-- Rank Factors -->
+        <!-- Input Section -->
+        <div class="card mb-10 slide-in">
+            <h2 class="text-3xl font-bold mb-6 text-center glow-text">Enter Your Marks</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- PUC Marks -->
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">PUC Marks (Out of 100)</h3>
+                    <div class="space-y-5">
                         <div>
-                            <h3 class="text-lg font-bold mb-4 flex items-center">
-                                <i class="fas fa-cogs mr-2 text-green-400"></i>
-                                <span>Rank Adjustment Factors</span>
-                            </h3>
-                                                        
-                            <div class="grid md:grid-cols-3 gap-4">
-                                <div class="bg-gray-700 rounded-lg p-4">
-                                    <div class="font-medium mb-2">Competition Level</div>
-                                    <div class="text-2xl font-bold text-blue-400" id="competitionFactor">Normal</div>
-                                    <div class="text-xs text-gray-400 mt-1" id="competitionImpact">Based on 2024 trends</div>
-                                </div>
-                                <div class="bg-gray-700 rounded-lg p-4">
-                                    <div class="font-medium mb-2">Prediction Mode</div>
-                                    <div class="text-2xl font-bold text-purple-400" id="predictionModeFactor">Standard</div>
-                                    <div class="text-xs text-gray-400 mt-1" id="predictionImpact">Most likely scenario</div>
-                                </div>
-                                <div class="bg-gray-700 rounded-lg p-4">
-                                    <div class="font-medium mb-2">Category</div>
-                                    <div class="text-2xl font-bold text-green-400" id="categoryFactor">GM</div>
-                                    <div class="text-xs text-gray-400 mt-1" id="categoryImpact">No rank adjustment</div>
-                                </div>
-                            </div>
+                            <label class="block text-sm font-medium">Physics</label>
+                            <input type="number" id="pucPhysics" value="60" min="0" max="100" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
+                            <div id="pucPhysicsError" class="error hidden"></div>
                         </div>
-                                                        
-                        <div class="mt-8 flex justify-center">
-                            <button id="backToResult" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg mr-4">
-                                <i class="fas fa-arrow-left mr-2"></i> Back to Result
-                            </button>
-                            <button id="viewColleges" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg">
-                                <i class="fas fa-university mr-2"></i> View College Suggestions
-                            </button>
+                        <div>
+                            <label class="block text-sm font-medium">Chemistry</label>
+                            <input type="number" id="pucChemistry" value="60" min="0" max="100" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
+                            <div id="pucChemistryError" class="error hidden"></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium">Mathematics</label>
+                            <input type="number" id="pucMath" value="60" min="0" max="100" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
+                            <div id="pucMathError" class="error hidden"></div>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <div class="flex justify-between text-sm">
+                            <span>PUC Total %</span>
+                            <span id="pucTotal">60%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 h-4 rounded-full mt-2">
+                            <div id="pucProgress" class="h-4 rounded-full progress-bar" style="width: 60%"></div>
                         </div>
                     </div>
                 </div>
-                                
-                <!-- College Suggestions Tab -->
-                <div id="colleges" class="tab-pane hidden">
-                    <div class="bg-gray-800 rounded-xl p-8 glow-box">
-                        <div class="text-center mb-8">
-                            <h2 class="text-2xl font-bold mb-2">College Suggestions</h2>
-                            <p class="text-gray-400">NOT Based on your predicted rank and category <br>
-                            just in developmeent</p>
+                <!-- KCET Marks -->
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">KCET Marks (Out of 60)</h3>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium">Physics</label>
+                            <input type="number" id="kcetPhysics" value="40" min="0" max="60" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
+                            <div id="kcetPhysicsError" class="error hidden"></div>
                         </div>
-                                                
-                        <!-- College Tier Filter -->
-                        <div class="mb-8">
-                            <h3 class="text-lg font-bold mb-4">Filter by College Tier</h3>
-                            <div class="flex flex-wrap gap-2">
-                                <button class="college-filter-btn active bg-blue-600 text-white px-4 py-2 rounded-full text-sm" data-tier="all">
-                                    All Colleges
-                                </button>
-                                <button class="college-filter-btn bg-purple-600 text-white px-4 py-2 rounded-full text-sm" data-tier="tier1">
-                                    Tier 1 (Top Govt.)
-                                </button>
-                                <button class="college-filter-btn bg-green-600 text-white px-4 py-2 rounded-full text-sm" data-tier="tier2">
-                                    Tier 2 (Good Pvt.)
-                                </button>
-                                <button class="college-filter-btn bg-yellow-600 text-white px-4 py-2 rounded-full text-sm" data-tier="tier3">
-                                    Tier 3 (Other)
-                                </button>
-                            </div>
+                        <div>
+                            <label class="block text-sm font-medium">Chemistry</label>
+                            <input type="number" id="kcetChemistry" value="40" min="0" max="60" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
+                            <div id="kcetChemistryError" class="error hidden"></div>
                         </div>
-                                                
-                        <!-- College Cards -->
-                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="collegeContainer">
-                            <!-- Colleges will be dynamically inserted here -->
+                        <div>
+                            <label class="block text-sm font-medium">Mathematics</label>
+                            <input type="number" id="kcetMath" value="40" min="0" max="60" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
+                            <div id="kcetMathError" class="error hidden"></div>
                         </div>
-                                                
-                        <div class="mt-8 text-center text-gray-400">
-                            <p><i class="fas fa-info-circle mr-2"></i> These are estimated suggestions based on previous year cutoffs. Actual seat allocation may vary.</p>
+                    </div>
+                    <div class="mt-5">
+                        <div class="flex justify-between text-sm">
+                            <span>KCET Total %</span>
+                            <span id="kcetTotal">66.67%</span>
                         </div>
-                                                
-                        <div class="mt-8 flex justify-center">
-                            <button id="backToBreakdown" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg">
-                                <i class="fas fa-arrow-left mr-2"></i> Back to Breakdown
-                            </button>
+                        <div class="w-full bg-gray-800 h-4 rounded-full mt-2">
+                            <div id="kcetProgress" class="h-4 rounded-full progress-bar" style="width: 66.67%"></div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <!-- Category and Branch Preferences -->
+            <div class="mt-8 grid md:grid-cols-2 gap-8">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Category</label>
+                    <select id="category" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
+                        <option value="GM">General Merit</option>
+                        <option value="OBC">OBC</option>
+                        <option value="SC">SC</option>
+                        <option value="ST">ST</option>
+                    </select>
+                    <p class="text-xs text-gray-400 mt-2">
+                        <strong>Note:</strong> Category is used only for estimating college cutoffs, not for rank calculation, as per KEA guidelines.
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Preferred Branches</label>
+                    <select id="branches" multiple class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Civil">Civil</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Performance Analytics -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold mb-4">Performance Snapshot</h3>
+                <div id="analytics" class="grid md:grid-cols-3 gap-4"></div>
+            </div>
+            <!-- Live Rank -->
+            <div class="mt-8 text-center">
+                <h3 class="text-xl font-semibold glow-text">Live Rank Preview</h3>
+                <p id="liveRank" class="text-3xl font-bold text-blue-300">--</p>
+            </div>
+            <!-- Buttons -->
+            <div class="mt-8 flex flex-wrap justify-center gap-4">
+                <button id="calculate" class="btn bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-lg">Calculate Rank</button>
+                <button id="save" class="btn bg-green-600 hover:bg-green-700 text-white py-3 px-8 rounded-lg">Save Inputs</button>
+                <button id="studyPlan" class="btn bg-purple-600 hover:bg-purple-700 text-white py-3 px-8 rounded-lg">Generate Study Plan</button>
             </div>
         </div>
-    </div>
+
+        <!-- Result Section -->
+        <div id="result" class="card mb-10 hidden slide-in">
+            <h2 class="text-3xl font-bold mb-6 text-center glow-text">Your Predicted Rank</h2>
+            <div class="text-center mb-8">
+                <p class="text-5xl font-extrabold text-blue-300" id="finalRank">--</p>
+                <p class="text-gray-300 text-lg">Estimated Rank Range: <span id="rankRange">-- to --</span></p>
+                <p class="text-gray-300 text-lg">Category: <span id="categoryDisplay">GM</span></p>
+            </div>
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Interpretation</h3>
+                <p id="interpretation" class="text-gray-200">Enter marks to see your rank.</p>
+            </div>
+            <!-- Calculation Breakdown -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">How Your Rank Was Calculated</h3>
+                <div class="bg-gray-900 p-6 rounded-lg">
+                    <p class="mb-3"><strong>Step 1: PUC Percentage</strong></p>
+                    <p id="stepPuc" class="text-gray-300">Calculated from Physics, Chemistry, Math marks.</p>
+                    <p class="mt-3 mb-3"><strong>Step 2: KCET Percentage</strong></p>
+                    <p id="stepKcet" class="text-gray-300">Calculated from KCET marks out of 180.</p>
+                    <p class="mt-3 mb-3"><strong>Step 3: Composite Score</strong></p>
+                    <p id="stepComposite" class="text-gray-300">50% PUC + 50% KCET.</p>
+                    <p class="mt-3 mb-3"><strong>Step 4: Rank Estimation</strong></p>
+                    <p id="stepRank" class="text-gray-300">Based on historical score-to-rank data.</p>
+                </div>
+            </div>
+            <!-- Score vs. Rank Chart -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Score vs. Rank Curve</h3>
+                <canvas id="rankChart" class="bg-gray-900 p-4 rounded-lg"></canvas>
+            </div>
+            <!-- Cutoff Trends -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Historical Cutoff Trends (2022–2024)</h3>
+                <select id="trendCollege" class="w-full md:w-1/3 bg-gray-900 p-3 rounded-lg border border-gray-700 mb-4">
+                    <option value="RV College of Engineering">RV College of Engineering</option>
+                    <option value="PES University">PES University</option>
+                </select>
+                <select id="trendBranch" class="w-full md:w-1/3 bg-gray-900 p-3 rounded-lg border border-gray-700 mb-4"></select>
+                <canvas id="cutoffChart" class="bg-gray-900 p-4 rounded-lg"></canvas>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button id="edit" class="btn bg-gray-600 hover:bg-gray-700 text-white py-3 px-8 rounded-lg">Edit Marks</button>
+                <button id="viewColleges" class="btn bg-green-600 hover:bg-green-700 text-white py-3 px-8 rounded-lg">View Colleges</button>
+                <button id="share" class="btn bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-8 rounded-lg">Share Results</button>
+                <button id="export" class="btn bg-red-600 hover:bg-red-700 text-white py-3 px-8 rounded-lg">Export PDF</button>
+            </div>
+        </div>
+
+        <!-- College Suggestions -->
+        <div id="colleges" class="card hidden slide-in">
+            <h2 class="text-3xl font-bold mb-6 text-center glow-text">College Suggestions</h2>
+            <div id="collegeList" class="grid md:grid-cols-2 gap-6"></div>
+            <!-- Map Placeholder -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold mb-4">College Locations</h3>
+                <iframe class="w-full h-64 rounded-lg" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d144.9537363153167!3d-37.81627927975159!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzfCsDQ5JzQ1LjQiUyAxNDTCsDU3JzEzLjUiRQ!5e0!3m2!1sen!2sau!4v1610000000000"></iframe>
+            </div>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="backToResult" class="btn bg-gray-600 hover:bg-gray-700 text-white py-3 px-8 rounded-lg">Back to Result</button>
+            </div>
+        </div>
+
+        <!-- Modal for Study Plan -->
+        <div id="modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50">
+            <div class="card max-w-lg w-full p-6">
+                <div class="flex justify-between mb-4">
+                    <h2 id="modalTitle" class="text-xl font-bold glow-text"></h2>
+                    <button id="closeModal" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="modalContent" class="text-gray-200"></div>
+                <div id="modalActions" class="mt-4 flex justify-end gap-4"></div>
+            </div>
+        </div>
 
     <script>
-        // College data
+        // College Data
         const colleges = [
             {
-                name: "RV College of Engineering, Bangalore",
-                tier: "tier1",
+                name: "RV College of Engineering",
                 branches: [
-                    { name: "Computer Science", cutoff: 500, yourChance: "high" },
-                    { name: "Electronics", cutoff: 1500, yourChance: "medium" },
-                    { name: "Mechanical", cutoff: 3000, yourChance: "low" }
-                ],
-                badge: "Top Choice",
-                badgeColor: "bg-red-500"
+                    { name: "Computer Science", cutoff: { GM: 1000, OBC: 1500, SC: 5000, ST: 6000 }, trends: { 2022: 1200, 2023: 1100, 2024: 1000 } },
+                    { name: "Electronics", cutoff: { GM: 3000, OBC: 4000, SC: 8000, ST: 9000 }, trends: { 2022: 3500, 2023: 3200, 2024: 3000 } }
+                ]
             },
             {
-                name: "PES University, Bangalore",
-                tier: "tier1",
+                name: "PES University",
                 branches: [
-                    { name: "Computer Science", cutoff: 300, yourChance: "high" },
-                    { name: "Artificial Intelligence", cutoff: 800, yourChance: "high" },
-                    { name: "Electrical", cutoff: 2500, yourChance: "medium" }
-                ],
-                badge: "Highly Rated",
-                badgeColor: "bg-blue-500"
-            },
-            {
-                name: "BMS College of Engineering, Bangalore",
-                tier: "tier1",
-                branches: [
-                    { name: "Computer Science", cutoff: 600, yourChance: "high" },
-                    { name: "Information Science", cutoff: 1200, yourChance: "medium" },
-                    { name: "Civil", cutoff: 3500, yourChance: "low" }
-                ],
-                badge: "Established",
-                badgeColor: "bg-green-500"
-            },
-            {
-                name: "MS Ramaiah Institute of Technology",
-                tier: "tier1",
-                branches: [
-                    { name: "Computer Science", cutoff: 700, yourChance: "high" },
-                    { name: "Electronics", cutoff: 1800, yourChance: "medium" },
-                    { name: "Biotechnology", cutoff: 4000, yourChance: "low" }
-                ],
-                badge: "Reputed",
-                badgeColor: "bg-purple-500"
-            },
-            {
-                name: "Dayananda Sagar College of Engineering",
-                tier: "tier2",
-                branches: [
-                    { name: "Computer Science", cutoff: 1500, yourChance: "medium" },
-                    { name: "Mechanical", cutoff: 4500, yourChance: "low" },
-                    { name: "Civil", cutoff: 6000, yourChance: "low" }
-                ],
-                badge: "Good Placement",
-                badgeColor: "bg-yellow-500"
-            },
-            {
-                name: "Nitte Meenakshi Institute of Technology",
-                tier: "tier2",
-                branches: [
-                    { name: "Computer Science", cutoff: 2500, yourChance: "medium" },
-                    { name: "Electronics", cutoff: 5000, yourChance: "low" },
-                    { name: "Aerospace", cutoff: 8000, yourChance: "low" }
-                ],
-                badge: "Emerging",
-                badgeColor: "bg-indigo-500"
-            },
-            {
-                name: "SJB Institute of Technology",
-                tier: "tier3",
-                branches: [
-                    { name: "Computer Science", cutoff: 8000, yourChance: "low" },
-                    { name: "Information Science", cutoff: 12000, yourChance: "low" },
-                    { name: "Mechanical", cutoff: 20000, yourChance: "low" }
-                ],
-                badge: "Affordable",
-                badgeColor: "bg-gray-500"
-            },
-            {
-                name: "New Horizon College of Engineering",
-                tier: "tier3",
-                branches: [
-                    { name: "Computer Science", cutoff: 10000, yourChance: "low" },
-                    { name: "Electronics", cutoff: 15000, yourChance: "low" },
-                    { name: "Civil", cutoff: 25000, yourChance: "low" }
-                ],
-                badge: "Good Infrastructure",
-                badgeColor: "bg-pink-500"
+                    { name: "Computer Science", cutoff: { GM: 800, OBC: 1200, SC: 4000, ST: 4500 }, trends: { 2022: 900, 2023: 850, 2024: 800 } },
+                    { name: "Mechanical", cutoff: { GM: 5000, OBC: 6000, SC: 10000, ST: 11000 }, trends: { 2022: 5500, 2023: 5200, 2024: 5000 } }
+                ]
             }
         ];
 
+        // Rank Estimation Table
+        const rankTable = [
+            { score: 95, rank: 500 },
+            { score: 90, rank: 1000 },
+            { score: 85, rank: 3000 },
+            { score: 80, rank: 5000 },
+            { score: 75, rank: 10000 },
+            { score: 70, rank: 15000 },
+            { score: 60, rank: 30000 },
+            { score: 50, rank: 50000 },
+            { score: 40, rank: 80000 }
+        ];
+
         // DOM Elements
-        const mainContent = document.getElementById('mainContent');
-        const calculateBtn = document.getElementById('calculateBtn');
-        const tabButtons = document.querySelectorAll('[data-tab]');
-        const tabPanes = document.querySelectorAll('.tab-pane');
-        const backToInput = document.getElementById('backToInput');
-        const viewBreakdown = document.getElementById('viewBreakdown');
-        const backToResult = document.getElementById('backToResult');
-        const viewColleges = document.getElementById('viewColleges');
-        const backToBreakdown = document.getElementById('backToBreakdown');
-        const collegeFilterBtns = document.querySelectorAll('.college-filter-btn');
-        const collegeContainer = document.getElementById('collegeContainer');
-                
-        // Input elements
-        const pucPhysics = document.getElementById('pucPhysics');
-        const pucChemistry = document.getElementById('pucChemistry');
-        const pucMath = document.getElementById('pucMath');
-        const kcetPhysics = document.getElementById('kcetPhysics');
-        const kcetChemistry = document.getElementById('kcetChemistry');
-        const kcetMath = document.getElementById('kcetMath');
-        const pucPhysicsSlider = document.getElementById('pucPhysicsSlider');
-        const pucChemistrySlider = document.getElementById('pucChemistrySlider');
-        const pucMathSlider = document.getElementById('pucMathSlider');
-        const kcetPhysicsSlider = document.getElementById('kcetPhysicsSlider');
-        const kcetChemistrySlider = document.getElementById('kcetChemistrySlider');
-        const kcetMathSlider = document.getElementById('kcetMathSlider');
-        const pucTotalPercent = document.getElementById('pucTotalPercent');
-        const kcetTotalPercent = document.getElementById('kcetTotalPercent');
-        const pucProgressBar = document.getElementById('pucProgressBar');
-        const kcetProgressBar = document.getElementById('kcetProgressBar');
-        const categorySelect = document.getElementById('category');
-                
-        // Result elements
-        const finalRank = document.getElementById('finalRank');
-        const rankRange = document.getElementById('rankRange');
-        const rankQualityCircle = document.getElementById('rankQualityCircle');
-        const rankQualityText = document.getElementById('rankQualityText');
-        const rankPercentile = document.getElementById('rankPercentile');
-        const categoryRank = document.getElementById('categoryRank');
-        const selectedCategory = document.getElementById('selectedCategory');
-        const categoryInfo = document.getElementById('categoryInfo');
-        const rankInterpretation = document.getElementById('rankInterpretation');
-                
-        // Breakdown elements
-        const breakdownPucScore = document.getElementById('breakdownPucScore');
-        const breakdownKcetScore = document.getElementById('breakdownKcetScore');
-        const breakdownFinalScore = document.getElementById('breakdownFinalScore');
-        const breakdownPucPhysics = document.getElementById('breakdownPucPhysics');
-        const breakdownPucChemistry = document.getElementById('breakdownPucChemistry');
-        const breakdownPucMath = document.getElementById('breakdownPucMath');
-        const breakdownKcetPhysics = document.getElementById('breakdownKcetPhysics');
-        const breakdownKcetChemistry = document.getElementById('breakdownKcetChemistry');
-        const breakdownKcetMath = document.getElementById('breakdownKcetMath');
-        const competitionFactor = document.getElementById('competitionFactor');
-        const competitionImpact = document.getElementById('competitionImpact');
-        const predictionModeFactor = document.getElementById('predictionModeFactor');
-        const predictionImpact = document.getElementById('predictionImpact');
-        const categoryFactor = document.getElementById('categoryFactor');
-        const categoryImpact = document.getElementById('categoryImpact');
-                
-        // Subject performance labels
-        const pucPhysicsLabel = document.getElementById('pucPhysicsLabel');
-        const pucChemistryLabel = document.getElementById('pucChemistryLabel');
-        const pucMathLabel = document.getElementById('pucMathLabel');
-        const kcetPhysicsLabel = document.getElementById('kcetPhysicsLabel');
-        const kcetChemistryLabel = document.getElementById('kcetChemistryLabel');
-        const kcetMathLabel = document.getElementById('kcetMathLabel');
-                
-        // Subject progress bars
-        const pucPhysicsBar = document.getElementById('pucPhysicsBar');
-        const pucChemistryBar = document.getElementById('pucChemistryBar');
-        const pucMathBar = document.getElementById('pucMathBar');
-        const kcetPhysicsBar = document.getElementById('kcetPhysicsBar');
-        const kcetChemistryBar = document.getElementById('kcetChemistryBar');
-        const kcetMathBar = document.getElementById('kcetMathBar');
-                
-        // Chart
-        let scoreChart;
-                
-        // Variables to store calculations
+        const els = {
+            inputs: {
+                pucPhysics: document.getElementById('pucPhysics'),
+                pucChemistry: document.getElementById('pucChemistry'),
+                pucMath: document.getElementById('pucMath'),
+                kcetPhysics: document.getElementById('kcetPhysics'),
+                kcetChemistry: document.getElementById('kcetChemistry'),
+                kcetMath: document.getElementById('kcetMath'),
+                category: document.getElementById('category'),
+                branches: document.getElementById('branches')
+            },
+            errors: {
+                pucPhysics: document.getElementById('pucPhysicsError'),
+                pucChemistry: document.getElementById('pucChemistryError'),
+                pucMath: document.getElementById('pucMathError'),
+                kcetPhysics: document.getElementById('kcetPhysicsError'),
+                kcetChemistry: document.getElementById('kcetChemistryError'),
+                kcetMath: document.getElementById('kcetMathError')
+            },
+            totals: {
+                puc: document.getElementById('pucTotal'),
+                pucProgress: document.getElementById('pucProgress'),
+                kcet: document.getElementById('kcetTotal'),
+                kcetProgress: document.getElementById('kcetProgress')
+            },
+            analytics: document.getElementById('analytics'),
+            liveRank: document.getElementById('liveRank'),
+            result: document.getElementById('result'),
+            finalRank: document.getElementById('finalRank'),
+            rankRange: document.getElementById('rankRange'),
+            categoryDisplay: document.getElementById('categoryDisplay'),
+            interpretation: document.getElementById('interpretation'),
+            stepPuc: document.getElementById('stepPuc'),
+            stepKcet: document.getElementById('stepKcet'),
+            stepComposite: document.getElementById('stepComposite'),
+            stepRank: document.getElementById('stepRank'),
+            trendCollege: document.getElementById('trendCollege'),
+            trendBranch: document.getElementById('trendBranch'),
+            colleges: document.getElementById('colleges'),
+            collegeList: document.getElementById('collegeList'),
+            calculate: document.getElementById('calculate'),
+            save: document.getElementById('save'),
+            studyPlan: document.getElementById('studyPlan'),
+            edit: document.getElementById('edit'),
+            viewColleges: document.getElementById('viewColleges'),
+            share: document.getElementById('share'),
+            export: document.getElementById('export'),
+            backToResult: document.getElementById('backToResult'),
+            modal: document.getElementById('modal'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalContent: document.getElementById('modalContent'),
+            modalActions: document.getElementById('modalActions'),
+            closeModal: document.getElementById('closeModal')
+        };
+
+        let rankChart, cutoffChart;
         let currentRank = 0;
-        let currentCategoryRank = 0;
-        let currentFinalScore = 0;
-                
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set up event listeners for sliders and input fields
-            setupInputListeners();
-                        
-            // Set up tab navigation
-            setupTabs();
-                        
-            // Set up college filter buttons
-            setupCollegeFilters();
-                        
-            // Initialize chart
-            initializeChart();
+        let currentScore = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupInputs();
+            setupButtons();
+            setupCharts();
+            setupParticles();
+            updateTotals();
+            updateAnalytics();
+            updateLiveRank();
+            updateTrendBranchOptions();
         });
-                
-        function setupInputListeners() {
-            // PUC Physics
-            pucPhysics.addEventListener('input', function() {
-                const value = Math.min(100, Math.max(0, parseInt(this.value) || 0));
-                this.value = value;
-                pucPhysicsSlider.value = value;
-                updatePucTotal();
-                updateSubjectLabels();
-            });
-                        
-            pucPhysicsSlider.addEventListener('input', function() {
-                pucPhysics.value = this.value;
-                updatePucTotal();
-                updateSubjectLabels();
-            });
-                        
-            // PUC Chemistry
-            pucChemistry.addEventListener('input', function() {
-                const value = Math.min(100, Math.max(0, parseInt(this.value) || 0));
-                this.value = value;
-                pucChemistrySlider.value = value;
-                updatePucTotal();
-                updateSubjectLabels();
-            });
-                        
-            pucChemistrySlider.addEventListener('input', function() {
-                pucChemistry.value = this.value;
-                updatePucTotal();
-                updateSubjectLabels();
-            });
-                        
-            // PUC Math
-            pucMath.addEventListener('input', function() {
-                const value = Math.min(100, Math.max(0, parseInt(this.value) || 0));
-                this.value = value;
-                pucMathSlider.value = value;
-                updatePucTotal();
-                updateSubjectLabels();
-            });
-                        
-            pucMathSlider.addEventListener('input', function() {
-                pucMath.value = this.value;
-                updatePucTotal();
-                updateSubjectLabels();
-            });
-                        
-            // KCET Physics
-            kcetPhysics.addEventListener('input', function() {
-                const value = Math.min(60, Math.max(0, parseInt(this.value) || 0));
-                this.value = value;
-                kcetPhysicsSlider.value = value;
-                updateKcetTotal();
-                updateSubjectLabels();
-            });
-                        
-            kcetPhysicsSlider.addEventListener('input', function() {
-                kcetPhysics.value = this.value;
-                updateKcetTotal();
-                updateSubjectLabels();
-            });
-                        
-            // KCET Chemistry
-            kcetChemistry.addEventListener('input', function() {
-                const value = Math.min(60, Math.max(0, parseInt(this.value) || 0));
-                this.value = value;
-                kcetChemistrySlider.value = value;
-                updateKcetTotal();
-                updateSubjectLabels();
-            });
-                        
-            kcetChemistrySlider.addEventListener('input', function() {
-                kcetChemistry.value = this.value;
-                updateKcetTotal();
-                updateSubjectLabels();
-            });
-                        
-            // KCET Math
-            kcetMath.addEventListener('input', function() {
-                const value = Math.min(60, Math.max(0, parseInt(this.value) || 0));
-                this.value = value;
-                kcetMathSlider.value = value;
-                updateKcetTotal();
-                updateSubjectLabels();
-            });
-                        
-            kcetMathSlider.addEventListener('input', function() {
-                kcetMath.value = this.value;
-                updateKcetTotal();
-                updateSubjectLabels();
-            });
-                        
-            // Increment/Decrement buttons
-            document.querySelectorAll('.increment-btn, .decrement-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const isIncrement = this.classList.contains('increment-btn');
-                    const subject = this.getAttribute('data-subject');
-                    const amount = isIncrement ? parseInt(this.getAttribute('data-increment')) : -parseInt(this.getAttribute('data-decrement'));
-                                        
-                    const inputElement = document.getElementById(subject);
-                    const sliderElement = document.getElementById(`${subject}Slider`);
-                                        
-                    let newValue = parseInt(inputElement.value) + amount;
-                                        
-                    if (subject.startsWith('puc')) {
-                        newValue = Math.min(100, Math.max(0, newValue));
+
+        // Particle Background
+        function setupParticles() {
+            const canvas = document.getElementById('particles');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    vx: Math.random() * 0.5 - 0.25,
+                    vy: Math.random() * 0.5 - 0.25
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(59, 130, 246, 0.5)';
+                particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Input Handling
+        function setupInputs() {
+            const inputConfigs = [
+                { el: els.inputs.pucPhysics, error: els.errors.pucPhysics, max: 100 },
+                { el: els.inputs.pucChemistry, error: els.errors.pucChemistry, max: 100 },
+                { el: els.inputs.pucMath, error: els.errors.pucMath, max: 100 },
+                { el: els.inputs.kcetPhysics, error: els.errors.kcetPhysics, max: 60 },
+                { el: els.inputs.kcetChemistry, error: els.errors.kcetChemistry, max: 60 },
+                { el: els.inputs.kcetMath, error: els.errors.kcetMath, max: 60 }
+            ];
+
+            inputConfigs.forEach(({ el, error, max }) => {
+                el.addEventListener('input', () => {
+                    const value = parseFloat(el.value) || 0;
+                    if (value < 0 || value > max || isNaN(value)) {
+                        error.textContent = `Enter a value between 0 and ${max}`;
+                        error.classList.remove('hidden');
                     } else {
-                        newValue = Math.min(60, Math.max(0, newValue));
+                        error.classList.add('hidden');
+                        el.value = value;
                     }
-                                        
-                    inputElement.value = newValue;
-                    sliderElement.value = newValue;
-                                        
-                    if (subject.startsWith('puc')) {
-                        updatePucTotal();
-                    } else {
-                        updateKcetTotal();
-                    }
-                                        
-                    updateSubjectLabels();
+                    updateTotals();
+                    updateAnalytics();
+                    updateLiveRank();
                 });
             });
-                        
-            // Calculate button
-            calculateBtn.addEventListener('click', calculateRank);
-                        
-            // Navigation buttons
-            backToInput.addEventListener('click', () => switchTab('input'));
-            viewBreakdown.addEventListener('click', () => switchTab('breakdown'));
-            backToResult.addEventListener('click', () => switchTab('result'));
-            viewColleges.addEventListener('click', () => {
-                switchTab('colleges');
-                renderColleges('all');
-            });
-            backToBreakdown.addEventListener('click', () => switchTab('breakdown'));
+
+            els.inputs.branches.addEventListener('change', updateAnalytics);
+            els.inputs.category.addEventListener('change', updateAnalytics);
         }
-                
-        function setupTabs() {
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const tabName = this.getAttribute('data-tab');
-                    switchTab(tabName);
-                });
+
+        function updateTotals() {
+            const pucTotal = (
+                (parseFloat(els.inputs.pucPhysics.value) || 0) +
+                (parseFloat(els.inputs.pucChemistry.value) || 0) +
+                (parseFloat(els.inputs.pucMath.value) || 0)
+            ) / 3;
+            els.totals.puc.textContent = pucTotal.toFixed(2) + '%';
+            els.totals.pucProgress.style.width = pucTotal.toFixed(2) + '%';
+
+            const kcetTotal = (
+                (parseFloat(els.inputs.kcetPhysics.value) || 0) +
+                (parseFloat(els.inputs.kcetChemistry.value) || 0) +
+                (parseFloat(els.inputs.kcetMath.value) || 0)
+            ) / 180 * 100;
+            els.totals.kcet.textContent = kcetTotal.toFixed(2) + '%';
+            els.totals.kcetProgress.style.width = kcetTotal.toFixed(2) + '%';
+        }
+
+        // Performance Analytics
+        function updateAnalytics() {
+            const subjects = [
+                { name: 'PUC Physics', value: parseFloat(els.inputs.pucPhysics.value) || 0, max: 100 },
+                { name: 'PUC Chemistry', value: parseFloat(els.inputs.pucChemistry.value) || 0, max: 100 },
+                { name: 'PUC Math', value: parseFloat(els.inputs.pucMath.value) || 0, max: 100 },
+                { name: 'KCET Physics', value: parseFloat(els.inputs.kcetPhysics.value) || 0, max: 60 },
+                { name: 'KCET Chemistry', value: parseFloat(els.inputs.kcetChemistry.value) || 0, max: 60 },
+                { name: 'KCET Math', value: parseFloat(els.inputs.kcetMath.value) || 0, max: 60 }
+            ];
+
+            els.analytics.innerHTML = '';
+            subjects.forEach(subject => {
+                const percent = (subject.value / subject.max) * 100;
+                const label = percent >= 80 ? 'Excellent' : percent >= 60 ? 'Good' : percent >= 40 ? 'Average' : 'Needs Improvement';
+                const color = percent >= 80 ? 'bg-green-600' : percent >= 60 ? 'bg-blue-600' : percent >= 40 ? 'bg-yellow-600' : 'bg-red-600';
+                const div = document.createElement('div');
+                div.className = 'bg-gray-900 p-4 rounded-lg';
+                div.innerHTML = `
+                    <p class="font-semibold">${subject.name}</p>
+                    <p class="text-sm">${percent.toFixed(2)}% - ${label}</p>
+                    <div class="w-full bg-gray-800 h-2 rounded-full mt-2">
+                        <div class="${color} h-2 rounded-full" style="width: ${percent}%"></div>
+                    </div>
+                `;
+                els.analytics.appendChild(div);
             });
         }
-                
-        function switchTab(tabName) {
-            // Update active tab button
-            tabButtons.forEach(button => {
-                if (button.getAttribute('data-tab') === tabName) {
-                    button.classList.add('tab-active');
-                    button.classList.remove('text-gray-400', 'hover:text-white');
-                } else {
-                    button.classList.remove('tab-active');
-                    button.classList.add('text-gray-400', 'hover:text-white');
+
+        // Rank Calculation
+        function calculateCompositeScore() {
+            const pucPercent = (
+                (parseFloat(els.inputs.pucPhysics.value) || 0) +
+                (parseFloat(els.inputs.pucChemistry.value) || 0) +
+                (parseFloat(els.inputs.pucMath.value) || 0)
+            ) / 3;
+            const kcetPercent = (
+                (parseFloat(els.inputs.kcetPhysics.value) || 0) +
+                (parseFloat(els.inputs.kcetChemistry.value) || 0) +
+                (parseFloat(els.inputs.kcetMath.value) || 0)
+            ) / 180 * 100;
+            return { puc: pucPercent, kcet: kcetPercent, composite: (pucPercent * 0.5) + (kcetPercent * 0.5) };
+        }
+
+        function estimateRank(score) {
+            if (score >= rankTable[0].score) return rankTable[0].rank;
+            if (score <= rankTable[rankTable.length - 1].score) return rankTable[rankTable.length - 1].rank;
+
+            for (let i = 0; i < rankTable.length - 1; i++) {
+                const high = rankTable[i];
+                const low = rankTable[i + 1];
+                if (score <= high.score && score > low.score) {
+                    const fraction = (high.score - score) / (high.score - low.score);
+                    return Math.round(high.rank + fraction * (low.rank - high.rank));
                 }
-            });
-                        
-            // Show active tab pane
-            tabPanes.forEach(pane => {
-                if (pane.id === tabName) {
-                    pane.classList.remove('hidden');
-                    pane.classList.add('active');
-                } else {
-                    pane.classList.add('hidden');
-                    pane.classList.remove('active');
-                }
-            });
+            }
+            return 100000;
         }
-                
-        function setupCollegeFilters() {
-            collegeFilterBtns.forEach(button => {
-                button.addEventListener('click', function() {
-                    const tier = this.getAttribute('data-tier');
-                                        
-                    // Update active button
-                    collegeFilterBtns.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                                        
-                    // Render colleges
-                    renderColleges(tier);
-                });
-            });
+
+        function updateLiveRank() {
+            const { composite } = calculateCompositeScore();
+            els.liveRank.textContent = estimateRank(composite).toLocaleString();
         }
-                
-        function initializeChart() {
-            const ctx = document.getElementById('scoreChart').getContext('2d');
-            scoreChart = new Chart(ctx, {
-                type: 'doughnut',
+
+        function calculateRank() {
+            if (Object.values(els.errors).some(error => !error.classList.contains('hidden'))) {
+                alert('Please correct input errors.');
+                return;
+            }
+
+            const scores = calculateCompositeScore();
+            currentScore = scores.composite;
+            currentRank = estimateRank(currentScore);
+
+            // Update Result
+            els.finalRank.textContent = currentRank.toLocaleString();
+            els.rankRange.textContent = `${(currentRank * 0.9).toFixed(0)} to ${(currentRank * 1.1).toFixed(0)}`;
+            els.categoryDisplay.textContent = els.inputs.category.value;
+            els.interpretation.textContent = currentRank < 2000 ? 'Outstanding! Top-tier colleges like RVCE are within reach.' : currentRank < 10000 ? 'Great! Competitive colleges and branches available.' : 'Good! Explore Tier-2/3 colleges or less competitive branches.';
+
+            // Update Calculation Steps
+            els.stepPuc.textContent = `(${els.inputs.pucPhysics.value} + ${els.inputs.pucChemistry.value} + ${els.inputs.pucMath.value}) / 3 = ${scores.puc.toFixed(2)}%`;
+            els.stepKcet.textContent = `(${els.inputs.kcetPhysics.value} + ${els.inputs.kcetChemistry.value} + ${els.inputs.kcetMath.value}) / 180 * 100 = ${scores.kcet.toFixed(2)}%`;
+            els.stepComposite.textContent = `(${scores.puc.toFixed(2)} * 0.5) + (${scores.kcet.toFixed(2)} * 0.5) = ${currentScore.toFixed(2)}%`;
+            els.stepRank.textContent = `Score ${currentScore.toFixed(2)}% maps to rank ~${currentRank.toLocaleString()} (interpolated from historical data).`;
+
+            // Update Charts
+            rankChart.data.datasets[0].data = rankTable.map(entry => entry.rank);
+            rankChart.data.datasets[1].data = rankTable.map(entry => entry.score === Math.round(currentScore) ? currentRank : null);
+            rankChart.update();
+            updateCutoffChart();
+
+            // Show Result
+            els.result.classList.remove('hidden');
+            els.colleges.classList.add('hidden');
+        }
+
+        // Charts
+        function setupCharts() {
+            rankChart = new Chart(document.getElementById('rankChart'), {
+                type: 'line',
                 data: {
-                    labels: ['PUC Score (50%)', 'KCET Score (50%)'],
+                    labels: rankTable.map(entry => entry.score + '%'),
+                    datasets: [
+                        {
+                            label: 'Rank Curve',
+                            data: rankTable.map(entry => entry.rank),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Your Rank',
+                            data: [],
+                            borderColor: '#eab308',
+                            backgroundColor: '#eab308',
+                            pointRadius: 8,
+                            pointHoverRadius: 12,
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: { title: { display: true, text: 'Composite Score (%)', color: '#e2e8f0' } },
+                        y: { title: { display: true, text: 'Rank', color: '#e2e8f0' }, beginAtZero: false }
+                    },
+                    plugins: { legend: { labels: { color: '#e2e8f0' } } }
+                }
+            });
+
+            cutoffChart = new Chart(document.getElementById('cutoffChart'), {
+                type: 'line',
+                data: {
+                    labels: ['2022', '2023', '2024'],
                     datasets: [{
-                        data: [30, 33.33],
-                        backgroundColor: [
-                            'rgba(59, 130, 246, 0.8)',
-                            'rgba(124, 58, 237, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgba(59, 130, 246, 1)',
-                            'rgba(124, 58, 237, 1)'
-                        ],
-                        borderWidth: 1
+                        label: 'Cutoff Rank',
+                        data: [],
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#f8fafc'
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.label}: ${context.raw}%`;
-                                }
-                            }
-                        }
+                    scales: {
+                        x: { title: { display: true, text: 'Year', color: '#e2e8f0' } },
+                        y: { title: { display: true, text: 'Cutoff Rank', color: '#e2e8f0' }, beginAtZero: false }
                     },
-                    cutout: '70%'
+                    plugins: { legend: { labels: { color: '#e2e8f0' } } }
                 }
             });
         }
-                
-        function updatePucTotal() {
-            const physics = parseInt(pucPhysics.value);
-            const chemistry = parseInt(pucChemistry.value);
-            const math = parseInt(pucMath.value);
-                        
-            const total = (physics + chemistry + math) / 3;
-            const roundedTotal = Math.round(total * 100) / 100;
-                        
-            pucTotalPercent.textContent = `${roundedTotal}%`;
-            pucProgressBar.style.width = `${roundedTotal}%`;
-                        
-            // Update breakdown
-            breakdownPucScore.textContent = `${(roundedTotal * 0.5).toFixed(2)}%`;
-            breakdownPucPhysics.textContent = `${physics}%`;
-            breakdownPucChemistry.textContent = `${chemistry}%`;
-            breakdownPucMath.textContent = `${math}%`;
-                        
-            // Update progress bars
-            pucPhysicsBar.style.width = `${physics}%`;
-            pucChemistryBar.style.width = `${chemistry}%`;
-            pucMathBar.style.width = `${math}%`;
-        }
-                
-        function updateKcetTotal() {
-            const physics = parseInt(kcetPhysics.value);
-            const chemistry = parseInt(kcetChemistry.value);
-            const math = parseInt(kcetMath.value);
-                        
-            const total = ((physics + chemistry + math) / 180) * 100;
-            const roundedTotal = Math.round(total * 100) / 100;
-                        
-            kcetTotalPercent.textContent = `${roundedTotal}%`;
-            kcetProgressBar.style.width = `${roundedTotal}%`;
-                        
-            // Update breakdown
-            breakdownKcetScore.textContent = `${(roundedTotal * 0.5).toFixed(2)}%`;
-            breakdownKcetPhysics.textContent = `${((physics / 60) * 100).toFixed(2)}%`;
-            breakdownKcetChemistry.textContent = `${((chemistry / 60) * 100).toFixed(2)}%`;
-            breakdownKcetMath.textContent = `${((math / 60) * 100).toFixed(2)}%`;
-                        
-            // Update progress bars
-            kcetPhysicsBar.style.width = `${(physics / 60) * 100}%`;
-            kcetChemistryBar.style.width = `${(chemistry / 60) * 100}%`;
-            kcetMathBar.style.width = `${(math / 60) * 100}%`;
-        }
-                
-        function updateSubjectLabels() {
-            // PUC Subjects
-            updateSubjectLabel(pucPhysics.value, pucPhysicsLabel);
-            updateSubjectLabel(pucChemistry.value, pucChemistryLabel);
-            updateSubjectLabel(pucMath.value, pucMathLabel);
-                        
-            // KCET Subjects
-            updateSubjectLabel((kcetPhysics.value / 60 * 100).toFixed(0), kcetPhysicsLabel);
-            updateSubjectLabel((kcetChemistry.value / 60 * 100).toFixed(0), kcetChemistryLabel);
-            updateSubjectLabel((kcetMath.value / 60 * 100).toFixed(0), kcetMathLabel);
-        }
-                
-        function updateSubjectLabel(score, labelElement) {
-            const percent = parseInt(score);
-                        
-            if (percent >= 85) {
-                labelElement.textContent = "Excellent";
-                labelElement.className = "text-xs text-right mt-1 text-green-400";
-            } else if (percent >= 70) {
-                labelElement.textContent = "Good";
-                labelElement.className = "text-xs text-right mt-1 text-blue-400";
-            } else if (percent >= 50) {
-                labelElement.textContent = "Average";
-                labelElement.className = "text-xs text-right mt-1 text-yellow-400";
-            } else {
-                labelElement.textContent = "Needs Improvement";
-                labelElement.className = "text-xs text-right mt-1 text-red-400";
-            }
-        }
-        function estimateRealisticRank(score) {
-    if (score >= 99.5) return 1;
-    if (score >= 99) return 10;
-    if (score >= 98.5) return 25;
-    if (score >= 98) return 50;
-    if (score >= 97) return 100;
-    if (score >= 96) return 250;
-    if (score >= 95) return 400;
-    if (score >= 94) return 600;
-    if (score >= 93) return 900;
-    if (score >= 92) return 1300;
-    if (score >= 91) return 1700;
-    if (score >= 90) return 2100;
-    if (score >= 89) return 2500;
-    if (score >= 88) return 3000;
-    if (score >= 87) return 3700;
-    if (score >= 86) return 4500;
-    if (score >= 85) return 5500;
-    if (score >= 84) return 6500;
-    if (score >= 83) return 7700;
-    if (score >= 82) return 9000;
-    if (score >= 81) return 10500;
-    if (score >= 80) return 12000;
-    if (score >= 78) return 14500;
-    if (score >= 76) return 17000;
-    if (score >= 74) return 20000;
-    if (score >= 72) return 24000;
-    if (score >= 70) return 28000;
-    if (score >= 68) return 33000;
-    if (score >= 66) return 38000;
-    if (score >= 64) return 44000;
-    if (score >= 62) return 50000;
-    if (score >= 60) return 57000;
-    if (score >= 58) return 64000;
-    if (score >= 56) return 72000;
-    if (score >= 54) return 80000;
-    if (score >= 52) return 89000;
-    if (score >= 50) return 98000;
-    return 100000;
-}
 
-                
-        function calculateRank() {
-            // Get PUC and KCET totals
-            const pucTotal = parseFloat(pucTotalPercent.textContent);
-            const kcetTotal = parseFloat(kcetTotalPercent.textContent);
-                        
-            // Calculate final score (50% PUC + 50% KCET)
-            currentFinalScore = (pucTotal * 0.5) + (kcetTotal * 0.5);
-            breakdownFinalScore.textContent = `${currentFinalScore.toFixed(2)}%`;
-                        
-            // Update chart
-            scoreChart.data.datasets[0].data = [pucTotal * 0.5, kcetTotal * 0.5];
-            scoreChart.update();
-                        
-            // Get competition level
-            const competitionLevel = document.querySelector('input[name="competition"]:checked').value;
-                        
-            // Get prediction mode
-            const predictionMode = document.querySelector('input[name="predictionMode"]:checked').value;
-                        
-            // Get category
-            const category = categorySelect.value;
-            selectedCategory.textContent = category;
-                        
-            // Calculate base rank using the formula: 100000 * (1 - (Final Score / 100))
-            currentRank = estimateRealisticRank(currentFinalScore);
-                        
-            // Adjust for competition level
-            if (competitionLevel === 'high') {
-                currentRank = Math.round(currentRank * 1.15); // 15% worse rank for high competition
-                competitionFactor.textContent = "High";
-                competitionImpact.textContent = "Increased competition for 2025 (+15% rank)";
-            } else {
-                competitionFactor.textContent = "Normal";
-                competitionImpact.textContent = "Based on 2024 trends";
-            }
-                        
-            // Adjust for prediction mode
-            if (predictionMode === 'optimistic') {
-                currentRank = Math.round(currentRank * 0.9); // 10% better rank
-                predictionModeFactor.textContent = "Optimistic";
-                predictionImpact.textContent = "Best case scenario (-10% rank)";
-            } else if (predictionMode === 'conservative') {
-                currentRank = Math.round(currentRank * 1.1); // 10% worse rank
-                predictionModeFactor.textContent = "Conservative";
-                predictionImpact.textContent = "Worst case scenario (+10% rank)";
-            } else {
-                predictionModeFactor.textContent = "Standard";
-                predictionImpact.textContent = "Most likely scenario";
-            }
-                        
-            // Calculate category adjusted rank
-            if (category === 'GM') {
-                currentCategoryRank = currentRank;
-                categoryFactor.textContent = "GM";
-                categoryImpact.textContent = "No rank adjustment";
-                categoryInfo.textContent = "For GM candidates";
-            } else {
-                // Apply category benefit (25% improvement)
-                currentCategoryRank = Math.round(currentRank * 0.75);
-                categoryFactor.textContent = category;
-                categoryImpact.textContent = "Category benefit applied (25% rank improvement)";
-                categoryInfo.textContent = `For ${category} candidates (with category benefit)`;
-            }
-                        
-            // Calculate rank range (±10%)
-            const lowerRange = Math.round(currentRank * 0.9);
-            const upperRange = Math.round(currentRank * 1.1);
-            rankRange.textContent = `${lowerRange.toLocaleString()} to ${upperRange.toLocaleString()}`;
-                        
-            // Calculate percentile
-            const percentile = ((currentRank / 100000) * 100).toFixed(1);
-            rankPercentile.textContent = `Top ${percentile}%`;
-                        
-            // Set rank quality
-            setRankQuality(currentRank);
-                        
-            // Set rank interpretation
-            setRankInterpretation(currentRank);
-                        
-            // Animate the rank counter
-            animateRankCounter(finalRank, currentRank);
-            animateRankCounter(categoryRank, currentCategoryRank);
-                        
-            // Switch to result tab
-            switchTab('result');
+        function updateTrendBranchOptions() {
+            const collegeName = els.trendCollege.value;
+            const college = colleges.find(c => c.name === collegeName);
+            els.trendBranch.innerHTML = college.branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+            updateCutoffChart();
         }
-                
-        function setRankQuality(rank) {
-            let quality = "";
-            let percent = 0;
-                        
-            if (rank <= 1000) {
-                quality = "Excellent";
-                percent = 95;
-            } else if (rank <= 5000) {
-                quality = "Very Good";
-                percent = 85;
-            } else if (rank <= 10000) {
-                quality = "Good";
-                percent = 70;
-            } else if (rank <= 25000) {
-                quality = "Average";
-                percent = 50;
-            } else {
-                quality = "Needs Improvement";
-                percent = 30;
-            }
-                        
-            rankQualityText.textContent = quality;
-                        
-            // Animate the circle
-            const radius = rankQualityCircle.r.baseVal.value;
-            const circumference = 2 * Math.PI * radius;
-            const offset = circumference - (percent / 100) * circumference;
-                        
-            rankQualityCircle.style.strokeDasharray = circumference;
-            rankQualityCircle.style.strokeDashoffset = offset;
-                        
-            // Set color based on quality
-            if (quality === "Excellent") {
-                rankQualityCircle.style.stroke = "#10B981"; // green
-            } else if (quality === "Very Good") {
-                rankQualityCircle.style.stroke = "#3B82F6"; // blue
-            } else if (quality === "Good") {
-                rankQualityCircle.style.stroke = "#F59E0B"; // yellow
-            } else if (quality === "Average") {
-                rankQualityCircle.style.stroke = "#F97316"; // orange
-            } else {
-                rankQualityCircle.style.stroke = "#EF4444"; // red
-            }
+
+        function updateCutoffChart() {
+            const collegeName = els.trendCollege.value;
+            const branchName = els.trendBranch.value;
+            const college = colleges.find(c => c.name === collegeName);
+            const branch = college.branches.find(b => b.name === branchName);
+            cutoffChart.data.datasets[0].data = [branch.trends[2022], branch.trends[2023], branch.trends[2024]];
+            cutoffChart.update();
         }
-                
-        function setRankInterpretation(rank) {
-            let interpretation = "";
-                        
-            if (rank <= 500) {
-                interpretation = "With this rank, you have excellent chances of getting into top government engineering colleges like RVCE, PES, and BMS for most branches including Computer Science. You're likely to qualify for KCET Round 1 counseling.";
-            } else if (rank <= 2000) {
-                interpretation = "This rank puts you in a strong position for most engineering colleges in Bangalore. You have good chances for Computer Science in tier-1 private colleges and other branches in government colleges. Consider applying for COMEDK as well.";
-            } else if (rank <= 5000) {
-                interpretation = "You're competitive for many good private colleges and some government college branches (excluding CS in top colleges). Focus on improving your rank further for better options. Consider mid-tier colleges like Dayananda Sagar, MS Ramaiah, etc.";
-            } else if (rank <= 10000) {
-                interpretation = "This rank range suggests you should research colleges carefully. You may get branches like Mechanical, Civil, or Electronics in some government colleges and good private colleges. Consider your branch preferences carefully.";
-            } else if (rank <= 20000) {
-                interpretation = "You'll need to explore a wider range of colleges with this rank. Focus on colleges beyond the top tier and consider branches that match your interests. Private colleges with good infrastructure might be better options.";
-            } else {
-                interpretation = "With this rank, you should consider all available options including lesser-known colleges. Focus on colleges with good placement records rather than just reputation. You might also consider improving your marks through KCET improvement exams or exploring other entrance exams.";
-            }
-                        
-            rankInterpretation.innerHTML = interpretation;
-        }
-                
-        function animateRankCounter(element, target) {
-            const duration = 2000; // Animation duration in ms
-            const start = 0;
-            const increment = target / (duration / 16); // 60fps
-                        
-            let current = start;
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    clearInterval(timer);
-                    current = target;
-                }
-                element.textContent = Math.round(current).toLocaleString();
-            }, 16);
-        }
-                
-        function renderColleges(tier) {
-            // Clear existing colleges
-            collegeContainer.innerHTML = '';
-                        
-            // Filter colleges based on tier
-            let filteredColleges = colleges;
-            if (tier !== 'all') {
-                filteredColleges = colleges.filter(college => college.tier === tier);
-            }
-                        
-            // Sort colleges by cutoff (ascending)
-            filteredColleges.sort((a, b) => a.branches[0].cutoff - b.branches[0].cutoff);
-                        
-            // Render each college
-            filteredColleges.forEach(college => {
-                const collegeCard = document.createElement('div');
-                collegeCard.className = 'college-card bg-gray-700 rounded-xl p-6 hover:bg-gray-600 transition-all';
-                                
-                // College header with badge
-                let headerHtml = `
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 class="text-lg font-bold">${college.name}</h3>
+
+        // College Suggestions
+        function renderColleges() {
+            els.collegeList.innerHTML = '';
+            const category = els.inputs.category.value;
+            const selectedBranches = Array.from(els.inputs.branches.selectedOptions).map(opt => opt.value);
+            colleges.forEach(college => {
+                const matchedBranches = college.branches.filter(b => selectedBranches.length === 0 || selectedBranches.includes(b.name));
+                if (matchedBranches.length === 0) return;
+                const div = document.createElement('div');
+                div.className = 'bg-gray-900 p-5 rounded-lg';
+                div.innerHTML = `
+                    <h3 class="text-lg font-semibold mb-3">${college.name}</h3>
+                    ${matchedBranches.map(b => `
+                        <p class="text-gray-300">${b.name}: Cutoff ${b.cutoff[category].toLocaleString()} (${b.cutoff[category] > currentRank ? 'Challenging' : 'Likely'})</p>
+                    `).join('')}
+                    <button class="mt-3 btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg" onclick="showCollegeDetails('${college.name}')">View Details</button>
                 `;
-                                
-                if (college.badge) {
-                    headerHtml += `
-                        <span class="${college.badgeColor} text-white text-xs font-bold px-2 py-1 rounded-full">
-                            ${college.badge}
-                        </span>
-                    `;
-                }
-                                
-                headerHtml += `</div>`;
-                                
-                // Branches list
-                let branchesHtml = '<div class="space-y-3">';
-                college.branches.forEach(branch => {
-                    let chanceClass = '';
-                    let chanceIcon = '';
-                                    
-                    if (branch.yourChance === 'high') {
-                        chanceClass = 'bg-green-900 text-green-300';
-                        chanceIcon = '<i class="fas fa-check-circle mr-1"></i>';
-                    } else if (branch.yourChance === 'medium') {
-                        chanceClass = 'bg-yellow-900 text-yellow-300';
-                        chanceIcon = '<i class="fas fa-info-circle mr-1"></i>';
-                    } else {
-                        chanceClass = 'bg-red-900 text-red-300';
-                        chanceIcon = '<i class="fas fa-exclamation-circle mr-1"></i>';
-                    }
-                                    
-                    branchesHtml += `
-                        <div class="flex justify-between items-center">
-                            <span>${branch.name}</span>
-                            <div class="flex items-center">
-                                <span class="text-sm font-medium mr-2">Cutoff: ${branch.cutoff.toLocaleString()}</span>
-                                <span class="text-xs ${chanceClass} px-2 py-1 rounded-full">
-                                    ${chanceIcon}${branch.yourChance.charAt(0).toUpperCase() + branch.yourChance.slice(1)} Chance
-                                </span>
-                            </div>
-                        </div>
-                    `;
-                });
-                branchesHtml += '</div>';
-                                
-                // Disclaimer
-                const disclaimerHtml = `
-                    <div class="mt-4 text-xs text-gray-400">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        Cutoffs based on previous year data. Your actual chances may vary.
-                    </div>
-                `;
-                                
-                // Put it all together
-                collegeCard.innerHTML = headerHtml + branchesHtml + disclaimerHtml;
-                collegeContainer.appendChild(collegeCard);
+                els.collegeList.appendChild(div);
             });
-                        
-            // If no colleges match the filter
-            if (filteredColleges.length === 0) {
-                collegeContainer.innerHTML = `
-                    <div class="col-span-full text-center py-8 text-gray-400">
-                        <i class="fas fa-university text-4xl mb-3"></i>
-                        <p>No colleges match your current filter.</p>
-                        <p class="text-sm mt-2">Try adjusting your filters or improving your predicted rank.</p>
-                    </div>
+            els.colleges.classList.remove('hidden');
+            els.result.classList.add('hidden');
+        }
+
+        function showCollegeDetails(name) {
+            const college = colleges.find(c => c.name === name);
+            els.modalTitle.textContent = college.name;
+            els.modalContent.innerHTML = `
+                <p class="mb-2"><strong>Branches Available:</strong></p>
+                <ul class="list-disc pl-5">
+                    ${college.branches.map(b => `<li>${b.name}: Cutoff ${b.cutoff[els.inputs.category.value].toLocaleString()}</li>`).join('')}
+                </ul>
+            `;
+            els.modalActions.innerHTML = `
+                <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Close</button>
+            `;
+            els.modal.classList.remove('hidden');
+        }
+
+        // Study Plan
+        function generateStudyPlan() {
+            const subjects = [
+                { name: 'PUC Physics', value: parseFloat(els.inputs.pucPhysics.value) || 0, max: 100 },
+                { name: 'PUC Chemistry', value: parseFloat(els.inputs.pucChemistry.value) || 0, max: 100 },
+                { name: 'PUC Math', value: parseFloat(els.inputs.pucMath.value) || 0, max: 100 },
+                { name: 'KCET Physics', value: parseFloat(els.inputs.kcetPhysics.value) || 0, max: 60 },
+                { name: 'KCET Chemistry', value: parseFloat(els.inputs.kcetChemistry.value) || 0, max: 60 },
+                { name: 'KCET Math', value: parseFloat(els.inputs.kcetMath.value) || 0, max: 60 }
+            ];
+            const weak = subjects.filter(s => (s.value / s.max) * 100 < 60);
+
+            els.modalTitle.textContent = 'Personalized Study Plan';
+            els.modalContent.innerHTML = `
+                <p class="mb-4">Focus on these areas to boost your KCET rank:</p>
+                ${weak.length > 0 ? `
+                    <h3 class="font-semibold mb-2">Weak Subjects:</h3>
+                    <ul class="list-disc pl-5 mb-4">
+                        ${weak.map(s => `<li>${s.name}: Allocate 2 extra hours daily.</li>`).join('')}
+                    </ul>
+                ` : '<p>All subjects are strong! Maintain consistency.</p>'}
+                <h3 class="font-semibold mb-2">Daily Schedule:</h3>
+                <ul class="list-disc pl-5">
+                    <li>4 hours: Core subject revision</li>
+                    <li>2 hours: Solve past KCET papers</li>
+                    <li>1 hour: Mock tests</li>
+                    <li>1 hour: Formula review</li>
+                </ul>
+            `;
+            els.modalActions.innerHTML = `
+                <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Close</button>
+                <button class="btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg" onclick="exportStudyPlan()">Export Plan</button>
+            `;
+            els.modal.classList.remove('hidden');
+        }
+
+        function exportStudyPlan() {
+            const element = document.createElement('div');
+            element.className = 'p-4';
+            element.innerHTML = `
+                <h1 class="text-2xl font-bold">KCET 2025 Study Plan</h1>
+                ${els.modalContent.innerHTML}
+            `;
+            html2pdf().from(element).save('kcet_study_plan.pdf');
+        }
+
+        // Button Actions
+        function setupButtons() {
+            els.calculate.addEventListener('click', calculateRank);
+            els.save.addEventListener('click', () => {
+                const data = {
+                    pucPhysics: els.inputs.pucPhysics.value,
+                    pucChemistry: els.inputs.pucChemistry.value,
+                    pucMath: els.inputs.pucMath.value,
+                    kcetPhysics: els.inputs.kcetPhysics.value,
+                    kcetChemistry: els.inputs.kcetChemistry.value,
+                    kcetMath: els.inputs.kcetMath.value,
+                    category: els.inputs.category.value,
+                    branches: Array.from(els.inputs.branches.selectedOptions).map(opt => opt.value)
+                };
+                localStorage.setItem('kcetData', JSON.stringify(data));
+                alert('Inputs saved!');
+            });
+            els.studyPlan.addEventListener('click', generateStudyPlan);
+            els.edit.addEventListener('click', () => {
+                els.result.classList.add('hidden');
+                els.colleges.classList.add('hidden');
+            });
+            els.viewColleges.addEventListener('click', renderColleges);
+            els.share.addEventListener('click', () => {
+                alert('Shareable URL: kcet2025.com/rank/' + currentRank);
+            });
+            els.export.addEventListener('click', () => {
+                const element = document.createElement('div');
+                element.className = 'p-4';
+                element.innerHTML = `
+                    <h1 class="text-2xl font-bold">KCET 2025 Rank Prediction</h1>
+                    <p><strong>Rank:</strong> ${els.finalRank.textContent}</p>
+                    <p><strong>Range:</strong> ${els.rankRange.textContent}</p>
+                    <p><strong>Category:</strong> ${els.categoryDisplay.textContent}</p>
+                    <p><strong>PUC %:</strong> ${els.stepPuc.textContent.split('=')[1].trim()}</p>
+                    <p><strong>KCET %:</strong> ${els.stepKcet.textContent.split('=')[1].trim()}</p>
+                    <p><strong>Composite Score:</strong> ${els.stepComposite.textContent.split('=')[1].trim()}</p>
+                    <p><strong>Disclaimer:</strong> This is an estimate based on historical data.</p>
                 `;
-            }
+                html2pdf().from(element).save('kcet_rank_prediction.pdf');
+            });
+            els.backToResult.addEventListener('click', () => {
+                els.colleges.classList.add('hidden');
+                els.result.classList.remove('hidden');
+            });
+            els.closeModal.addEventListener('click', () => els.modal.classList.add('hidden'));
+            els.trendCollege.addEventListener('change', updateTrendBranchOptions);
+            els.trendBranch.addEventListener('change', updateCutoffChart);
         }
     </script>
 </body>
