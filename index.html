@@ -5,8 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KCET 2025 Rank Predictor</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
+        :root {
+            --primary: #6495ed;
+            --secondary: #c71585;
+            --primary-light: rgba(100, 149, 237, 0.3);
+            --secondary-light: rgba(199, 21, 133, 0.3);
+        }
+        [data-theme="purple"] {
+            --primary: #7b2cbf;
+            --secondary: #00b7eb;
+            --primary-light: rgba(123, 44, 191, 0.3);
+            --secondary-light: rgba(0, 183, 235, 0.3);
+        }
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #0a0a2b, #1e1e5c, #2a1a8c);
@@ -22,16 +35,17 @@
         }
         .card {
             background: rgba(20, 20, 50, 0.85);
-            border: 2px solid rgba(100, 149, 237, 0.4);
+            border: 2px solid var(--primary-light);
             border-radius: 20px;
             padding: 1.5rem;
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(100, 149, 237, 0.2);
-            backdrop-filter: blur(12px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), inset 0 0 12px var(--primary-light);
+            backdrop-filter: blur(15px);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            will-change: transform;
         }
         .card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(100, 149, 237, 0.3);
+            transform: translateY(-6px) rotateX(2deg) rotateY(2deg);
+            box-shadow: 0 10px 36px rgba(0, 0, 0, 0.5), inset 0 0 14px var(--primary-light);
         }
         .error {
             color: #ff6b6b;
@@ -39,12 +53,20 @@
             margin-top: 0.25rem;
             text-shadow: 0 0 4px rgba(255, 107, 107, 0.5);
         }
+        .shake {
+            animation: shake 0.3s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
         .progress-bar {
-            background: linear-gradient(90deg, #6495ed, #c71585);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             height: 0.75rem;
             border-radius: 9999px;
             transition: width 0.6s ease-in-out;
-            box-shadow: 0 0 8px rgba(100, 149, 237, 0.6);
+            box-shadow: 0 0 10px var(--primary);
         }
         .btn {
             padding: 0.75rem 1.5rem;
@@ -55,11 +77,12 @@
             transition: all 0.3s ease;
             touch-action: manipulation;
             min-width: 120px;
-            background: linear-gradient(135deg, #6495ed, #c71585);
-            border: 2px solid transparent;
-            box-shadow: 0 4px 12px rgba(100, 149, 237, 0.4), inset 0 0 6px rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: 2px solid var(--primary-light);
+            box-shadow: 0 4px 12px var(--primary-light), inset 0 0 8px rgba(255, 255, 255, 0.3);
             position: relative;
             overflow: hidden;
+            will-change: transform, box-shadow;
         }
         .btn::before {
             content: '';
@@ -68,7 +91,7 @@
             left: 50%;
             width: 0;
             height: 0;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             transition: width 0.4s ease, height 0.4s ease;
@@ -79,7 +102,15 @@
         }
         .btn:active {
             transform: scale(0.95);
-            box-shadow: 0 2px 8px rgba(100, 149, 237, 0.3);
+            box-shadow: 0 2px 8px var(--primary-light);
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 8px var(--primary-light), inset 0 0 6px var(--primary-light); }
+            50% { box-shadow: 0 0 16px var(--primary), inset 0 0 10px var(--primary); }
+            100% { box-shadow: 0 0 8px var(--primary-light), inset 0 0 6px var(--primary-light); }
+        }
+        .btn-pulse {
+            animation: pulse 2s infinite ease-in-out;
         }
         .disclaimer {
             background: rgba(255, 215, 0, 0.15);
@@ -91,7 +122,7 @@
         }
         .modal {
             background: rgba(10, 10, 40, 0.95);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(18px);
         }
         .tips-widget {
             position: fixed;
@@ -105,15 +136,15 @@
             background: rgba(20, 20, 50, 0.9);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 0 10px var(--primary-light);
         }
         .cutoff-table th, .cutoff-table td {
             padding: 0.75rem;
             text-align: left;
-            border-bottom: 1px solid rgba(100, 149, 237, 0.2);
+            border-bottom: 1px solid var(--primary-light);
         }
         .cutoff-table th {
-            background: linear-gradient(135deg, #6495ed, #c71585);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.75rem;
@@ -121,25 +152,26 @@
             text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
         }
         .cutoff-table tr {
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
         }
         .cutoff-table tr:nth-child(even) {
-            background: rgba(100, 149, 237, 0.05);
+            background: rgba(255, 255, 255, 0.05);
         }
         .cutoff-table tr:hover {
-            background: rgba(100, 149, 237, 0.2);
-            box-shadow: inset 0 0 8px rgba(100, 149, 237, 0.3);
+            background: var(--primary-light);
+            box-shadow: inset 0 0 10px var(--primary-light);
         }
         input, select {
             transition: box-shadow 0.3s ease, border-color 0.3s ease;
-            border: 1px solid rgba(100, 149, 237, 0.3);
+            border: 1px solid var(--primary-light);
+            background: rgba(20, 20, 50, 0.9);
         }
         input:focus, select:focus {
-            box-shadow: 0 0 12px rgba(100, 149, 237, 0.6);
-            border-color: #6495ed;
+            box-shadow: 0 0 14px var(--primary);
+            border-color: var(--primary);
         }
         .glow-text {
-            text-shadow: 0 0 8px rgba(100, 149, 237, 0.8), 0 0 12px rgba(199, 21, 133, 0.6);
+            text-shadow: 0 0 10px var(--primary), 0 0 14px var(--secondary);
         }
         .particles {
             position: absolute;
@@ -154,35 +186,42 @@
             position: absolute;
             width: 2px;
             height: 2px;
-            background: rgba(100, 149, 237, 0.6);
+            background: var(--primary);
             border-radius: 50%;
-            animation: float 15s infinite linear;
-            box-shadow: 0 0 8px rgba(100, 149, 237, 0.4);
+            animation: float 12s infinite linear;
+            box-shadow: 0 0 10px var(--primary-light);
+        }
+        .particle:nth-child(odd) {
+            width: 3px;
+            height: 3px;
+            background: var(--secondary);
+            animation-duration: 15s;
         }
         @keyframes float {
-            0% { transform: translateY(100vh) scale(1); opacity: 0.6; }
-            100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+            0% { transform: translateY(100vh) scale(1); opacity: 0.8; }
+            100% { transform: translateY(-100vh) scale(0.4); opacity: 0; }
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px) scale(0.95); }
+            from { opacity: 0; transform: translateY(20px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .animate-fade-in {
-            animation: fadeIn 0.6s ease-out forwards;
+            animation: fadeIn 0.7s ease-out forwards;
         }
         @media (max-width: 640px) {
             body { padding: 0.5rem; }
-            .card { padding: 1rem; border-radius: 16px; }
+            .card { padding: 1rem; border-radius: 16px; transform: none !important; }
             h1 { font-size: 1.75rem; }
             h2 { font-size: 1.25rem; }
             h3 { font-size: 1rem; }
             .btn { padding: 0.5rem 1rem; font-size: 0.75rem; min-width: 100px; }
             .modal { padding: 0.5rem; }
-            .modal .card { max-width: 90vw; }
+            .modal .card { max-width: 90vw; transform: none !important; }
             .grid-cols-2 { grid-template-columns: 1fr; }
             select, input { font-size: 0.875rem; }
             .cutoff-table th, .cutoff-table td { padding: 0.5rem; font-size: 0.7rem; }
             .particle { display: none; }
+            .btn-pulse { animation: none; }
         }
         @media (min-width: 641px) {
             body { padding: 1.5rem; }
@@ -194,16 +233,24 @@
 </head>
 <body>
     <div class="particles">
-        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
-        <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
-        <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
-        <div class="particle" style="left: 70%; animation-delay: 6s;"></div>
-        <div class="particle" style="left: 90%; animation-delay: 8s;"></div>
+        <div class="particle" style="left: 5%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 15%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 25%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 35%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 45%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 55%; animation-delay: 5s;"></div>
+        <div class="particle" style="left: 65%; animation-delay: 6s;"></div>
+        <div class="particle" style="left: 75%; animation-delay: 7s;"></div>
+        <div class="particle" style="left: 85%; animation-delay: 8s;"></div>
+        <div class="particle" style="left: 95%; animation-delay: 9s;"></div>
     </div>
     <div class="max-w-5xl mx-auto">
         <header class="text-center mb-6 animate-fade-in">
+            <div class="flex justify-end mb-2">
+                <button id="themeToggle" class="btn btn-pulse text-white text-xs px-3 py-1">Switch Theme</button>
+            </div>
             <h1 class="text-3xl sm:text-4xl font-bold text-white glow-text">KCET 2025 Rank Predictor</h1>
-            <p class="text-sm sm:text-base text-gray-300 mt-2">Unlock Your Future with Precision</p>
+            <p class="text-sm sm:text-base text-gray-300 mt-2">Chart Your Path to Excellence</p>
         </header>
 
         <div class="disclaimer mb-6 animate-fade-in">
@@ -217,7 +264,7 @@
                     <h3 class="text-base sm:text-lg font-medium mb-3">PUC Total (Out of 300)</h3>
                     <div>
                         <label class="block text-xs sm:text-sm font-medium">Total Marks</label>
-                        <input type="number" id="pucTotalInput" value="180" min="0" max="300" class="w-full bg-gray-900 p-2 rounded border text-sm sm:text-base">
+                        <input type="number" id="pucTotalInput" value="180" min="0" max="300" class="w-full p-2 rounded text-sm sm:text-base">
                         <div id="pucTotalError" class="error hidden"></div>
                     </div>
                     <div class="mt-3">
@@ -234,7 +281,7 @@
                     <h3 class="text-base sm:text-lg font-medium mb-3">KCET Total (Out of 180)</h3>
                     <div>
                         <label class="block text-xs sm:text-sm font-medium">Total Marks</label>
-                        <input type="number" id="kcetTotalInput" value="120" min="0" max="180" class="w-full bg-gray-900 p-2 rounded border text-sm sm:text-base">
+                        <input type="number" id="kcetTotalInput" value="120" min="0" max="180" class="w-full p-2 rounded text-sm sm:text-base">
                         <div id="kcetTotalError" class="error hidden"></div>
                     </div>
                     <div class="mt-3">
@@ -250,31 +297,37 @@
             </div>
             <div class="mt-4">
                 <label class="block text-xs sm:text-sm font-medium mb-2">Category</label>
-                <select id="category" class="w-full bg-gray-900 p-2 rounded border text-sm sm:text-base">
+                <select id="category" class="w-full p-2 rounded text-sm sm:text-base">
                     <option value="GM">General Merit</option>
                     <option value="OBC">OBC</option>
                     <option value="SC">SC</option>
                     <option value="ST">ST</option>
                 </select>
             </div>
+            <div class="mt-4">
+                <label class="block text-xs sm:text-sm font-medium mb-2">Previous KCET Rank (Optional)</label>
+                <input type="number" id="prevRank" min="0" max="1000000" placeholder="Enter past rank" class="w-full p-2 rounded text-sm sm:text-base">
+            </div>
             <div class="mt-4 text-center">
                 <h3 class="text-base sm:text-lg font-medium">Live Rank Preview</h3>
-                <p id="liveRank" class="text-xl sm:text-2xl font-bold text-blue-300 glow-text">--</p>
+                <p id="liveRank" class="text-xl sm:text-2xl font-bold text-white glow-text">--</p>
             </div>
             <div class="mt-4 flex flex-wrap justify-center gap-3">
-                <button id="calculate" class="btn text-white">Calculate Rank</button>
-                <button id="save" class="btn text-white">Save Inputs</button>
-                <button id="collegeMatch" class="btn text-white">Find Colleges</button>
-                <button id="reset" class="btn text-white">Reset</button>
+                <button id="calculate" class="btn btn-pulse text-white">Calculate Rank</button>
+                <button id="save" class="btn btn-pulse text-white">Save Inputs</button>
+                <button id="collegeMatch" class="btn btn-pulse text-white">Find Colleges</button>
+                <button id="studyPlan" class="btn btn-pulse text-white">Study Plan</button>
+                <button id="reset" class="btn btn-pulse text-white">Reset</button>
             </div>
         </div>
 
         <div id="result" class="card mb-6 hidden animate-fade-in">
             <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-center glow-text">Your Predicted Rank</h2>
             <div class="text-center mb-4">
-                <p id="finalRank" class="text-3xl sm:text-4xl font-bold text-blue-300 glow-text">--</p>
+                <p id="finalRank" class="text-3xl sm:text-4xl font-bold text-white glow-text">--</p>
                 <p class="text-xs sm:text-sm text-gray-300">Rank Range: <span id="rankRange">-- to --</span></p>
                 <p class="text-xs sm:text-sm text-gray-300">Category: <span id="categoryDisplay">GM</span></p>
+                <p id="rankComparison" class="text-xs sm:text-sm text-gray-300 hidden"></p>
             </div>
             <div class="mb-4">
                 <h3 class="text-base sm:text-lg font-medium mb-2">Calculation Steps</h3>
@@ -287,11 +340,11 @@
             <div class="mb-4">
                 <h3 class="text-base sm:text-lg font-medium mb-2">Historical Cutoff Ranks (2022–2024)</h3>
                 <div class="flex flex-col sm:flex-row gap-2 mb-2">
-                    <select id="trendCollege" class="w-full sm:w-1/3 bg-gray-900 p-2 rounded border text-xs sm:text-sm">
+                    <select id="trendCollege" class="w-full sm:w-1/3 p-2 rounded text-xs sm:text-sm">
                         <option value="RV College of Engineering">RV College of Engineering</option>
                         <option value="PES University">PES University</option>
                     </select>
-                    <select id="trendBranch" class="w-full sm:w-1/3 bg-gray-900 p-2 rounded border text-xs sm:text-sm"></select>
+                    <select id="trendBranch" class="w-full sm:w-1/3 p-2 rounded text-xs sm:text-sm"></select>
                 </div>
                 <table id="cutoffTable" class="cutoff-table">
                     <thead>
@@ -304,8 +357,9 @@
                 </table>
             </div>
             <div class="flex flex-wrap justify-center gap-3">
-                <button id="edit" class="btn text-white">Edit Marks</button>
-                <button id="viewColleges" class="btn text-white">View Colleges</button>
+                <button id="edit" class="btn btn-pulse text-white">Edit Marks</button>
+                <button id="viewColleges" class="btn btn-pulse text-white">View Colleges</button>
+                <button id="downloadPdf" class="btn btn-pulse text-white">Download PDF</button>
             </div>
         </div>
 
@@ -313,7 +367,7 @@
             <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-center glow-text">College Suggestions</h2>
             <div id="collegeList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
             <div class="mt-4 flex justify-center">
-                <button id="backToResult" class="btn text-white">Back to Result</button>
+                <button id="backToResult" class="btn btn-pulse text-white">Back to Result</button>
             </div>
         </div>
 
@@ -329,7 +383,7 @@
         </div>
 
         <div class="tips-widget">
-            <button id="tipsBtn" class="btn bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-full p-2 sm:p-3 text-sm">Tips</button>
+            <button id="tipsBtn" class="btn bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-full p-2 sm:p-3 text-sm btn-pulse">Tips</button>
             <div id="tipsContent" class="hidden card p-3 w-56 sm:w-64 mt-2 text-xs sm:text-sm">
                 <p id="tipText"></p>
             </div>
@@ -358,10 +412,22 @@
         ];
 
         const rankTable = [
-            { score: 95, rank: 500 }, { score: 90, rank: 1000 }, { score: 85, rank: 3000 },
-            { score: 80, rank: 5000 }, { score: 75, rank: 10000 }, { score: 70, rank: 15000 },
-            { score: 60, rank: 30000 }, { score: 50, rank: 50000 }, { score: 40, rank: 80000 }
+            { score: 97.5, rank: 250 }, { score: 95, rank: 500 }, { score: 92.5, rank: 750 },
+            { score: 90, rank: 1000 }, { score: 87.5, rank: 2000 }, { score: 85, rank: 3000 },
+            { score: 82.5, rank: 4000 }, { score: 80, rank: 5000 }, { score: 77.5, rank: 7500 },
+            { score: 75, rank: 10000 }, { score: 72.5, rank: 12500 }, { score: 70, rank: 15000 },
+            { score: 67.5, rank: 20000 }, { score: 65, rank: 25000 }, { score: 62.5, rank: 30000 },
+            { score: 60, rank: 35000 }, { score: 57.5, rank: 40000 }, { score: 55, rank: 45000 },
+            { score: 52.5, rank: 50000 }, { score: 50, rank: 60000 }, { score: 47.5, rank: 70000 },
+            { score: 45, rank: 80000 }, { score: 42.5, rank: 90000 }, { score: 40, rank: 100000 }
         ];
+
+        const categoryModifiers = {
+            GM: 1,
+            OBC: 0.9,
+            SC: 0.7,
+            ST: 0.65
+        };
 
         const tips = [
             'Practice 10 MCQs daily per subject.',
@@ -377,7 +443,8 @@
             inputs: {
                 pucTotal: document.getElementById('pucTotalInput'),
                 kcetTotal: document.getElementById('kcetTotalInput'),
-                category: document.getElementById('category')
+                category: document.getElementById('category'),
+                prevRank: document.getElementById('prevRank')
             },
             errors: {
                 pucTotal: document.getElementById('pucTotalError'),
@@ -394,6 +461,7 @@
             finalRank: document.getElementById('finalRank'),
             rankRange: document.getElementById('rankRange'),
             categoryDisplay: document.getElementById('categoryDisplay'),
+            rankComparison: document.getElementById('rankComparison'),
             stepPuc: document.getElementById('stepPuc'),
             stepKcet: document.getElementById('stepKcet'),
             stepComposite: document.getElementById('stepComposite'),
@@ -405,15 +473,18 @@
             calculate: document.getElementById('calculate'),
             save: document.getElementById('save'),
             collegeMatch: document.getElementById('collegeMatch'),
+            studyPlan: document.getElementById('studyPlan'),
             reset: document.getElementById('reset'),
             edit: document.getElementById('edit'),
             viewColleges: document.getElementById('viewColleges'),
+            downloadPdf: document.getElementById('downloadPdf'),
             backToResult: document.getElementById('backToResult'),
             modal: document.getElementById('modal'),
             modalTitle: document.getElementById('modalTitle'),
             modalContent: document.getElementById('modalContent'),
             modalActions: document.getElementById('modalActions'),
             closeModal: document.getElementById('closeModal'),
+            themeToggle: document.getElementById('themeToggle'),
             tipsBtn: document.getElementById('tipsBtn'),
             tipsContent: document.getElementById('tipsContent'),
             tipText: document.getElementById('tipText')
@@ -421,12 +492,26 @@
 
         function init() {
             console.log('Setting up...');
+            loadSavedInputs();
             setupInputs();
             setupButtons();
             setupTipsWidget();
+            setupTheme();
             updateTotals();
             updateLiveRank();
             updateTrendBranchOptions();
+        }
+
+        function loadSavedInputs() {
+            const saved = localStorage.getItem('kcetInputs');
+            if (saved) {
+                const data = JSON.parse(saved);
+                els.inputs.pucTotal.value = data.pucTotal || '';
+                els.inputs.kcetTotal.value = data.kcetTotal || '';
+                els.inputs.category.value = data.category || 'GM';
+                updateTotals();
+                updateLiveRank();
+            }
         }
 
         function setupInputs() {
@@ -441,6 +526,8 @@
                     if (value < 0 || value > max || isNaN(value)) {
                         error.textContent = `Enter 0–${max}`;
                         error.classList.remove('hidden');
+                        el.classList.add('shake');
+                        setTimeout(() => el.classList.remove('shake'), 300);
                     } else {
                         error.classList.add('hidden');
                         el.value = value;
@@ -448,6 +535,13 @@
                     updateTotals();
                     updateLiveRank();
                 });
+            });
+            els.inputs.prevRank.addEventListener('input', () => {
+                const value = parseFloat(els.inputs.prevRank.value) || 0;
+                if (value < 0 || value > 1000000) {
+                    els.inputs.prevRank.classList.add('shake');
+                    setTimeout(() => els.inputs.prevRank.classList.remove('shake'), 300);
+                }
             });
         }
 
@@ -468,15 +562,18 @@
             return { puc: pucPercent, kcet: kcetPercent, composite: (pucPercent * 0.5) + (kcetPercent * 0.5) };
         }
 
-        function estimateRank(score) {
-            if (score >= rankTable[0].score) return rankTable[0].rank;
-            if (score <= rankTable[rankTable.length - 1].score) return rankTable[rankTable.length - 1].rank;
+        function estimateRank(score, category) {
+            if (score >= rankTable[0].score) return Math.round(rankTable[0].rank * categoryModifiers[category]);
+            if (score <= rankTable[rankTable.length - 1].score) return Math.round(rankTable[rankTable.length - 1].rank * categoryModifiers[category]);
             for (let i = 0; i < rankTable.length - 1; i++) {
                 const high = rankTable[i];
                 const low = rankTable[i + 1];
                 if (score <= high.score && score > low.score) {
                     const fraction = (high.score - score) / (high.score - low.score);
-                    return Math.round(high.rank + fraction * (low.rank - high.rank));
+                    const baseRank = high.rank + fraction * (low.rank - high.rank);
+                    const logisticFactor = 1 / (1 + Math.exp(-0.1 * (score - 70)));
+                    const adjustedRank = baseRank * (1 - 0.2 * logisticFactor);
+                    return Math.round(adjustedRank * categoryModifiers[category]);
                 }
             }
             return 100000;
@@ -487,7 +584,7 @@
                 els.inputs.pucTotal.value,
                 els.inputs.kcetTotal.value
             );
-            els.liveRank.textContent = estimateRank(composite).toLocaleString();
+            els.liveRank.textContent = estimateRank(composite, els.inputs.category.value).toLocaleString();
         }
 
         function calculateRank() {
@@ -500,13 +597,21 @@
                 els.inputs.pucTotal.value,
                 els.inputs.kcetTotal.value
             );
-            currentRank = estimateRank(scores.composite);
+            currentRank = estimateRank(scores.composite, els.inputs.category.value);
             els.finalRank.textContent = currentRank.toLocaleString();
-            els.rankRange.textContent = `${(currentRank * 0.9).toFixed(0)} to ${(currentRank * 1.1).toFixed(0)}`;
+            els.rankRange.textContent = `${(currentRank * 0.95).toFixed(0)} to ${(currentRank * 1.05).toFixed(0)}`;
             els.categoryDisplay.textContent = els.inputs.category.value;
             els.stepPuc.textContent = `${els.inputs.pucTotal.value} / 300 * 100 = ${scores.puc.toFixed(2)}%`;
             els.stepKcet.textContent = `${els.inputs.kcetTotal.value} / 180 * 100 = ${scores.kcet.toFixed(2)}%`;
             els.stepComposite.textContent = `(${scores.puc.toFixed(2)} * 0.5) + (${scores.kcet.toFixed(2)} * 0.5) = ${scores.composite.toFixed(2)}%`;
+            const prevRank = parseFloat(els.inputs.prevRank.value) || 0;
+            if (prevRank > 0) {
+                const diff = prevRank - currentRank;
+                els.rankComparison.textContent = `Compared to previous rank (${prevRank.toLocaleString()}): ${diff > 0 ? 'Improved by' : 'Declined by'} ${Math.abs(diff).toLocaleString()} ranks`;
+                els.rankComparison.classList.remove('hidden');
+            } else {
+                els.rankComparison.classList.add('hidden');
+            }
             updateCutoffTable();
             els.result.classList.remove('hidden');
             els.colleges.classList.add('hidden');
@@ -551,14 +656,14 @@
             els.modalTitle.textContent = 'College Matchmaker';
             els.modalContent.innerHTML = `
                 <p class="mb-3">Select your preferred location to find colleges:</p>
-                <select id="matchLocation" class="w-full bg-gray-900 p-2 rounded border mb-3 text-xs sm:text-sm">
+                <select id="matchLocation" class="w-full p-2 rounded mb-3 text-xs sm:text-sm">
                     <option value="Bangalore">Bangalore</option>
                     <option value="Other">Other</option>
                 </select>
             `;
             els.modalActions.innerHTML = `
-                <button class="btn text-white" onclick="els.modal.classList.add('hidden')">Cancel</button>
-                <button class="btn text-white" onclick="showMatchResults()">Get Matches</button>
+                <button class="btn btn-pulse text-white" onclick="els.modal.classList.add('hidden')">Cancel</button>
+                <button class="btn btn-pulse text-white" onclick="showMatchResults()">Get Matches</button>
             `;
             els.modal.classList.remove('hidden');
         }
@@ -582,12 +687,72 @@
                     </ul>
                 ` : '<p>No matches found. Try adjusting preferences.</p>'}
             `;
-            els.modalActions.innerHTML = `<button class="btn text-white" onclick="els.modal.classList.add('hidden')">Close</button>`;
+            els.modalActions.innerHTML = `<button class="btn btn-pulse text-white" onclick="els.modal.classList.add('hidden')">Close</button>`;
             els.modal.classList.remove('hidden');
         }
 
+        function generateStudyPlan() {
+            console.log('Study Plan button clicked');
+            const pucPercent = (parseFloat(els.inputs.pucTotal.value) || 0) / 300 * 100;
+            const kcetPercent = (parseFloat(els.inputs.kcetTotal.value) || 0) / 180 * 100;
+            const weakArea = pucPercent < kcetPercent ? 'PUC subjects' : 'KCET preparation';
+            const plan = `
+                <p class="mb-3">Personalized Study Plan:</p>
+                <ul class="list-disc pl-5 text-xs sm:text-sm">
+                    <li>Focus on ${weakArea}: Allocate 2 hours daily to revise weak topics.</li>
+                    <li>Daily MCQs: Solve 15 questions per subject to build speed.</li>
+                    <li>Mock Tests: Take one full-length test weekly to track progress.</li>
+                    <li>Time Management: Practice solving questions within 1 minute each.</li>
+                    <li>Revision: Spend 30 minutes daily on formulas and key concepts.</li>
+                </ul>
+            `;
+            els.modalTitle.textContent = 'Your Study Plan';
+            els.modalContent.innerHTML = plan;
+            els.modalActions.innerHTML = `<button class="btn btn-pulse text-white" onclick="els.modal.classList.add('hidden')">Close</button>`;
+            els.modal.classList.remove('hidden');
+        }
+
+        function downloadPdf() {
+            console.log('Download PDF button clicked');
+            const element = els.result.cloneNode(true);
+            element.classList.remove('hidden');
+            element.style.background = 'rgba(20, 20, 50, 0.95)';
+            element.style.border = 'none';
+            element.style.boxShadow = 'none';
+            element.style.padding = '1rem';
+            element.style.color = '#e2e8f0';
+            element.querySelectorAll('.btn').forEach(btn => btn.remove());
+            const opt = {
+                margin: 0.5,
+                filename: 'KCET_2025_Rank_Prediction.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            try {
+                html2pdf().set(opt).from(element).save();
+            } catch (err) {
+                console.error('PDF generation error:', err);
+                alert('Failed to generate PDF. Please try again.');
+            }
+        }
+
+        function setupTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'blue';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            els.themeToggle.textContent = savedTheme === 'blue' ? 'Purple Cosmos' : 'Blue Nebula';
+            els.themeToggle.addEventListener('click', () => {
+                console.log('Theme toggle clicked');
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'blue' ? 'purple' : 'blue';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                els.themeToggle.textContent = newTheme === 'blue' ? 'Purple Cosmos' : 'Blue Nebula';
+            });
+        }
+
         function setupButtons() {
-            console.log('Setting up buttons:', els.calculate, els.save, els.collegeMatch, els.reset, els.edit, els.viewColleges, els.backToResult, els.closeModal);
+            console.log('Setting up buttons:', els.calculate, els.save, els.collegeMatch, els.studyPlan, els.reset, els.edit, els.viewColleges, els.downloadPdf, els.backToResult, els.closeModal);
             els.calculate.addEventListener('click', calculateRank);
             els.save.addEventListener('click', () => {
                 console.log('Save button clicked');
@@ -600,6 +765,7 @@
                 alert('Inputs saved!');
             });
             els.collegeMatch.addEventListener('click', startCollegeMatch);
+            els.studyPlan.addEventListener('click', generateStudyPlan);
             els.reset.addEventListener('click', () => {
                 console.log('Reset button clicked');
                 Object.values(els.inputs).forEach(input => input.value = '');
@@ -630,6 +796,7 @@
                 els.result.classList.add('hidden');
                 els.colleges.classList.remove('hidden');
             });
+            els.downloadPdf.addEventListener('click', downloadPdf);
             els.backToResult.addEventListener('click', () => {
                 console.log('Back to Result button clicked');
                 els.colleges.classList.add('hidden');
