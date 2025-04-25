@@ -5,391 +5,339 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KCET 2025 Rank Predictor</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@300;400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0a0a23, #1a2a6c);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a2b, #1e1e5c, #2a1a8c);
             color: #e2e8f0;
             min-height: 100vh;
-            padding: 2rem;
-            position: relative;
+            padding: 1rem;
             overflow-x: hidden;
+            position: relative;
         }
-        h1, h2, .glow-text {
-            font-family: 'Cinzel', serif;
-            letter-spacing: 0.05em;
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.3);
-        }
-        button, label, .btn {
-            font-family: 'Raleway', sans-serif;
-            font-weight: 300;
-            text-transform: uppercase;
+        h1, h2, h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
         }
         .card {
-            background: linear-gradient(145deg, #1e1e3f, #2a2a5e);
-            border: 2px solid rgba(59, 130, 246, 0.4);
-            border-radius: 24px;
-            padding: 2.5rem;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(59, 130, 246, 0.2);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            position: relative;
-            overflow: hidden;
-            animation: pulseBorder 3s infinite ease-in-out;
-        }
-        @keyframes pulseBorder {
-            0% { border-color: rgba(59, 130, 246, 0.4); }
-            50% { border-color: rgba(59, 130, 246, 0.8); }
-            100% { border-color: rgba(59, 130, 246, 0.4); }
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(59, 130, 246, 0.3) 0%, transparent 50%);
-            pointer-events: none;
-            transition: background 0.2s ease;
+            background: rgba(20, 20, 50, 0.85);
+            border: 2px solid rgba(100, 149, 237, 0.4);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(100, 149, 237, 0.2);
+            backdrop-filter: blur(12px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(59, 130, 246, 0.4);
+            transform: translateY(-6px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(100, 149, 237, 0.3);
         }
         .error {
-            color: #f87171;
+            color: #ff6b6b;
             font-size: 0.75rem;
             margin-top: 0.25rem;
+            text-shadow: 0 0 4px rgba(255, 107, 107, 0.5);
         }
         .progress-bar {
-            transition: width 0.5s ease-in-out;
-            background: linear-gradient(90deg, #3b82f6, #a855f7, #eab308);
-            position: relative;
-            overflow: hidden;
-        }
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-        @keyframes shimmer {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(200%); }
+            background: linear-gradient(90deg, #6495ed, #c71585);
+            height: 0.75rem;
+            border-radius: 9999px;
+            transition: width 0.6s ease-in-out;
+            box-shadow: 0 0 8px rgba(100, 149, 237, 0.6);
         }
         .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+            min-width: 120px;
+            background: linear-gradient(135deg, #6495ed, #c71585);
+            border: 2px solid transparent;
+            box-shadow: 0 4px 12px rgba(100, 149, 237, 0.4), inset 0 0 6px rgba(255, 255, 255, 0.2);
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s ease;
-            z-index: 1;
         }
-        .btn:hover {
-            transform: scale(1.08);
-        }
-        .btn::after {
+        .btn::before {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
             width: 0;
             height: 0;
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            transition: width 0.5s ease, height 0.5s ease;
-            z-index: -1;
+            transition: width 0.4s ease, height 0.4s ease;
         }
-        .btn:hover::after {
-            width: 300px;
-            height: 300px;
+        .btn:active::before {
+            width: 200px;
+            height: 200px;
+        }
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(100, 149, 237, 0.3);
         }
         .disclaimer {
-            background: rgba(234, 179, 8, 0.2);
-            border-left: 5px solid #eab308;
-            padding: 1rem;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
-            animation: pulseDisclaimer 3s infinite ease-in-out;
-        }
-        @keyframes pulseDisclaimer {
-            0% { box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
-            50% { box-shadow: 0 0 15px rgba(234, 179, 8, 0.5); }
-            100% { box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
-        }
-        .glow-text {
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.3);
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
-        .pulse {
-            animation: pulse 2s infinite ease-in-out;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .slide-in {
-            animation: slideIn 0.6s ease-out;
-        }
-        canvas#particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            opacity: 0.4;
+            background: rgba(255, 215, 0, 0.15);
+            border-left: 4px solid #ffd700;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
         }
         .modal {
-            backdrop-filter: blur(12px);
-            background: rgba(10, 10, 35, 0.85);
-            animation: scaleIn 0.3s ease-out;
+            background: rgba(10, 10, 40, 0.95);
+            backdrop-filter: blur(15px);
         }
-        @keyframes scaleIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        .tips-widget {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 50;
         }
-        .three-canvas {
+        .cutoff-table {
             width: 100%;
-            height: 300px;
+            border-collapse: collapse;
+            background: rgba(20, 20, 50, 0.9);
             border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
-        @media (max-width: 768px) {
-            .card { padding: 1.5rem; }
+        .cutoff-table th, .cutoff-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(100, 149, 237, 0.2);
+        }
+        .cutoff-table th {
+            background: linear-gradient(135deg, #6495ed, #c71585);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: #fff;
+            text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+        }
+        .cutoff-table tr {
+            transition: background 0.3s ease;
+        }
+        .cutoff-table tr:nth-child(even) {
+            background: rgba(100, 149, 237, 0.05);
+        }
+        .cutoff-table tr:hover {
+            background: rgba(100, 149, 237, 0.2);
+            box-shadow: inset 0 0 8px rgba(100, 149, 237, 0.3);
+        }
+        input, select {
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+            border: 1px solid rgba(100, 149, 237, 0.3);
+        }
+        input:focus, select:focus {
+            box-shadow: 0 0 12px rgba(100, 149, 237, 0.6);
+            border-color: #6495ed;
+        }
+        .glow-text {
+            text-shadow: 0 0 8px rgba(100, 149, 237, 0.8), 0 0 12px rgba(199, 21, 133, 0.6);
+        }
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(100, 149, 237, 0.6);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+            box-shadow: 0 0 8px rgba(100, 149, 237, 0.4);
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(1); opacity: 0.6; }
+            100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        @media (max-width: 640px) {
+            body { padding: 0.5rem; }
+            .card { padding: 1rem; border-radius: 16px; }
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.25rem; }
+            h3 { font-size: 1rem; }
+            .btn { padding: 0.5rem 1rem; font-size: 0.75rem; min-width: 100px; }
+            .modal { padding: 0.5rem; }
+            .modal .card { max-width: 90vw; }
+            .grid-cols-2 { grid-template-columns: 1fr; }
+            select, input { font-size: 0.875rem; }
+            .cutoff-table th, .cutoff-table td { padding: 0.5rem; font-size: 0.7rem; }
+            .particle { display: none; }
+        }
+        @media (min-width: 641px) {
+            body { padding: 1.5rem; }
             h1 { font-size: 2.5rem; }
-            .three-canvas { height: 200px; }
+            h2 { font-size: 1.75rem; }
+            h3 { font-size: 1.25rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Particle Background -->
-    <canvas id="particles"></canvas>
-
-    <div class="max-w-7xl mx-auto relative z-10">
-        <!-- Header -->
-        <header class="text-center mb-12 slide-in">
-            <h1 class="text-5xl md:text-7xl font-extrabold text-white glow-text mb-4">KCET 2025 Rank Predictor</h1>
-            <p class="text-xl text-gray-300 font-raleway">Your Gateway to a Brilliant Future</p>
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 6s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 8s;"></div>
+    </div>
+    <div class="max-w-5xl mx-auto">
+        <header class="text-center mb-6 animate-fade-in">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white glow-text">KCET 2025 Rank Predictor</h1>
+            <p class="text-sm sm:text-base text-gray-300 mt-2">Unlock Your Future with Precision</p>
         </header>
 
-        <!-- General Disclaimer -->
-        <div class="disclaimer mb-12 slide-in">
-            <p>
-                <strong>Disclaimer:</strong> This KCET 2025 Rank Predictor uses historical data and advanced models to estimate ranks. Actual results may differ due to exam changes, candidate performance, or KEA policies. Verify with official KEA sources for accuracy.
-            </p>
+        <div class="disclaimer mb-6 animate-fade-in">
+            <p><strong>Disclaimer:</strong> This tool uses sample data for predictions. Actual results may vary. Verify with official KEA sources.</p>
         </div>
 
-        <!-- Input Section -->
-        <div class="card mb-12 slide-in">
-            <h2 class="text-3xl font-bold mb-8 text-center glow-text">Input Your Marks</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- PUC Marks -->
+        <div class="card mb-6 animate-fade-in">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-center glow-text">Input Your Total Marks</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                    <h3 class="text-xl font-semibold mb-4">PUC Marks (Out of 100)</h3>
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium">Physics</label>
-                            <input type="number" id="pucPhysics" value="60" min="0" max="100" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
-                            <div id="pucPhysicsError" class="error hidden"></div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium">Chemistry</label>
-                            <input type="number" id="pucChemistry" value="60" min="0" max="100" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
-                            <div id="pucChemistryError" class="error hidden"></div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium">Mathematics</label>
-                            <input type="number" id="pucMath" value="60" min="0" max="100" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
-                            <div id="pucMathError" class="error hidden"></div>
-                        </div>
+                    <h3 class="text-base sm:text-lg font-medium mb-3">PUC Total (Out of 300)</h3>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium">Total Marks</label>
+                        <input type="number" id="pucTotalInput" value="180" min="0" max="300" class="w-full bg-gray-900 p-2 rounded border text-sm sm:text-base">
+                        <div id="pucTotalError" class="error hidden"></div>
                     </div>
-                    <div class="mt-6">
-                        <div class="flex justify-between text-sm">
-                            <span>PUC Total %</span>
-                            <span id="pucTotal">60%</span>
+                    <div class="mt-3">
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span>PUC Percentage</span>
+                            <span id="pucPercent">60%</span>
                         </div>
-                        <div class="w-full bg-gray-800 h-4 rounded-full mt-2">
-                            <div id="pucProgress" class="h-4 rounded-full progress-bar" style="width: 60%"></div>
+                        <div class="w-full bg-gray-800 h-3 rounded-full mt-1">
+                            <div id="pucProgress" class="progress-bar" style="width: 60%"></div>
                         </div>
                     </div>
                 </div>
-                <!-- KCET Marks -->
                 <div>
-                    <h3 class="text-xl font-semibold mb-4">KCET Marks (Out of 60)</h3>
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium">Physics</label>
-                            <input type="number" id="kcetPhysics" value="40" min="0" max="60" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
-                            <div id="kcetPhysicsError" class="error hidden"></div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium">Chemistry</label>
-                            <input type="number" id="kcetChemistry" value="40" min="0" max="60" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
-                            <div id="kcetChemistryError" class="error hidden"></div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium">Mathematics</label>
-                            <input type="number" id="kcetMath" value="40" min="0" max="60" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
-                            <div id="kcetMathError" class="error hidden"></div>
-                        </div>
+                    <h3 class="text-base sm:text-lg font-medium mb-3">KCET Total (Out of 180)</h3>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium">Total Marks</label>
+                        <input type="number" id="kcetTotalInput" value="120" min="0" max="180" class="w-full bg-gray-900 p-2 rounded border text-sm sm:text-base">
+                        <div id="kcetTotalError" class="error hidden"></div>
                     </div>
-                    <div class="mt-6">
-                        <div class="flex justify-between text-sm">
-                            <span>KCET Total %</span>
-                            <span id="kcetTotal">66.67%</span>
+                    <div class="mt-3">
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span>KCET Percentage</span>
+                            <span id="kcetPercent">66.67%</span>
                         </div>
-                        <div class="w-full bg-gray-800 h-4 rounded-full mt-2">
-                            <div id="kcetProgress" class="h-4 rounded-full progress-bar" style="width: 66.67%"></div>
+                        <div class="w-full bg-gray-800 h-3 rounded-full mt-1">
+                            <div id="kcetProgress" class="progress-bar" style="width: 66.67%"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Category and Branch Preferences -->
-            <div class="mt-8 grid md:grid-cols-2 gap-8">
-                <div>
-                    <label class="block text-sm font-medium mb-2">Category</label>
-                    <select id="category" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
-                        <option value="GM">General Merit</option>
-                        <option value="OBC">OBC</option>
-                        <option value="SC">SC</option>
-                        <option value="ST">ST</option>
-                    </select>
-                    <p class="text-xs text-gray-400 mt-2">
-                        <strong>Note:</strong> Category is used only for estimating college cutoffs, not for rank calculation, as per KEA guidelines.
-                    </p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2">Preferred Branches</label>
-                    <select id="branches" multiple class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
-                        <option value="Computer Science">Computer Science</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Mechanical">Mechanical</option>
-                        <option value="Civil">Civil</option>
-                    </select>
-                </div>
-            </div>
-            <!-- Live Rank -->
-            <div class="mt-8 text-center">
-                <h3 class="text-xl font-semibold glow-text">Live Rank Preview</h3>
-                <p id="liveRank" class="text-4xl font-bold text-blue-300 pulse">--</p>
-            </div>
-            <!-- College Matchmaker Disclaimer -->
-            <div class="disclaimer mt-8 slide-in">
-                <p>
-                    <strong>College Matchmaker Disclaimer:</strong> The College Matchmaker is under development and will be fully available post-KCET 2025. The current functionality is a preview and may not reflect final results.
-                </p>
-            </div>
-            <!-- Buttons -->
-            <div class="mt-8 flex flex-wrap justify-center gap-4">
-                <button id="calculate" class="btn bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-lg">Calculate Rank</button>
-                <button id="save" class="btn bg-green-600 hover:bg-green-700 text-white py-3 px-8 rounded-lg">Save Inputs</button>
-                <button id="collegeMatch" class="btn bg-purple-600 hover:bg-purple-700 text-white py-3 px-8 rounded-lg">Find My College</button>
-                <button id="prepDashboard" class="btn bg-orange-600 hover:bg-orange-700 text-white py-3 px-8 rounded-lg">Preparation Dashboard</button>
-            </div>
-        </div>
-
-        <!-- Result Section -->
-        <div id="result" class="card mb-12 hidden slide-in">
-            <h2 class="text-3xl font-bold mb-8 text-center glow-text">Your Predicted Rank</h2>
-            <div class="text-center mb-8">
-                <p class="text-6xl font-extrabold text-blue-300 pulse" id="finalRank">--</p>
-                <p class="text-gray-300 text-lg">Estimated Rank Range: <span id="rankRange">-- to --</span></p>
-                <p class="text-gray-300 text-lg">Category: <span id="categoryDisplay">GM</span></p>
-            </div>
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4">Interpretation</h3>
-                <p id="interpretation" class="text-gray-200">Enter marks to see your rank.</p>
-            </div>
-            <!-- Calculation Breakdown -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4">How Your Rank Was Calculated</h3>
-                <div class="bg-gray-900 p-6 rounded-lg">
-                    <p class="mb-3"><strong>Step 1: PUC Percentage</strong></p>
-                    <p id="stepPuc" class="text-gray-300">Calculated from Physics, Chemistry, Math marks.</p>
-                    <p class="mt-3 mb-3"><strong>Step 2: KCET Percentage</strong></p>
-                    <p id="stepKcet" class="text-gray-300">Calculated from KCET marks out of 180.</p>
-                    <p class="mt-3 mb-3"><strong>Step 3: Composite Score</strong></p>
-                    <p id="stepComposite" class="text-gray-300">50% PUC + 50% KCET.</p>
-                    <p class="mt-3 mb-3"><strong>Step 4: Rank Estimation</strong></p>
-                    <p id="stepRank" class="text-gray-300">Based on historical score-to-rank data.</p>
-                </div>
-            </div>
-            <!-- Score vs. Rank Chart -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4">Score vs. Rank Curve</h3>
-                <canvas id="rankChart" class="bg-gray-900 p-4 rounded-lg"></canvas>
-            </div>
-            <!-- Holographic Visualization -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4">Holographic Rank Visual</h3>
-                <div id="hologram" class="three-canvas"></div>
-            </div>
-            <!-- Cutoff Trends -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4">Historical Cutoff Trends (2022–2024)</h3>
-                <select id="trendCollege" class="w-full md:w-1/3 bg-gray-900 p-3 rounded-lg border border-gray-700 mb-4">
-                    <option value="RV College of Engineering">RV College of Engineering</option>
-                    <option value="PES University">PES University</option>
+            <div class="mt-4">
+                <label class="block text-xs sm:text-sm font-medium mb-2">Category</label>
+                <select id="category" class="w-full bg-gray-900 p-2 rounded border text-sm sm:text-base">
+                    <option value="GM">General Merit</option>
+                    <option value="OBC">OBC</option>
+                    <option value="SC">SC</option>
+                    <option value="ST">ST</option>
                 </select>
-                <select id="trendBranch" class="w-full md:w-1/3 bg-gray-900 p-3 rounded-lg border border-gray-700 mb-4"></select>
-                <canvas id="cutoffChart" class="bg-gray-900 p-4 rounded-lg"></canvas>
             </div>
-            <div class="flex flex-wrap justify-center gap-4">
-                <button id="edit" class="btn bg-gray-600 hover:bg-gray-700 text-white py-3 px-8 rounded-lg">Edit Marks</button>
-                <button id="viewColleges" class="btn bg-green-600 hover:bg-green-700 text-white py-3 px-8 rounded-lg">View Colleges</button>
-                <button id="share" class="btn bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-8 rounded-lg">Share Results</button>
-                <button id="export" class="btn bg-red-600 hover:bg-red-700 text-white py-3 px-8 rounded-lg">Export PDF</button>
+            <div class="mt-4 text-center">
+                <h3 class="text-base sm:text-lg font-medium">Live Rank Preview</h3>
+                <p id="liveRank" class="text-xl sm:text-2xl font-bold text-blue-300 glow-text">--</p>
             </div>
-        </div>
-
-        <!-- College Suggestions -->
-        <div id="colleges" class="card hidden slide-in">
-            <h2 class="text-3xl font-bold mb-8 text-center glow-text">College Suggestions</h2>
-            <div id="collegeList" class="grid md:grid-cols-2 gap-6"></div>
-            <!-- Virtual Tour -->
-            <div class="mt-8">
-                <h3 class="text-xl font-semibold mb-4">Virtual Campus Tour</h3>
-                <div id="virtualTour" class="relative w-full h-64 bg-gray-900 rounded-lg overflow-hidden">
-                    <img id="tourImage" src="https://via.placeholder.com/800x400?text=Campus+Tour" class="absolute w-full h-full object-cover">
-                    <button id="panLeft" class="absolute left-4 top-1/2 transform -translate-y-1/2 btn bg-gray-600 hover:bg-gray-700 text-white p-2 rounded-full"><i class="fas fa-chevron-left"></i></button>
-                    <button id="panRight" class="absolute right-4 top-1/2 transform -translate-y-1/2 btn bg-gray-600 hover:bg-gray-700 text-white p-2 rounded-full"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </div>
-            <!-- Map -->
-            <div class="mt-8">
-                <h3 class="text-xl font-semibold mb-4">College Locations</h3>
-                <iframe class="w-full h-64 rounded-lg" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d144.9537363153167!3d-37.81627927975159!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzfCsDQ5JzQ1LjQiUyAxNDTCsDU3JzEzLjUiRQ!5e0!3m2!1sen!2sau!4v1610000000000"></iframe>
-            </div>
-            <div class="mt-6 flex justify-center gap-4">
-                <button id="backToResult" class="btn bg-gray-600 hover:bg-gray-700 text-white py-3 px-8 rounded-lg">Back to Result</button>
+            <div class="mt-4 flex flex-wrap justify-center gap-3">
+                <button id="calculate" class="btn text-white">Calculate Rank</button>
+                <button id="save" class="btn text-white">Save Inputs</button>
+                <button id="collegeMatch" class="btn text-white">Find Colleges</button>
+                <button id="reset" class="btn text-white">Reset</button>
             </div>
         </div>
 
-        <!-- Modal for College Matchmaker/Prep Dashboard -->
-        <div id="modal" class="fixed inset-0 modal flex items-center justify-center hidden z-50">
-            <div class="card max-w-lg w-full p-8 relative">
-                <div class="flex justify-between mb-6">
-                    <h2 id="modalTitle" class="text-2xl font-bold glow-text"></h2>
-                    <button id="closeModal" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+        <div id="result" class="card mb-6 hidden animate-fade-in">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-center glow-text">Your Predicted Rank</h2>
+            <div class="text-center mb-4">
+                <p id="finalRank" class="text-3xl sm:text-4xl font-bold text-blue-300 glow-text">--</p>
+                <p class="text-xs sm:text-sm text-gray-300">Rank Range: <span id="rankRange">-- to --</span></p>
+                <p class="text-xs sm:text-sm text-gray-300">Category: <span id="categoryDisplay">GM</span></p>
+            </div>
+            <div class="mb-4">
+                <h3 class="text-base sm:text-lg font-medium mb-2">Calculation Steps</h3>
+                <div class="bg-gray-900 p-3 rounded text-xs sm:text-sm">
+                    <p class="mb-2"><strong>PUC %:</strong> <span id="stepPuc">--</span></p>
+                    <p class="mb-2"><strong>KCET %:</strong> <span id="stepKcet">--</span></p>
+                    <p><strong>Composite Score:</strong> <span id="stepComposite">--</span></p>
                 </div>
-                <div id="modalContent" class="text-gray-200"></div>
-                <div id="modalActions" class="mt-6 flex justify-end gap-4"></div>
+            </div>
+            <div class="mb-4">
+                <h3 class="text-base sm:text-lg font-medium mb-2">Historical Cutoff Ranks (2022–2024)</h3>
+                <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                    <select id="trendCollege" class="w-full sm:w-1/3 bg-gray-900 p-2 rounded border text-xs sm:text-sm">
+                        <option value="RV College of Engineering">RV College of Engineering</option>
+                        <option value="PES University">PES University</option>
+                    </select>
+                    <select id="trendBranch" class="w-full sm:w-1/3 bg-gray-900 p-2 rounded border text-xs sm:text-sm"></select>
+                </div>
+                <table id="cutoffTable" class="cutoff-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Cutoff Rank</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cutoffTableBody"></tbody>
+                </table>
+            </div>
+            <div class="flex flex-wrap justify-center gap-3">
+                <button id="edit" class="btn text-white">Edit Marks</button>
+                <button id="viewColleges" class="btn text-white">View Colleges</button>
+            </div>
+        </div>
+
+        <div id="colleges" class="card mb-6 hidden animate-fade-in">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-center glow-text">College Suggestions</h2>
+            <div id="collegeList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            <div class="mt-4 flex justify-center">
+                <button id="backToResult" class="btn text-white">Back to Result</button>
+            </div>
+        </div>
+
+        <div id="modal" class="fixed inset-0 modal flex items-center justify-center hidden z-50 p-2 sm:p-4">
+            <div class="card max-w-md w-full p-4 sm:p-6">
+                <div class="flex justify-between mb-3">
+                    <h2 id="modalTitle" class="text-lg sm:text-xl font-semibold glow-text"></h2>
+                    <button id="closeModal" class="text-gray-300 hover:text-white text-lg">✕</button>
+                </div>
+                <div id="modalContent" class="text-gray-200 text-xs sm:text-sm"></div>
+                <div id="modalActions" class="mt-3 flex justify-end gap-2 sm:gap-4"></div>
+            </div>
+        </div>
+
+        <div class="tips-widget">
+            <button id="tipsBtn" class="btn bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-full p-2 sm:p-3 text-sm">Tips</button>
+            <div id="tipsContent" class="hidden card p-3 w-56 sm:w-64 mt-2 text-xs sm:text-sm">
+                <p id="tipText"></p>
             </div>
         </div>
 
     <script>
-        // College Data
+        console.log('Initializing KCET Rank Predictor...');
+
         const colleges = [
             {
                 name: "RV College of Engineering",
@@ -397,8 +345,7 @@
                     { name: "Computer Science", cutoff: { GM: 1000, OBC: 1500, SC: 5000, ST: 6000 }, trends: { 2022: 1200, 2023: 1100, 2024: 1000 } },
                     { name: "Electronics", cutoff: { GM: 3000, OBC: 4000, SC: 8000, ST: 9000 }, trends: { 2022: 3500, 2023: 3200, 2024: 3000 } }
                 ],
-                location: "Bangalore",
-                vibe: "Tech-Focused"
+                location: "Bangalore"
             },
             {
                 name: "PES University",
@@ -406,51 +353,40 @@
                     { name: "Computer Science", cutoff: { GM: 800, OBC: 1200, SC: 4000, ST: 4500 }, trends: { 2022: 900, 2023: 850, 2024: 800 } },
                     { name: "Mechanical", cutoff: { GM: 5000, OBC: 6000, SC: 10000, ST: 11000 }, trends: { 2022: 5500, 2023: 5200, 2024: 5000 } }
                 ],
-                location: "Bangalore",
-                vibe: "Innovative"
+                location: "Bangalore"
             }
         ];
 
-        // Rank Estimation Table
         const rankTable = [
-            { score: 95, rank: 500 },
-            { score: 90, rank: 1000 },
-            { score: 85, rank: 3000 },
-            { score: 80, rank: 5000 },
-            { score: 75, rank: 10000 },
-            { score: 70, rank: 15000 },
-            { score: 60, rank: 30000 },
-            { score: 50, rank: 50000 },
-            { score: 40, rank: 80000 }
+            { score: 95, rank: 500 }, { score: 90, rank: 1000 }, { score: 85, rank: 3000 },
+            { score: 80, rank: 5000 }, { score: 75, rank: 10000 }, { score: 70, rank: 15000 },
+            { score: 60, rank: 30000 }, { score: 50, rank: 50000 }, { score: 40, rank: 80000 }
         ];
 
-        // Mock Test History
-        let mockTests = [];
+        const tips = [
+            'Practice 10 MCQs daily per subject.',
+            'Revise weak topics for 1 hour daily.',
+            'Take weekly mock tests.',
+            'Focus on time management.',
+            'Review Organic Chemistry reactions.'
+        ];
 
-        // DOM Elements
+        let currentRank = 0;
+
         const els = {
             inputs: {
-                pucPhysics: document.getElementById('pucPhysics'),
-                pucChemistry: document.getElementById('pucChemistry'),
-                pucMath: document.getElementById('pucMath'),
-                kcetPhysics: document.getElementById('kcetPhysics'),
-                kcetChemistry: document.getElementById('kcetChemistry'),
-                kcetMath: document.getElementById('kcetMath'),
-                category: document.getElementById('category'),
-                branches: document.getElementById('branches')
+                pucTotal: document.getElementById('pucTotalInput'),
+                kcetTotal: document.getElementById('kcetTotalInput'),
+                category: document.getElementById('category')
             },
             errors: {
-                pucPhysics: document.getElementById('pucPhysicsError'),
-                pucChemistry: document.getElementById('pucChemistryError'),
-                pucMath: document.getElementById('pucMathError'),
-                kcetPhysics: document.getElementById('kcetPhysicsError'),
-                kcetChemistry: document.getElementById('kcetChemistryError'),
-                kcetMath: document.getElementById('kcetMathError')
+                pucTotal: document.getElementById('pucTotalError'),
+                kcetTotal: document.getElementById('kcetTotalError')
             },
             totals: {
-                puc: document.getElementById('pucTotal'),
+                pucPercent: document.getElementById('pucPercent'),
                 pucProgress: document.getElementById('pucProgress'),
-                kcet: document.getElementById('kcetTotal'),
+                kcetPercent: document.getElementById('kcetPercent'),
                 kcetProgress: document.getElementById('kcetProgress')
             },
             liveRank: document.getElementById('liveRank'),
@@ -458,120 +394,52 @@
             finalRank: document.getElementById('finalRank'),
             rankRange: document.getElementById('rankRange'),
             categoryDisplay: document.getElementById('categoryDisplay'),
-            interpretation: document.getElementById('interpretation'),
             stepPuc: document.getElementById('stepPuc'),
             stepKcet: document.getElementById('stepKcet'),
             stepComposite: document.getElementById('stepComposite'),
-            stepRank: document.getElementById('stepRank'),
             trendCollege: document.getElementById('trendCollege'),
             trendBranch: document.getElementById('trendBranch'),
+            cutoffTableBody: document.getElementById('cutoffTableBody'),
             colleges: document.getElementById('colleges'),
             collegeList: document.getElementById('collegeList'),
-            virtualTour: {
-                image: document.getElementById('tourImage'),
-                panLeft: document.getElementById('panLeft'),
-                panRight: document.getElementById('panRight')
-            },
             calculate: document.getElementById('calculate'),
             save: document.getElementById('save'),
             collegeMatch: document.getElementById('collegeMatch'),
-            prepDashboard: document.getElementById('prepDashboard'),
+            reset: document.getElementById('reset'),
             edit: document.getElementById('edit'),
             viewColleges: document.getElementById('viewColleges'),
-            share: document.getElementById('share'),
-            export: document.getElementById('export'),
             backToResult: document.getElementById('backToResult'),
             modal: document.getElementById('modal'),
             modalTitle: document.getElementById('modalTitle'),
             modalContent: document.getElementById('modalContent'),
             modalActions: document.getElementById('modalActions'),
-            closeModal: document.getElementById('closeModal')
+            closeModal: document.getElementById('closeModal'),
+            tipsBtn: document.getElementById('tipsBtn'),
+            tipsContent: document.getElementById('tipsContent'),
+            tipText: document.getElementById('tipText')
         };
 
-        let rankChart, cutoffChart, hologramScene, prepChart;
-
-        let currentRank = 0;
-        let currentScore = 0;
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
+        function init() {
+            console.log('Setting up...');
             setupInputs();
             setupButtons();
-            setupCharts();
-            setupHologram();
-            setupVirtualTour();
-            setupParticles();
-            setupCardLighting();
+            setupTipsWidget();
             updateTotals();
             updateLiveRank();
             updateTrendBranchOptions();
-        });
-
-        // Particle Background
-        function setupParticles() {
-            const canvas = document.getElementById('particles');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            const particles = [];
-            for (let i = 0; i = 150; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    radius: Math.random() * 3 + 1,
-                    vx: Math.random() * 0.6 - 0.3,
-                    vy: Math.random() * 0.6 - 0.3,
-                    glow: Math.random() * 0.5 + 0.2
-                });
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particles.forEach(p => {
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(59, 130, 246, ${p.glow})`;
-                    ctx.fill();
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                });
-                requestAnimationFrame(animate);
-            }
-            animate();
         }
 
-        // Dynamic Card Lighting
-        function setupCardLighting() {
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('mousemove', e => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
-                    card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
-                });
-            });
-        }
-
-        // Input Handling
         function setupInputs() {
             const inputConfigs = [
-                { el: els.inputs.pucPhysics, error: els.errors.pucPhysics, max: 100 },
-                { el: els.inputs.pucChemistry, error: els.errors.pucChemistry, max: 100 },
-                { el: els.inputs.pucMath, error: els.errors.pucMath, max: 100 },
-                { el: els.inputs.kcetPhysics, error: els.errors.kcetPhysics, max: 60 },
-                { el: els.inputs.kcetChemistry, error: els.errors.kcetChemistry, max: 60 },
-                { el: els.inputs.kcetMath, error: els.errors.kcetMath, max: 60 }
+                { el: els.inputs.pucTotal, error: els.errors.pucTotal, max: 300 },
+                { el: els.inputs.kcetTotal, error: els.errors.kcetTotal, max: 180 }
             ];
-
             inputConfigs.forEach(({ el, error, max }) => {
+                if (!el || !error) return;
                 el.addEventListener('input', () => {
                     const value = parseFloat(el.value) || 0;
                     if (value < 0 || value > max || isNaN(value)) {
-                        error.textContent = `Enter a value between 0 and ${max}`;
+                        error.textContent = `Enter 0–${max}`;
                         error.classList.remove('hidden');
                     } else {
                         error.classList.add('hidden');
@@ -584,42 +452,25 @@
         }
 
         function updateTotals() {
-            const pucTotal = (
-                (parseFloat(els.inputs.pucPhysics.value) || 0) +
-                (parseFloat(els.inputs.pucChemistry.value) || 0) +
-                (parseFloat(els.inputs.pucMath.value) || 0)
-            ) / 3;
-            els.totals.puc.textContent = pucTotal.toFixed(2) + '%';
-            els.totals.pucProgress.style.width = pucTotal.toFixed(2) + '%';
-
-            const kcetTotal = (
-                (parseFloat(els.inputs.kcetPhysics.value) || 0) +
-                (parseFloat(els.inputs.kcetChemistry.value) || 0) +
-                (parseFloat(els.inputs.kcetMath.value) || 0)
-            ) / 180 * 100;
-            els.totals.kcet.textContent = kcetTotal.toFixed(2) + '%';
-            els.totals.kcetProgress.style.width = kcetTotal.toFixed(2) + '%';
+            const pucTotal = parseFloat(els.inputs.pucTotal.value) || 0;
+            const pucPercent = (pucTotal / 300) * 100;
+            els.totals.pucPercent.textContent = pucPercent.toFixed(2) + '%';
+            els.totals.pucProgress.style.width = pucPercent.toFixed(2) + '%';
+            const kcetTotal = parseFloat(els.inputs.kcetTotal.value) || 0;
+            const kcetPercent = (kcetTotal / 180) * 100;
+            els.totals.kcetPercent.textContent = kcetPercent.toFixed(2) + '%';
+            els.totals.kcetProgress.style.width = kcetPercent.toFixed(2) + '%';
         }
 
-        // Rank Calculation
-        function calculateCompositeScore(pucPhysics, pucChemistry, pucMath, kcetPhysics, kcetChemistry, kcetMath) {
-            const pucPercent = (
-                (parseFloat(pucPhysics) || 0) +
-                (parseFloat(pucChemistry) || 0) +
-                (parseFloat(pucMath) || 0)
-            ) / 3;
-            const kcetPercent = (
-                (parseFloat(kcetPhysics) || 0) +
-                (parseFloat(kcetChemistry) || 0) +
-                (parseFloat(kcetMath) || 0)
-            ) / 180 * 100;
+        function calculateCompositeScore(pucTotal, kcetTotal) {
+            const pucPercent = (parseFloat(pucTotal) || 0) / 300 * 100;
+            const kcetPercent = (parseFloat(kcetTotal) || 0) / 180 * 100;
             return { puc: pucPercent, kcet: kcetPercent, composite: (pucPercent * 0.5) + (kcetPercent * 0.5) };
         }
 
         function estimateRank(score) {
             if (score >= rankTable[0].score) return rankTable[0].rank;
             if (score <= rankTable[rankTable.length - 1].score) return rankTable[rankTable.length - 1].rank;
-
             for (let i = 0; i < rankTable.length - 1; i++) {
                 const high = rankTable[i];
                 const low = rankTable[i + 1];
@@ -633,447 +484,166 @@
 
         function updateLiveRank() {
             const { composite } = calculateCompositeScore(
-                els.inputs.pucPhysics.value,
-                els.inputs.pucChemistry.value,
-                els.inputs.pucMath.value,
-                els.inputs.kcetPhysics.value,
-                els.inputs.kcetChemistry.value,
-                els.inputs.kcetMath.value
+                els.inputs.pucTotal.value,
+                els.inputs.kcetTotal.value
             );
             els.liveRank.textContent = estimateRank(composite).toLocaleString();
         }
 
         function calculateRank() {
+            console.log('Calculate button clicked');
             if (Object.values(els.errors).some(error => !error.classList.contains('hidden'))) {
                 alert('Please correct input errors.');
                 return;
             }
-
             const scores = calculateCompositeScore(
-                els.inputs.pucPhysics.value,
-                els.inputs.pucChemistry.value,
-                els.inputs.pucMath.value,
-                els.inputs.kcetPhysics.value,
-                els.inputs.kcetChemistry.value,
-                els.inputs.kcetMath.value
+                els.inputs.pucTotal.value,
+                els.inputs.kcetTotal.value
             );
-            currentScore = scores.composite;
-            currentRank = estimateRank(currentScore);
-
-            // Update Result
+            currentRank = estimateRank(scores.composite);
             els.finalRank.textContent = currentRank.toLocaleString();
             els.rankRange.textContent = `${(currentRank * 0.9).toFixed(0)} to ${(currentRank * 1.1).toFixed(0)}`;
             els.categoryDisplay.textContent = els.inputs.category.value;
-            els.interpretation.textContent = currentRank < 2000 ? 'Elite! Top-tier colleges await you!' : currentRank < 10000 ? 'Impressive! Strong college options available.' : 'Solid! Explore diverse colleges and branches.';
-
-            // Update Calculation Steps
-            els.stepPuc.textContent = `(${els.inputs.pucPhysics.value} + ${els.inputs.pucChemistry.value} + ${els.inputs.pucMath.value}) / 3 = ${scores.puc.toFixed(2)}%`;
-            els.stepKcet.textContent = `(${els.inputs.kcetPhysics.value} + ${els.inputs.kcetChemistry.value} + ${els.inputs.kcetMath.value}) / 180 * 100 = ${scores.kcet.toFixed(2)}%`;
-            els.stepComposite.textContent = `(${scores.puc.toFixed(2)} * 0.5) + (${scores.kcet.toFixed(2)} * 0.5) = ${currentScore.toFixed(2)}%`;
-            els.stepRank.textContent = `Score ${currentScore.toFixed(2)}% maps to rank ~${currentRank.toLocaleString()} (interpolated from historical data).`;
-
-            // Update Charts and Hologram
-            rankChart.data.datasets[0].data = rankTable.map(entry => entry.rank);
-            rankChart.data.datasets[1].data = rankTable.map(entry => entry.score === Math.round(currentScore) ? currentRank : null);
-            rankChart.update();
-            updateCutoffChart();
-            updateHologram();
-
-            // Show Result
+            els.stepPuc.textContent = `${els.inputs.pucTotal.value} / 300 * 100 = ${scores.puc.toFixed(2)}%`;
+            els.stepKcet.textContent = `${els.inputs.kcetTotal.value} / 180 * 100 = ${scores.kcet.toFixed(2)}%`;
+            els.stepComposite.textContent = `(${scores.puc.toFixed(2)} * 0.5) + (${scores.kcet.toFixed(2)} * 0.5) = ${scores.composite.toFixed(2)}%`;
+            updateCutoffTable();
             els.result.classList.remove('hidden');
             els.colleges.classList.add('hidden');
         }
 
-        // Charts
-        function setupCharts() {
-            rankChart = new Chart(document.getElementById('rankChart'), {
-                type: 'line',
-                data: {
-                    labels: rankTable.map(entry => entry.score + '%'),
-                    datasets: [
-                        {
-                            label: 'Rank Curve',
-                            data: rankTable.map(entry => entry.rank),
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.3)',
-                            fill: true,
-                            tension: 0.4
-                        },
-                        {
-                            label: 'Your Rank',
-                            data: [],
-                            borderColor: '#eab308',
-                            backgroundColor: '#eab308',
-                            pointRadius: 10,
-                            pointHoverRadius: 15,
-                            showLine: false
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        x: { title: { display: true, text: 'Composite Score (%)', color: '#e2e8f0' } },
-                        y: { title: { display: true, text: 'Rank', color: '#e2e8f0' }, beginAtZero: false }
-                    },
-                    plugins: { legend: { labels: { color: '#e2e8f0' } } }
-                }
-            });
-
-            cutoffChart = new Chart(document.getElementById('cutoffChart'), {
-                type: 'line',
-                data: {
-                    labels: ['2022', '2023', '2024'],
-                    datasets: [{
-                        label: 'Cutoff Rank',
-                        data: [],
-                        borderColor: '#a855f7',
-                        backgroundColor: 'rgba(168, 85, 247, 0.3)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: { title: { display: true, text: 'Year', color: '#e2e8f0' } },
-                        y: { title: { display: true, text: 'Cutoff Rank', color: '#e2e8f0' }, beginAtZero: false }
-                    },
-                    plugins: { legend: { labels: { color: '#e2e8f0' } } }
-                }
-            });
+        function updateCutoffTable() {
+            const collegeName = els.trendCollege.value;
+            const branchName = els.trendBranch.value;
+            const college = colleges.find(c => c.name === collegeName);
+            const branch = college.branches.find(b => b.name === branchName);
+            els.cutoffTableBody.innerHTML = `
+                <tr><td>2022</td><td>${branch.trends[2022].toLocaleString()}</td></tr>
+                <tr><td>2023</td><td>${branch.trends[2023].toLocaleString()}</td></tr>
+                <tr><td>2024</td><td>${branch.trends[2024].toLocaleString()}</td></tr>
+            `;
         }
 
         function updateTrendBranchOptions() {
             const collegeName = els.trendCollege.value;
             const college = colleges.find(c => c.name === collegeName);
             els.trendBranch.innerHTML = college.branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
-            updateCutoffChart();
+            updateCutoffTable();
         }
 
-        function updateCutoffChart() {
-            const collegeName = els.trendCollege.value;
-            const branchName = els.trendBranch.value;
-            const college = colleges.find(c => c.name === collegeName);
-            const branch = college.branches.find(b => b.name === branchName);
-            cutoffChart.data.datasets[0].data = [branch.trends[2022], branch.trends[2023], branch.trends[2024]];
-            cutoffChart.update();
-        }
-
-        // Holographic Visualization
-        function setupHologram() {
-            const container = document.getElementById('hologram');
-            hologramScene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / 300, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ alpha: true });
-            renderer.setSize(container.clientWidth, 300);
-            container.appendChild(renderer.domElement);
-
-            const geometry = new THREE.BoxGeometry(1, 1, 1);
-            const material = new THREE.MeshBasicMaterial({ color: 0x3b82f6, wireframe: true });
-            const cube = new THREE.Mesh(geometry, material);
-            hologramScene.add(cube);
-
-            camera.position.z = 2;
-
-            function animate() {
-                requestAnimationFrame(animate);
-                cube.rotation.x += 0.01;
-                cube.rotation.y += 0.01;
-                renderer.render(hologramScene, camera);
+        function setupTipsWidget() {
+            let tipIndex = 0;
+            function showTip() {
+                els.tipText.textContent = tips[tipIndex];
+                tipIndex = (tipIndex + 1) % tips.length;
             }
-            animate();
-
-            window.addEventListener('resize', () => {
-                renderer.setSize(container.clientWidth, 300);
-                camera.aspect = container.clientWidth / 300;
-                camera.updateProjectionMatrix();
-            });
-
-            container.addEventListener('mousemove', e => {
-                const rect = container.getBoundingClientRect();
-                cube.rotation.x = ((e.clientY - rect.top) / rect.height - 0.5) * 0.5;
-                cube.rotation.y = ((e.clientX - rect.left) / rect.width - 0.5) * 0.5;
+            showTip();
+            setInterval(showTip, 10000);
+            els.tipsBtn.addEventListener('click', () => {
+                console.log('Tips button clicked');
+                els.tipsContent.classList.toggle('hidden');
+                if (!els.tipsContent.classList.contains('hidden')) showTip();
             });
         }
 
-        function updateHologram() {
-            const intensity = Math.max(0.2, 1 - currentRank / 10000);
-            hologramScene.children[0].material.color.setRGB(intensity, intensity, 1);
-        }
-
-        // Virtual Tour
-        function setupVirtualTour() {
-            let panX = 0;
-            els.virtualTour.panLeft.addEventListener('click', () => {
-                panX += 50;
-                els.virtualTour.image.style.transform = `translateX(${panX}px)`;
-            });
-            els.virtualTour.panRight.addEventListener('click', () => {
-                panX -= 50;
-                els.virtualTour.image.style.transform = `translateX(${panX}px)`;
-            });
-        }
-
-        // College Matchmaker
         function startCollegeMatch() {
-            els.modalTitle.textContent = 'AI College Matchmaker';
+            console.log('College Match button clicked');
+            els.modalTitle.textContent = 'College Matchmaker';
             els.modalContent.innerHTML = `
-                <p class="mb-4">Let's find your perfect college! Answer these questions:</p>
-                <div id="matchQuestions">
-                    <p class="mb-2"><strong>Preferred Location:</strong></p>
-                    <select id="matchLocation" class="w-full bg-gray-900 p-2 rounded-lg border border-gray-700 mb-4">
-                        <option value="Bangalore">Bangalore</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <p class="mb-2"><strong>Campus Vibe:</strong></p>
-                    <select id="matchVibe" class="w-full bg-gray-900 p-2 rounded-lg border border-gray-700 mb-4">
-                        <option value="Tech-Focused">Tech-Focused</option>
-                        <option value="Innovative">Innovative</option>
-                    </select>
-                </div>
+                <p class="mb-3">Select your preferred location to find colleges:</p>
+                <select id="matchLocation" class="w-full bg-gray-900 p-2 rounded border mb-3 text-xs sm:text-sm">
+                    <option value="Bangalore">Bangalore</option>
+                    <option value="Other">Other</option>
+                </select>
             `;
             els.modalActions.innerHTML = `
-                <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Cancel</button>
-                <button class="btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg" onclick="showMatchResults()">Get Matches</button>
+                <button class="btn text-white" onclick="els.modal.classList.add('hidden')">Cancel</button>
+                <button class="btn text-white" onclick="showMatchResults()">Get Matches</button>
             `;
             els.modal.classList.remove('hidden');
         }
 
         function showMatchResults() {
+            console.log('Showing college match results');
             const location = document.getElementById('matchLocation').value;
-            const vibe = document.getElementById('matchVibe').value;
-            const matches = colleges.filter(c => c.location === location && c.vibe === vibe);
+            const matches = colleges.filter(c => c.location === location);
             els.modalContent.innerHTML = `
-                <p class="mb-4">Here are your top college matches (Preview):</p>
-                ${matches.length > 0 ? `
-                    <ul class="list-disc pl-5">
+                <p class="mb-3">Top college matches:</p>
+                ${matches.length ? `
+                    <ul class="list-disc pl-5 text-xs sm:text-sm">
                         ${matches.map(c => `
                             <li>
-                                ${c.name} (Confidence: ${Math.round(80 + Math.random() * 15)}%)
+                                ${c.name}
                                 <ul class="list-circle pl-5">
                                     ${c.branches.filter(b => b.cutoff[els.inputs.category.value] > currentRank).map(b => `<li>${b.name}</li>`).join('')}
                                 </ul>
                             </li>
                         `).join('')}
                     </ul>
-                ` : '<p>No exact matches found. Try adjusting preferences.</p>'}
+                ` : '<p>No matches found. Try adjusting preferences.</p>'}
             `;
-            els.modalActions.innerHTML = `
-                <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Close</button>
-            `;
-        }
-
-        // Preparation Dashboard
-        function showPrepDashboard() {
-            els.modalTitle.textContent = 'KCET Preparation Dashboard';
-            els.modalContent.innerHTML = `
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-lg font-semibold mb-2">Mock Test Simulator</h3>
-                        <p class="mb-2">Enter your latest mock test scores to predict rank improvement.</p>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm">Physics (out of 60)</label>
-                                <input type="number" id="mockPhysics" min="0" max="60" class="w-full bg-gray-900 p-2 rounded-lg border border-gray-700">
-                            </div>
-                            <div>
-                                <label class="block text-sm">Chemistry (out of 60)</label>
-                                <input type="number" id="mockChemistry" min="0" max="60" class="w-full bg-gray-900 p-2 rounded-lg border border-gray-700">
-                            </div>
-                            <div>
-                                <label class="block text-sm">Math (out of 60)</label>
-                                <input type="number" id="mockMath" min="0" max="60" class="w-full bg-gray-900 p-2 rounded-lg border border-gray-700">
-                            </div>
-                        </div>
-                        <button class="mt-4 btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg" onclick="simulateMockTest()">Simulate Rank</button>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold mb-2">Progress Tracker</h3>
-                        <canvas id="prepChart" class="bg-gray-900 p-4 rounded-lg"></canvas>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold mb-2">Personalized Tips</h3>
-                        <div id="prepTips" class="text-gray-300"></div>
-                    </div>
-                </div>
-            `;
-            els.modalActions.innerHTML = `
-                <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Close</button>
-            `;
-            els.modal.classList.remove('hidden');
-            setupPrepChart();
-            updatePrepTips([]);
-        }
-
-        function setupPrepChart() {
-            if (prepChart) prepChart.destroy();
-            prepChart = new Chart(document.getElementById('prepChart'), {
-                type: 'line',
-                data: {
-                    labels: mockTests.map((_, i) => `Test ${i + 1}`),
-                    datasets: [
-                        {
-                            label: 'Mock Test Score (%)',
-                            data: mockTests.map(test => test.score),
-                            borderColor: '#eab308',
-                            backgroundColor: 'rgba(234, 179, 8, 0.2)',
-                            fill: true,
-                            tension: 0.4
-                        },
-                        {
-                            label: 'Predicted Rank',
-                            data: mockTests.map(test => test.rank),
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                            fill: true,
-                            tension: 0.4,
-                            yAxisID: 'y1'
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        y: { title: { display: true, text: 'Score (%)', color: '#e2e8f0' }, beginAtZero: true },
-                        y1: { title: { display: true, text: 'Rank', color: '#e2e8f0' }, position: 'right', beginAtZero: false, reverse: true },
-                        x: { title: { display: true, text: 'Mock Test', color: '#e2e8f0' } }
-                    },
-                    plugins: { legend: { labels: { color: '#e2e8f0' } } }
-                }
-            });
-        }
-
-        function simulateMockTest() {
-            const physics = parseFloat(document.getElementById('mockPhysics').value) || 0;
-            const chemistry = parseFloat(document.getElementById('mockChemistry').value) || 0;
-            const math = parseFloat(document.getElementById('mockMath').value) || 0;
-
-            if (physics < 0 || physics > 60 || chemistry < 0 || chemistry > 60 || math < 0 || math > 60) {
-                alert('Please enter valid mock test scores (0–60).');
-                return;
-            }
-
-            const scores = calculateCompositeScore(
-                els.inputs.pucPhysics.value,
-                els.inputs.pucChemistry.value,
-                els.inputs.pucMath.value,
-                physics,
-                chemistry,
-                math
-            );
-            const mockScore = scores.composite;
-            const mockRank = estimateRank(mockScore);
-
-            mockTests.push({ score: mockScore, rank: mockRank, physics, chemistry, math });
-            setupPrepChart();
-            updatePrepTips([physics, chemistry, math]);
-
-            alert(`Mock Test Rank: ${mockRank.toLocaleString()}\nScore: ${mockScore.toFixed(2)}%`);
-        }
-
-        function updatePrepTips(scores) {
-            const subjects = [
-                { name: 'Physics', score: scores[0] || 0, max: 60 },
-                { name: 'Chemistry', score: scores[1] || 0, max: 60 },
-                { name: 'Math', score: scores[2] || 0, max: 60 }
-            ];
-            const weak = subjects.filter(s => (s.score / s.max) * 100 < 60);
-            els.prepTips.innerHTML = weak.length > 0 ? `
-                <p>Focus on these areas:</p>
-                <ul class="list-disc pl-5">
-                    ${weak.map(s => `<li>${s.name}: Solve 20 ${s.name.toLowerCase()} questions daily.</li>`).join('')}
-                </ul>
-            ` : '<p>Balanced performance! Keep practicing all subjects.</p>';
-        }
-
-        // College Suggestions
-        function renderColleges() {
-            els.collegeList.innerHTML = '';
-            const category = els.inputs.category.value;
-            const selectedBranches = Array.from(els.inputs.branches.selectedOptions).map(opt => opt.value);
-            colleges.forEach(college => {
-                const matchedBranches = college.branches.filter(b => selectedBranches.length === 0 || selectedBranches.includes(b.name));
-                if (matchedBranches.length === 0) return;
-                const div = document.createElement('div');
-                div.className = 'bg-gray-900 p-5 rounded-lg';
-                div.innerHTML = `
-                    <h3 class="text-lg font-semibold mb-3">${college.name}</h3>
-                    ${matchedBranches.map(b => `
-                        <p class="text-gray-300">${b.name}: Cutoff ${b.cutoff[category].toLocaleString()} (${b.cutoff[category] > currentRank ? 'Challenging' : 'Likely'})</p>
-                    `).join('')}
-                    <button class="mt-3 btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg" onclick="showCollegeDetails('${college.name}')">View Details</button>
-                `;
-                els.collegeList.appendChild(div);
-            });
-            els.colleges.classList.remove('hidden');
-            els.result.classList.add('hidden');
-        }
-
-        function showCollegeDetails(name) {
-            const college = colleges.find(c => c.name === name);
-            els.modalTitle.textContent = college.name;
-            els.modalContent.innerHTML = `
-                <p class="mb-2"><strong>Branches Available:</strong></p>
-                <ul class="list-disc pl-5">
-                    ${college.branches.map(b => `<li>${b.name}: Cutoff ${b.cutoff[els.inputs.category.value].toLocaleString()}</li>`).join('')}
-                </ul>
-                <p class="mt-4"><strong>Location:</strong> ${college.location}</p>
-                <p><strong>Vibe:</strong> ${college.vibe}</p>
-            `;
-            els.modalActions.innerHTML = `
-                <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Close</button>
-            `;
+            els.modalActions.innerHTML = `<button class="btn text-white" onclick="els.modal.classList.add('hidden')">Close</button>`;
             els.modal.classList.remove('hidden');
         }
 
-        // Button Actions
         function setupButtons() {
+            console.log('Setting up buttons:', els.calculate, els.save, els.collegeMatch, els.reset, els.edit, els.viewColleges, els.backToResult, els.closeModal);
             els.calculate.addEventListener('click', calculateRank);
             els.save.addEventListener('click', () => {
+                console.log('Save button clicked');
                 const data = {
-                    pucPhysics: els.inputs.pucPhysics.value,
-                    pucChemistry: els.inputs.pucChemistry.value,
-                    pucMath: els.inputs.pucMath.value,
-                    kcetPhysics: els.inputs.kcetPhysics.value,
-                    kcetChemistry: els.inputs.kcetChemistry.value,
-                    kcetMath: els.inputs.kcetMath.value,
-                    category: els.inputs.category.value,
-                    branches: Array.from(els.inputs.branches.selectedOptions).map(opt => opt.value)
+                    pucTotal: els.inputs.pucTotal.value,
+                    kcetTotal: els.inputs.kcetTotal.value,
+                    category: els.inputs.category.value
                 };
-                localStorage.setItem('kcetData', JSON.stringify(data));
+                localStorage.setItem('kcetInputs', JSON.stringify(data));
                 alert('Inputs saved!');
             });
             els.collegeMatch.addEventListener('click', startCollegeMatch);
-            els.prepDashboard.addEventListener('click', showPrepDashboard);
-            els.edit.addEventListener('click', () => {
+            els.reset.addEventListener('click', () => {
+                console.log('Reset button clicked');
+                Object.values(els.inputs).forEach(input => input.value = '');
+                Object.values(els.errors).forEach(error => error.classList.add('hidden'));
+                updateTotals();
+                updateLiveRank();
                 els.result.classList.add('hidden');
                 els.colleges.classList.add('hidden');
             });
-            els.viewColleges.addEventListener('click', renderColleges);
-            els.share.addEventListener('click', () => {
-                alert('Shareable URL: kcet2025.com/rank/' + currentRank);
+            els.edit.addEventListener('click', () => {
+                console.log('Edit button clicked');
+                els.result.classList.add('hidden');
+                els.colleges.classList.add('hidden');
             });
-            els.export.addEventListener('click', () => {
-                const element = document.createElement('div');
-                element.className = 'p-4';
-                element.innerHTML = `
-                    <h1 class="text-2xl font-bold">KCET 2025 Rank Prediction</h1>
-                    <p><strong>Rank:</strong> ${els.finalRank.textContent}</p>
-                    <p><strong>Range:</strong> ${els.rankRange.textContent}</p>
-                    <p><strong>Category:</strong> ${els.categoryDisplay.textContent}</p>
-                    <p><strong>PUC %:</strong> ${els.stepPuc.textContent.split('=')[1].trim()}</p>
-                    <p><strong>KCET %:</strong> ${els.stepKcet.textContent.split('=')[1].trim()}</p>
-                    <p><strong>Composite Score:</strong> ${els.stepComposite.textContent.split('=')[1].trim()}</p>
-                    <p><strong>Disclaimer:</strong> This is an estimate based on historical data.</p>
-                `;
-                html2pdf().from(element).save('kcet_rank_prediction.pdf');
+            els.viewColleges.addEventListener('click', () => {
+                console.log('View Colleges button clicked');
+                els.collegeList.innerHTML = colleges.map(c => `
+                    <div class="bg-gray-900 p-3 rounded text-xs sm:text-sm">
+                        <h3 class="text-base font-medium glow-text">${c.name}</h3>
+                        <p class="text-gray-300">Location: ${c.location}</p>
+                        <ul class="list-disc pl-5 mt-2">
+                            ${c.branches.map(b => `
+                                <li>${b.name}: Cutoff (${els.inputs.category.value}) ${b.cutoff[els.inputs.category.value].toLocaleString()}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `).join('');
+                els.result.classList.add('hidden');
+                els.colleges.classList.remove('hidden');
             });
             els.backToResult.addEventListener('click', () => {
+                console.log('Back to Result button clicked');
                 els.colleges.classList.add('hidden');
                 els.result.classList.remove('hidden');
             });
-            els.closeModal.addEventListener('click', () => els.modal.classList.add('hidden'));
+            els.closeModal.addEventListener('click', () => {
+                console.log('Close Modal button clicked');
+                els.modal.classList.add('hidden');
+            });
             els.trendCollege.addEventListener('change', updateTrendBranchOptions);
-            els.trendBranch.addEventListener('change', updateCutoffChart);
+            els.trendBranch.addEventListener('change', updateCutoffTable);
         }
+
+        init();
     </script>
 </body>
 </html>
