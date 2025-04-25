@@ -1104,6 +1104,22 @@
                 labelElement.className = "text-xs text-right mt-1 text-red-400";
             }
         }
+        function estimateRealisticRank(score) {
+    if (score >= 98) return 10;
+    if (score >= 96) return 50;
+    if (score >= 94) return 100;
+    if (score >= 92) return 300;
+    if (score >= 90) return 600;
+    if (score >= 88) return 1200;
+    if (score >= 85) return 2000;
+    if (score >= 80) return 4000;
+    if (score >= 75) return 7000;
+    if (score >= 70) return 10000;
+    if (score >= 65) return 15000;
+    if (score >= 60) return 20000;
+    return 30000;
+}
+
                 
         function calculateRank() {
             // Get PUC and KCET totals
@@ -1129,7 +1145,7 @@
             selectedCategory.textContent = category;
                         
             // Calculate base rank using the formula: 100000 * (1 - (Final Score / 100))
-            currentRank = Math.round(100000 * (1 - (currentFinalScore / 100)));
+            currentRank = estimateRealisticRank(currentFinalScore);
                         
             // Adjust for competition level
             if (competitionLevel === 'high') {
