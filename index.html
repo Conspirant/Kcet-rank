@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,29 +7,59 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Futura&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@300;400&display=swap');
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a0a23, #1a2a6c);
             color: #e2e8f0;
             min-height: 100vh;
             padding: 2rem;
             position: relative;
             overflow-x: hidden;
         }
+        h1, h2, .glow-text {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.05em;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        button, label, .btn {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 300;
+            text-transform: uppercase;
+        }
         .card {
-            background: linear-gradient(145deg, #1e293b, #334155);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(59, 130, 246, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: linear-gradient(145deg, #1e1e3f, #2a2a5e);
+            border: 2px solid rgba(59, 130, 246, 0.4);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(59, 130, 246, 0.2);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            animation: pulseBorder 3s infinite ease-in-out;
+        }
+        @keyframes pulseBorder {
+            0% { border-color: rgba(59, 130, 246, 0.4); }
+            50% { border-color: rgba(59, 130, 246, 0.8); }
+            100% { border-color: rgba(59, 130, 246, 0.4); }
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(59, 130, 246, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            transition: background 0.2s ease;
         }
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(59, 130, 246, 0.3);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(59, 130, 246, 0.4);
         }
         .error {
             color: #f87171;
@@ -39,15 +68,32 @@
         }
         .progress-bar {
             transition: width 0.5s ease-in-out;
-            background: linear-gradient(90deg, #3b82f6, #a855f7);
+            background: linear-gradient(90deg, #3b82f6, #a855f7, #eab308);
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(200%); }
         }
         .btn {
             position: relative;
             overflow: hidden;
-            transition: transform 0.2s ease;
+            transition: transform 0.3s ease;
+            z-index: 1;
         }
         .btn:hover {
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
         .btn::after {
             content: '';
@@ -56,42 +102,73 @@
             left: 50%;
             width: 0;
             height: 0;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            transition: width 0.4s ease, height 0.4s ease;
+            transition: width 0.5s ease, height 0.5s ease;
+            z-index: -1;
         }
         .btn:hover::after {
-            width: 200px;
-            height: 200px;
+            width: 300px;
+            height: 300px;
         }
         .disclaimer {
-            background: rgba(234, 179, 8, 0.15);
-            border-left: 4px solid #eab308;
+            background: rgba(234, 179, 8, 0.2);
+            border-left: 5px solid #eab308;
             padding: 1rem;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 0.9rem;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+            animation: pulseDisclaimer 3s infinite ease-in-out;
+        }
+        @keyframes pulseDisclaimer {
+            0% { box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(234, 179, 8, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
         }
         .glow-text {
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        .pulse {
+            animation: pulse 2s infinite ease-in-out;
         }
         @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
+            from { opacity: 0; transform: translateX(-30px); }
             to { opacity: 1; transform: translateX(0); }
         }
         .slide-in {
-            animation: slideIn 0.5s ease-out;
+            animation: slideIn 0.6s ease-out;
         }
         canvas#particles {
             position: fixed;
             top: 0;
             left: 0;
             z-index: -1;
-            opacity: 0.3;
+            opacity: 0.4;
+        }
+        .modal {
+            backdrop-filter: blur(12px);
+            background: rgba(10, 10, 35, 0.85);
+            animation: scaleIn 0.3s ease-out;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .three-canvas {
+            width: 100%;
+            height: 300px;
+            border-radius: 12px;
         }
         @media (max-width: 768px) {
             .card { padding: 1.5rem; }
-            h1 { font-size: 2rem; }
+            h1 { font-size: 2.5rem; }
+            .three-canvas { height: 200px; }
         }
     </style>
 </head>
@@ -99,28 +176,28 @@
     <!-- Particle Background -->
     <canvas id="particles"></canvas>
 
-    <div class="max-w-6xl mx-auto relative z-10">
+    <div class="max-w-7xl mx-auto relative z-10">
         <!-- Header -->
         <header class="text-center mb-12 slide-in">
-            <h1 class="text-5xl md:text-6xl font-extrabold text-white glow-text mb-3">KCET 2025 Rank Predictor</h1>
-            <p class="text-lg text-gray-300">Unlock Your Future with Precision and Style</p>
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white glow-text mb-4">KCET 2025 Rank Predictor</h1>
+            <p class="text-xl text-gray-300 font-raleway">Your Gateway to a Brilliant Future</p>
         </header>
 
-        <!-- Disclaimer -->
-        <div class="disclaimer mb-10 slide-in">
+        <!-- General Disclaimer -->
+        <div class="disclaimer mb-12 slide-in">
             <p>
-                <strong>Disclaimer:</strong> This KCET 2025 Rank Predictor provides estimates based on historical data and simplified models. Actual ranks and cutoffs may vary due to exam changes, candidate performance, or KEA policies. Use for guidance only and verify with official KEA sources.
+                <strong>Disclaimer:</strong> This KCET 2025 Rank Predictor uses historical data and advanced models to estimate ranks. Actual results may differ due to exam changes, candidate performance, or KEA policies. Verify with official KEA sources for accuracy.
             </p>
         </div>
 
         <!-- Input Section -->
-        <div class="card mb-10 slide-in">
-            <h2 class="text-3xl font-bold mb-6 text-center glow-text">Enter Your Marks</h2>
+        <div class="card mb-12 slide-in">
+            <h2 class="text-3xl font-bold mb-8 text-center glow-text">Input Your Marks</h2>
             <div class="grid md:grid-cols-2 gap-8">
                 <!-- PUC Marks -->
                 <div>
                     <h3 class="text-xl font-semibold mb-4">PUC Marks (Out of 100)</h3>
-                    <div class="space-y-5">
+                    <div class="space-y-6">
                         <div>
                             <label class="block text-sm font-medium">Physics</label>
                             <input type="number" id="pucPhysics" value="60" min="0" max="100" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
@@ -137,7 +214,7 @@
                             <div id="pucMathError" class="error hidden"></div>
                         </div>
                     </div>
-                    <div class="mt-5">
+                    <div class="mt-6">
                         <div class="flex justify-between text-sm">
                             <span>PUC Total %</span>
                             <span id="pucTotal">60%</span>
@@ -150,7 +227,7 @@
                 <!-- KCET Marks -->
                 <div>
                     <h3 class="text-xl font-semibold mb-4">KCET Marks (Out of 60)</h3>
-                    <div class="space-y-5">
+                    <div class="space-y-6">
                         <div>
                             <label class="block text-sm font-medium">Physics</label>
                             <input type="number" id="kcetPhysics" value="40" min="0" max="60" class="w-full bg-gray-900 p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white">
@@ -167,7 +244,7 @@
                             <div id="kcetMathError" class="error hidden"></div>
                         </div>
                     </div>
-                    <div class="mt-5">
+                    <div class="mt-6">
                         <div class="flex justify-between text-sm">
                             <span>KCET Total %</span>
                             <span id="kcetTotal">66.67%</span>
@@ -202,29 +279,31 @@
                     </select>
                 </div>
             </div>
-            <!-- Performance Analytics -->
-            <div class="mt-8">
-                <h3 class="text-xl font-semibold mb-4">Performance Snapshot</h3>
-                <div id="analytics" class="grid md:grid-cols-3 gap-4"></div>
-            </div>
             <!-- Live Rank -->
             <div class="mt-8 text-center">
                 <h3 class="text-xl font-semibold glow-text">Live Rank Preview</h3>
-                <p id="liveRank" class="text-3xl font-bold text-blue-300">--</p>
+                <p id="liveRank" class="text-4xl font-bold text-blue-300 pulse">--</p>
+            </div>
+            <!-- College Matchmaker Disclaimer -->
+            <div class="disclaimer mt-8 slide-in">
+                <p>
+                    <strong>College Matchmaker Disclaimer:</strong> The College Matchmaker is under development and will be fully available post-KCET 2025. The current functionality is a preview and may not reflect final results.
+                </p>
             </div>
             <!-- Buttons -->
             <div class="mt-8 flex flex-wrap justify-center gap-4">
                 <button id="calculate" class="btn bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-lg">Calculate Rank</button>
                 <button id="save" class="btn bg-green-600 hover:bg-green-700 text-white py-3 px-8 rounded-lg">Save Inputs</button>
-                <button id="studyPlan" class="btn bg-purple-600 hover:bg-purple-700 text-white py-3 px-8 rounded-lg">Generate Study Plan</button>
+                <button id="collegeMatch" class="btn bg-purple-600 hover:bg-purple-700 text-white py-3 px-8 rounded-lg">Find My College</button>
+                <button id="prepDashboard" class="btn bg-orange-600 hover:bg-orange-700 text-white py-3 px-8 rounded-lg">Preparation Dashboard</button>
             </div>
         </div>
 
         <!-- Result Section -->
-        <div id="result" class="card mb-10 hidden slide-in">
-            <h2 class="text-3xl font-bold mb-6 text-center glow-text">Your Predicted Rank</h2>
+        <div id="result" class="card mb-12 hidden slide-in">
+            <h2 class="text-3xl font-bold mb-8 text-center glow-text">Your Predicted Rank</h2>
             <div class="text-center mb-8">
-                <p class="text-5xl font-extrabold text-blue-300" id="finalRank">--</p>
+                <p class="text-6xl font-extrabold text-blue-300 pulse" id="finalRank">--</p>
                 <p class="text-gray-300 text-lg">Estimated Rank Range: <span id="rankRange">-- to --</span></p>
                 <p class="text-gray-300 text-lg">Category: <span id="categoryDisplay">GM</span></p>
             </div>
@@ -251,6 +330,11 @@
                 <h3 class="text-xl font-semibold mb-4">Score vs. Rank Curve</h3>
                 <canvas id="rankChart" class="bg-gray-900 p-4 rounded-lg"></canvas>
             </div>
+            <!-- Holographic Visualization -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Holographic Rank Visual</h3>
+                <div id="hologram" class="three-canvas"></div>
+            </div>
             <!-- Cutoff Trends -->
             <div class="mb-8">
                 <h3 class="text-xl font-semibold mb-4">Historical Cutoff Trends (2022–2024)</h3>
@@ -271,9 +355,18 @@
 
         <!-- College Suggestions -->
         <div id="colleges" class="card hidden slide-in">
-            <h2 class="text-3xl font-bold mb-6 text-center glow-text">College Suggestions</h2>
+            <h2 class="text-3xl font-bold mb-8 text-center glow-text">College Suggestions</h2>
             <div id="collegeList" class="grid md:grid-cols-2 gap-6"></div>
-            <!-- Map Placeholder -->
+            <!-- Virtual Tour -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold mb-4">Virtual Campus Tour</h3>
+                <div id="virtualTour" class="relative w-full h-64 bg-gray-900 rounded-lg overflow-hidden">
+                    <img id="tourImage" src="https://via.placeholder.com/800x400?text=Campus+Tour" class="absolute w-full h-full object-cover">
+                    <button id="panLeft" class="absolute left-4 top-1/2 transform -translate-y-1/2 btn bg-gray-600 hover:bg-gray-700 text-white p-2 rounded-full"><i class="fas fa-chevron-left"></i></button>
+                    <button id="panRight" class="absolute right-4 top-1/2 transform -translate-y-1/2 btn bg-gray-600 hover:bg-gray-700 text-white p-2 rounded-full"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <!-- Map -->
             <div class="mt-8">
                 <h3 class="text-xl font-semibold mb-4">College Locations</h3>
                 <iframe class="w-full h-64 rounded-lg" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d144.9537363153167!3d-37.81627927975159!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzfCsDQ5JzQ1LjQiUyAxNDTCsDU3JzEzLjUiRQ!5e0!3m2!1sen!2sau!4v1610000000000"></iframe>
@@ -283,15 +376,15 @@
             </div>
         </div>
 
-        <!-- Modal for Study Plan -->
-        <div id="modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50">
-            <div class="card max-w-lg w-full p-6">
-                <div class="flex justify-between mb-4">
-                    <h2 id="modalTitle" class="text-xl font-bold glow-text"></h2>
-                    <button id="closeModal" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        <!-- Modal for College Matchmaker/Prep Dashboard -->
+        <div id="modal" class="fixed inset-0 modal flex items-center justify-center hidden z-50">
+            <div class="card max-w-lg w-full p-8 relative">
+                <div class="flex justify-between mb-6">
+                    <h2 id="modalTitle" class="text-2xl font-bold glow-text"></h2>
+                    <button id="closeModal" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
                 </div>
                 <div id="modalContent" class="text-gray-200"></div>
-                <div id="modalActions" class="mt-4 flex justify-end gap-4"></div>
+                <div id="modalActions" class="mt-6 flex justify-end gap-4"></div>
             </div>
         </div>
 
@@ -303,14 +396,18 @@
                 branches: [
                     { name: "Computer Science", cutoff: { GM: 1000, OBC: 1500, SC: 5000, ST: 6000 }, trends: { 2022: 1200, 2023: 1100, 2024: 1000 } },
                     { name: "Electronics", cutoff: { GM: 3000, OBC: 4000, SC: 8000, ST: 9000 }, trends: { 2022: 3500, 2023: 3200, 2024: 3000 } }
-                ]
+                ],
+                location: "Bangalore",
+                vibe: "Tech-Focused"
             },
             {
                 name: "PES University",
                 branches: [
                     { name: "Computer Science", cutoff: { GM: 800, OBC: 1200, SC: 4000, ST: 4500 }, trends: { 2022: 900, 2023: 850, 2024: 800 } },
                     { name: "Mechanical", cutoff: { GM: 5000, OBC: 6000, SC: 10000, ST: 11000 }, trends: { 2022: 5500, 2023: 5200, 2024: 5000 } }
-                ]
+                ],
+                location: "Bangalore",
+                vibe: "Innovative"
             }
         ];
 
@@ -326,6 +423,9 @@
             { score: 50, rank: 50000 },
             { score: 40, rank: 80000 }
         ];
+
+        // Mock Test History
+        let mockTests = [];
 
         // DOM Elements
         const els = {
@@ -353,7 +453,6 @@
                 kcet: document.getElementById('kcetTotal'),
                 kcetProgress: document.getElementById('kcetProgress')
             },
-            analytics: document.getElementById('analytics'),
             liveRank: document.getElementById('liveRank'),
             result: document.getElementById('result'),
             finalRank: document.getElementById('finalRank'),
@@ -368,9 +467,15 @@
             trendBranch: document.getElementById('trendBranch'),
             colleges: document.getElementById('colleges'),
             collegeList: document.getElementById('collegeList'),
+            virtualTour: {
+                image: document.getElementById('tourImage'),
+                panLeft: document.getElementById('panLeft'),
+                panRight: document.getElementById('panRight')
+            },
             calculate: document.getElementById('calculate'),
             save: document.getElementById('save'),
-            studyPlan: document.getElementById('studyPlan'),
+            collegeMatch: document.getElementById('collegeMatch'),
+            prepDashboard: document.getElementById('prepDashboard'),
             edit: document.getElementById('edit'),
             viewColleges: document.getElementById('viewColleges'),
             share: document.getElementById('share'),
@@ -383,7 +488,8 @@
             closeModal: document.getElementById('closeModal')
         };
 
-        let rankChart, cutoffChart;
+        let rankChart, cutoffChart, hologramScene, prepChart;
+
         let currentRank = 0;
         let currentScore = 0;
 
@@ -392,9 +498,11 @@
             setupInputs();
             setupButtons();
             setupCharts();
+            setupHologram();
+            setupVirtualTour();
             setupParticles();
+            setupCardLighting();
             updateTotals();
-            updateAnalytics();
             updateLiveRank();
             updateTrendBranchOptions();
         });
@@ -407,22 +515,23 @@
             canvas.height = window.innerHeight;
 
             const particles = [];
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i = 150; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    radius: Math.random() * 2 + 1,
-                    vx: Math.random() * 0.5 - 0.25,
-                    vy: Math.random() * 0.5 - 0.25
+                    radius: Math.random() * 3 + 1,
+                    vx: Math.random() * 0.6 - 0.3,
+                    vy: Math.random() * 0.6 - 0.3,
+                    glow: Math.random() * 0.5 + 0.2
                 });
             }
 
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = 'rgba(59, 130, 246, 0.5)';
                 particles.forEach(p => {
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(59, 130, 246, ${p.glow})`;
                     ctx.fill();
                     p.x += p.vx;
                     p.y += p.vy;
@@ -432,6 +541,19 @@
                 requestAnimationFrame(animate);
             }
             animate();
+        }
+
+        // Dynamic Card Lighting
+        function setupCardLighting() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+                    card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+                });
+            });
         }
 
         // Input Handling
@@ -456,13 +578,9 @@
                         el.value = value;
                     }
                     updateTotals();
-                    updateAnalytics();
                     updateLiveRank();
                 });
             });
-
-            els.inputs.branches.addEventListener('change', updateAnalytics);
-            els.inputs.category.addEventListener('change', updateAnalytics);
         }
 
         function updateTotals() {
@@ -483,46 +601,17 @@
             els.totals.kcetProgress.style.width = kcetTotal.toFixed(2) + '%';
         }
 
-        // Performance Analytics
-        function updateAnalytics() {
-            const subjects = [
-                { name: 'PUC Physics', value: parseFloat(els.inputs.pucPhysics.value) || 0, max: 100 },
-                { name: 'PUC Chemistry', value: parseFloat(els.inputs.pucChemistry.value) || 0, max: 100 },
-                { name: 'PUC Math', value: parseFloat(els.inputs.pucMath.value) || 0, max: 100 },
-                { name: 'KCET Physics', value: parseFloat(els.inputs.kcetPhysics.value) || 0, max: 60 },
-                { name: 'KCET Chemistry', value: parseFloat(els.inputs.kcetChemistry.value) || 0, max: 60 },
-                { name: 'KCET Math', value: parseFloat(els.inputs.kcetMath.value) || 0, max: 60 }
-            ];
-
-            els.analytics.innerHTML = '';
-            subjects.forEach(subject => {
-                const percent = (subject.value / subject.max) * 100;
-                const label = percent >= 80 ? 'Excellent' : percent >= 60 ? 'Good' : percent >= 40 ? 'Average' : 'Needs Improvement';
-                const color = percent >= 80 ? 'bg-green-600' : percent >= 60 ? 'bg-blue-600' : percent >= 40 ? 'bg-yellow-600' : 'bg-red-600';
-                const div = document.createElement('div');
-                div.className = 'bg-gray-900 p-4 rounded-lg';
-                div.innerHTML = `
-                    <p class="font-semibold">${subject.name}</p>
-                    <p class="text-sm">${percent.toFixed(2)}% - ${label}</p>
-                    <div class="w-full bg-gray-800 h-2 rounded-full mt-2">
-                        <div class="${color} h-2 rounded-full" style="width: ${percent}%"></div>
-                    </div>
-                `;
-                els.analytics.appendChild(div);
-            });
-        }
-
         // Rank Calculation
-        function calculateCompositeScore() {
+        function calculateCompositeScore(pucPhysics, pucChemistry, pucMath, kcetPhysics, kcetChemistry, kcetMath) {
             const pucPercent = (
-                (parseFloat(els.inputs.pucPhysics.value) || 0) +
-                (parseFloat(els.inputs.pucChemistry.value) || 0) +
-                (parseFloat(els.inputs.pucMath.value) || 0)
+                (parseFloat(pucPhysics) || 0) +
+                (parseFloat(pucChemistry) || 0) +
+                (parseFloat(pucMath) || 0)
             ) / 3;
             const kcetPercent = (
-                (parseFloat(els.inputs.kcetPhysics.value) || 0) +
-                (parseFloat(els.inputs.kcetChemistry.value) || 0) +
-                (parseFloat(els.inputs.kcetMath.value) || 0)
+                (parseFloat(kcetPhysics) || 0) +
+                (parseFloat(kcetChemistry) || 0) +
+                (parseFloat(kcetMath) || 0)
             ) / 180 * 100;
             return { puc: pucPercent, kcet: kcetPercent, composite: (pucPercent * 0.5) + (kcetPercent * 0.5) };
         }
@@ -543,7 +632,14 @@
         }
 
         function updateLiveRank() {
-            const { composite } = calculateCompositeScore();
+            const { composite } = calculateCompositeScore(
+                els.inputs.pucPhysics.value,
+                els.inputs.pucChemistry.value,
+                els.inputs.pucMath.value,
+                els.inputs.kcetPhysics.value,
+                els.inputs.kcetChemistry.value,
+                els.inputs.kcetMath.value
+            );
             els.liveRank.textContent = estimateRank(composite).toLocaleString();
         }
 
@@ -553,7 +649,14 @@
                 return;
             }
 
-            const scores = calculateCompositeScore();
+            const scores = calculateCompositeScore(
+                els.inputs.pucPhysics.value,
+                els.inputs.pucChemistry.value,
+                els.inputs.pucMath.value,
+                els.inputs.kcetPhysics.value,
+                els.inputs.kcetChemistry.value,
+                els.inputs.kcetMath.value
+            );
             currentScore = scores.composite;
             currentRank = estimateRank(currentScore);
 
@@ -561,7 +664,7 @@
             els.finalRank.textContent = currentRank.toLocaleString();
             els.rankRange.textContent = `${(currentRank * 0.9).toFixed(0)} to ${(currentRank * 1.1).toFixed(0)}`;
             els.categoryDisplay.textContent = els.inputs.category.value;
-            els.interpretation.textContent = currentRank < 2000 ? 'Outstanding! Top-tier colleges like RVCE are within reach.' : currentRank < 10000 ? 'Great! Competitive colleges and branches available.' : 'Good! Explore Tier-2/3 colleges or less competitive branches.';
+            els.interpretation.textContent = currentRank < 2000 ? 'Elite! Top-tier colleges await you!' : currentRank < 10000 ? 'Impressive! Strong college options available.' : 'Solid! Explore diverse colleges and branches.';
 
             // Update Calculation Steps
             els.stepPuc.textContent = `(${els.inputs.pucPhysics.value} + ${els.inputs.pucChemistry.value} + ${els.inputs.pucMath.value}) / 3 = ${scores.puc.toFixed(2)}%`;
@@ -569,11 +672,12 @@
             els.stepComposite.textContent = `(${scores.puc.toFixed(2)} * 0.5) + (${scores.kcet.toFixed(2)} * 0.5) = ${currentScore.toFixed(2)}%`;
             els.stepRank.textContent = `Score ${currentScore.toFixed(2)}% maps to rank ~${currentRank.toLocaleString()} (interpolated from historical data).`;
 
-            // Update Charts
+            // Update Charts and Hologram
             rankChart.data.datasets[0].data = rankTable.map(entry => entry.rank);
             rankChart.data.datasets[1].data = rankTable.map(entry => entry.score === Math.round(currentScore) ? currentRank : null);
             rankChart.update();
             updateCutoffChart();
+            updateHologram();
 
             // Show Result
             els.result.classList.remove('hidden');
@@ -591,7 +695,7 @@
                             label: 'Rank Curve',
                             data: rankTable.map(entry => entry.rank),
                             borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.3)',
                             fill: true,
                             tension: 0.4
                         },
@@ -600,8 +704,8 @@
                             data: [],
                             borderColor: '#eab308',
                             backgroundColor: '#eab308',
-                            pointRadius: 8,
-                            pointHoverRadius: 12,
+                            pointRadius: 10,
+                            pointHoverRadius: 15,
                             showLine: false
                         }
                     ]
@@ -623,7 +727,7 @@
                         label: 'Cutoff Rank',
                         data: [],
                         borderColor: '#a855f7',
-                        backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                        backgroundColor: 'rgba(168, 85, 247, 0.3)',
                         fill: true,
                         tension: 0.4
                     }]
@@ -652,6 +756,232 @@
             const branch = college.branches.find(b => b.name === branchName);
             cutoffChart.data.datasets[0].data = [branch.trends[2022], branch.trends[2023], branch.trends[2024]];
             cutoffChart.update();
+        }
+
+        // Holographic Visualization
+        function setupHologram() {
+            const container = document.getElementById('hologram');
+            hologramScene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / 300, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(container.clientWidth, 300);
+            container.appendChild(renderer.domElement);
+
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshBasicMaterial({ color: 0x3b82f6, wireframe: true });
+            const cube = new THREE.Mesh(geometry, material);
+            hologramScene.add(cube);
+
+            camera.position.z = 2;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                renderer.render(hologramScene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                renderer.setSize(container.clientWidth, 300);
+                camera.aspect = container.clientWidth / 300;
+                camera.updateProjectionMatrix();
+            });
+
+            container.addEventListener('mousemove', e => {
+                const rect = container.getBoundingClientRect();
+                cube.rotation.x = ((e.clientY - rect.top) / rect.height - 0.5) * 0.5;
+                cube.rotation.y = ((e.clientX - rect.left) / rect.width - 0.5) * 0.5;
+            });
+        }
+
+        function updateHologram() {
+            const intensity = Math.max(0.2, 1 - currentRank / 10000);
+            hologramScene.children[0].material.color.setRGB(intensity, intensity, 1);
+        }
+
+        // Virtual Tour
+        function setupVirtualTour() {
+            let panX = 0;
+            els.virtualTour.panLeft.addEventListener('click', () => {
+                panX += 50;
+                els.virtualTour.image.style.transform = `translateX(${panX}px)`;
+            });
+            els.virtualTour.panRight.addEventListener('click', () => {
+                panX -= 50;
+                els.virtualTour.image.style.transform = `translateX(${panX}px)`;
+            });
+        }
+
+        // College Matchmaker
+        function startCollegeMatch() {
+            els.modalTitle.textContent = 'AI College Matchmaker';
+            els.modalContent.innerHTML = `
+                <p class="mb-4">Let's find your perfect college! Answer these questions:</p>
+                <div id="matchQuestions">
+                    <p class="mb-2"><strong>Preferred Location:</strong></p>
+                    <select id="matchLocation" class="w-full bg-gray-900 p-2 rounded-lg border border-gray-700 mb-4">
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <p class="mb-2"><strong>Campus Vibe:</strong></p>
+                    <select id="matchVibe" class="w-full bg-gray-900 p-2 rounded-lg border border-gray-700 mb-4">
+                        <option value="Tech-Focused">Tech-Focused</option>
+                        <option value="Innovative">Innovative</option>
+                    </select>
+                </div>
+            `;
+            els.modalActions.innerHTML = `
+                <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Cancel</button>
+                <button class="btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg" onclick="showMatchResults()">Get Matches</button>
+            `;
+            els.modal.classList.remove('hidden');
+        }
+
+        function showMatchResults() {
+            const location = document.getElementById('matchLocation').value;
+            const vibe = document.getElementById('matchVibe').value;
+            const matches = colleges.filter(c => c.location === location && c.vibe === vibe);
+            els.modalContent.innerHTML = `
+                <p class="mb-4">Here are your top college matches (Preview):</p>
+                ${matches.length > 0 ? `
+                    <ul class="list-disc pl-5">
+                        ${matches.map(c => `
+                            <li>
+                                ${c.name} (Confidence: ${Math.round(80 + Math.random() * 15)}%)
+                                <ul class="list-circle pl-5">
+                                    ${c.branches.filter(b => b.cutoff[els.inputs.category.value] > currentRank).map(b => `<li>${b.name}</li>`).join('')}
+                                </ul>
+                            </li>
+                        `).join('')}
+                    </ul>
+                ` : '<p>No exact matches found. Try adjusting preferences.</p>'}
+            `;
+            els.modalActions.innerHTML = `
+                <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Close</button>
+            `;
+        }
+
+        // Preparation Dashboard
+        function showPrepDashboard() {
+            els.modalTitle.textContent = 'KCET Preparation Dashboard';
+            els.modalContent.innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">Mock Test Simulator</h3>
+                        <p class="mb-2">Enter your latest mock test scores to predict rank improvement.</p>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm">Physics (out of 60)</label>
+                                <input type="number" id="mockPhysics" min="0" max="60" class="w-full bg-gray-900 p-2 rounded-lg border border-gray-700">
+                            </div>
+                            <div>
+                                <label class="block text-sm">Chemistry (out of 60)</label>
+                                <input type="number" id="mockChemistry" min="0" max="60" class="w-full bg-gray-900 p-2 rounded-lg border border-gray-700">
+                            </div>
+                            <div>
+                                <label class="block text-sm">Math (out of 60)</label>
+                                <input type="number" id="mockMath" min="0" max="60" class="w-full bg-gray-900 p-2 rounded-lg border border-gray-700">
+                            </div>
+                        </div>
+                        <button class="mt-4 btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg" onclick="simulateMockTest()">Simulate Rank</button>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">Progress Tracker</h3>
+                        <canvas id="prepChart" class="bg-gray-900 p-4 rounded-lg"></canvas>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">Personalized Tips</h3>
+                        <div id="prepTips" class="text-gray-300"></div>
+                    </div>
+                </div>
+            `;
+            els.modalActions.innerHTML = `
+                <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Close</button>
+            `;
+            els.modal.classList.remove('hidden');
+            setupPrepChart();
+            updatePrepTips([]);
+        }
+
+        function setupPrepChart() {
+            if (prepChart) prepChart.destroy();
+            prepChart = new Chart(document.getElementById('prepChart'), {
+                type: 'line',
+                data: {
+                    labels: mockTests.map((_, i) => `Test ${i + 1}`),
+                    datasets: [
+                        {
+                            label: 'Mock Test Score (%)',
+                            data: mockTests.map(test => test.score),
+                            borderColor: '#eab308',
+                            backgroundColor: 'rgba(234, 179, 8, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Predicted Rank',
+                            data: mockTests.map(test => test.rank),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: { title: { display: true, text: 'Score (%)', color: '#e2e8f0' }, beginAtZero: true },
+                        y1: { title: { display: true, text: 'Rank', color: '#e2e8f0' }, position: 'right', beginAtZero: false, reverse: true },
+                        x: { title: { display: true, text: 'Mock Test', color: '#e2e8f0' } }
+                    },
+                    plugins: { legend: { labels: { color: '#e2e8f0' } } }
+                }
+            });
+        }
+
+        function simulateMockTest() {
+            const physics = parseFloat(document.getElementById('mockPhysics').value) || 0;
+            const chemistry = parseFloat(document.getElementById('mockChemistry').value) || 0;
+            const math = parseFloat(document.getElementById('mockMath').value) || 0;
+
+            if (physics < 0 || physics > 60 || chemistry < 0 || chemistry > 60 || math < 0 || math > 60) {
+                alert('Please enter valid mock test scores (0–60).');
+                return;
+            }
+
+            const scores = calculateCompositeScore(
+                els.inputs.pucPhysics.value,
+                els.inputs.pucChemistry.value,
+                els.inputs.pucMath.value,
+                physics,
+                chemistry,
+                math
+            );
+            const mockScore = scores.composite;
+            const mockRank = estimateRank(mockScore);
+
+            mockTests.push({ score: mockScore, rank: mockRank, physics, chemistry, math });
+            setupPrepChart();
+            updatePrepTips([physics, chemistry, math]);
+
+            alert(`Mock Test Rank: ${mockRank.toLocaleString()}\nScore: ${mockScore.toFixed(2)}%`);
+        }
+
+        function updatePrepTips(scores) {
+            const subjects = [
+                { name: 'Physics', score: scores[0] || 0, max: 60 },
+                { name: 'Chemistry', score: scores[1] || 0, max: 60 },
+                { name: 'Math', score: scores[2] || 0, max: 60 }
+            ];
+            const weak = subjects.filter(s => (s.score / s.max) * 100 < 60);
+            els.prepTips.innerHTML = weak.length > 0 ? `
+                <p>Focus on these areas:</p>
+                <ul class="list-disc pl-5">
+                    ${weak.map(s => `<li>${s.name}: Solve 20 ${s.name.toLowerCase()} questions daily.</li>`).join('')}
+                </ul>
+            ` : '<p>Balanced performance! Keep practicing all subjects.</p>';
         }
 
         // College Suggestions
@@ -685,57 +1015,13 @@
                 <ul class="list-disc pl-5">
                     ${college.branches.map(b => `<li>${b.name}: Cutoff ${b.cutoff[els.inputs.category.value].toLocaleString()}</li>`).join('')}
                 </ul>
+                <p class="mt-4"><strong>Location:</strong> ${college.location}</p>
+                <p><strong>Vibe:</strong> ${college.vibe}</p>
             `;
             els.modalActions.innerHTML = `
                 <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Close</button>
             `;
             els.modal.classList.remove('hidden');
-        }
-
-        // Study Plan
-        function generateStudyPlan() {
-            const subjects = [
-                { name: 'PUC Physics', value: parseFloat(els.inputs.pucPhysics.value) || 0, max: 100 },
-                { name: 'PUC Chemistry', value: parseFloat(els.inputs.pucChemistry.value) || 0, max: 100 },
-                { name: 'PUC Math', value: parseFloat(els.inputs.pucMath.value) || 0, max: 100 },
-                { name: 'KCET Physics', value: parseFloat(els.inputs.kcetPhysics.value) || 0, max: 60 },
-                { name: 'KCET Chemistry', value: parseFloat(els.inputs.kcetChemistry.value) || 0, max: 60 },
-                { name: 'KCET Math', value: parseFloat(els.inputs.kcetMath.value) || 0, max: 60 }
-            ];
-            const weak = subjects.filter(s => (s.value / s.max) * 100 < 60);
-
-            els.modalTitle.textContent = 'Personalized Study Plan';
-            els.modalContent.innerHTML = `
-                <p class="mb-4">Focus on these areas to boost your KCET rank:</p>
-                ${weak.length > 0 ? `
-                    <h3 class="font-semibold mb-2">Weak Subjects:</h3>
-                    <ul class="list-disc pl-5 mb-4">
-                        ${weak.map(s => `<li>${s.name}: Allocate 2 extra hours daily.</li>`).join('')}
-                    </ul>
-                ` : '<p>All subjects are strong! Maintain consistency.</p>'}
-                <h3 class="font-semibold mb-2">Daily Schedule:</h3>
-                <ul class="list-disc pl-5">
-                    <li>4 hours: Core subject revision</li>
-                    <li>2 hours: Solve past KCET papers</li>
-                    <li>1 hour: Mock tests</li>
-                    <li>1 hour: Formula review</li>
-                </ul>
-            `;
-            els.modalActions.innerHTML = `
-                <button class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg" onclick="els.modal.classList.add('hidden')">Close</button>
-                <button class="btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg" onclick="exportStudyPlan()">Export Plan</button>
-            `;
-            els.modal.classList.remove('hidden');
-        }
-
-        function exportStudyPlan() {
-            const element = document.createElement('div');
-            element.className = 'p-4';
-            element.innerHTML = `
-                <h1 class="text-2xl font-bold">KCET 2025 Study Plan</h1>
-                ${els.modalContent.innerHTML}
-            `;
-            html2pdf().from(element).save('kcet_study_plan.pdf');
         }
 
         // Button Actions
@@ -755,7 +1041,8 @@
                 localStorage.setItem('kcetData', JSON.stringify(data));
                 alert('Inputs saved!');
             });
-            els.studyPlan.addEventListener('click', generateStudyPlan);
+            els.collegeMatch.addEventListener('click', startCollegeMatch);
+            els.prepDashboard.addEventListener('click', showPrepDashboard);
             els.edit.addEventListener('click', () => {
                 els.result.classList.add('hidden');
                 els.colleges.classList.add('hidden');
