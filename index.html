@@ -6,6 +6,7 @@
     <title>KCET 2025 Rank Predictor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
         :root {
@@ -13,6 +14,7 @@
             --secondary: #c71585;
             --primary-light: rgba(100, 149, 237, 0.3);
             --secondary-light: rgba(199, 21, 133, 0.3);
+            --gradient-angle: 135deg;
         }
         [data-theme="purple"] {
             --primary: #7b2cbf;
@@ -22,16 +24,38 @@
         }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a2b, #1e1e5c, #2a1a8c);
+            background: linear-gradient(var(--gradient-angle), #0a0a2b, #1e1e5c, #2a1a8c);
             color: #e2e8f0;
             min-height: 100vh;
             padding: 1rem;
             overflow-x: hidden;
             position: relative;
+            animation: hueShift 20s infinite linear;
+        }
+        @keyframes hueShift {
+            0%, 100% { --gradient-angle: 135deg; }
+            50% { --gradient-angle: 145deg; }
         }
         h1, h2, h3 {
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
+            position: relative;
+        }
+        h1::after, h2::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            top: -4px;
+            right: -4px;
+            box-shadow: 0 0 8px var(--primary);
+            animation: sparkle 2s infinite ease-in-out;
+        }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
         }
         .card {
             background: rgba(20, 20, 50, 0.85);
@@ -123,6 +147,11 @@
         .modal {
             background: rgba(10, 10, 40, 0.95);
             backdrop-filter: blur(18px);
+            animation: modalFadeIn 0.5s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
         }
         .tips-widget {
             position: fixed;
@@ -137,6 +166,24 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 0 10px var(--primary-light);
+            position: relative;
+        }
+        .cutoff-table::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            opacity: 0.3;
+            pointer-events: none;
+            animation: neon 3s infinite ease-in-out;
+        }
+        @keyframes neon {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
         }
         .cutoff-table th, .cutoff-table td {
             padding: 0.75rem;
@@ -171,10 +218,10 @@
             border-color: var(--primary);
         }
         .glow-text {
-            text-shadow: 0 0 10px var(--primary), 0 0 14px var(--secondary);
+            text-shadow: 0 0 14px var(--primary), 0 0 18px var(--secondary);
         }
         .particles {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -188,18 +235,21 @@
             height: 2px;
             background: var(--primary);
             border-radius: 50%;
-            animation: float 12s infinite linear;
-            box-shadow: 0 0 10px var(--primary-light);
+            box-shadow: 0 0 12px var(--primary-light);
         }
         .particle:nth-child(odd) {
+            width: 4px;
+            height: 4px;
+            background: var(--secondary);
+        }
+        .particle:nth-child(3n) {
             width: 3px;
             height: 3px;
-            background: var(--secondary);
-            animation-duration: 15s;
+            opacity: 0.6;
         }
         @keyframes float {
             0% { transform: translateY(100vh) scale(1); opacity: 0.8; }
-            100% { transform: translateY(-100vh) scale(0.4); opacity: 0; }
+            100% { transform: translateY(-100vh) scale(0.3); opacity: 0; }
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px) scale(0.9); }
@@ -220,8 +270,7 @@
             .grid-cols-2 { grid-template-columns: 1fr; }
             select, input { font-size: 0.875rem; }
             .cutoff-table th, .cutoff-table td { padding: 0.5rem; font-size: 0.7rem; }
-            .particle { display: none; }
-            .btn-pulse { animation: none; }
+            .particle, .btn-pulse, h1::after, h2::after { display: none; animation: none; }
         }
         @media (min-width: 641px) {
             body { padding: 1.5rem; }
@@ -232,18 +281,7 @@
     </style>
 </head>
 <body>
-    <div class="particles">
-        <div class="particle" style="left: 5%; animation-delay: 0s;"></div>
-        <div class="particle" style="left: 15%; animation-delay: 1s;"></div>
-        <div class="particle" style="left: 25%; animation-delay: 2s;"></div>
-        <div class="particle" style="left: 35%; animation-delay: 3s;"></div>
-        <div class="particle" style="left: 45%; animation-delay: 4s;"></div>
-        <div class="particle" style="left: 55%; animation-delay: 5s;"></div>
-        <div class="particle" style="left: 65%; animation-delay: 6s;"></div>
-        <div class="particle" style="left: 75%; animation-delay: 7s;"></div>
-        <div class="particle" style="left: 85%; animation-delay: 8s;"></div>
-        <div class="particle" style="left: 95%; animation-delay: 9s;"></div>
-    </div>
+    <div class="particles" id="particles"></div>
     <div class="max-w-5xl mx-auto">
         <header class="text-center mb-6 animate-fade-in">
             <div class="flex justify-end mb-2">
@@ -255,6 +293,7 @@
 
         <div class="disclaimer mb-6 animate-fade-in">
             <p><strong>Disclaimer:</strong> This tool uses sample data for predictions. Actual results may vary. Verify with official KEA sources.</p>
+            <p id="apiWarning" class="hidden text-yellow-300 mt-2">Using static data due to API unavailability.</p>
         </div>
 
         <div class="card mb-6 animate-fade-in">
@@ -316,7 +355,9 @@
                 <button id="calculate" class="btn btn-pulse text-white">Calculate Rank</button>
                 <button id="save" class="btn btn-pulse text-white">Save Inputs</button>
                 <button id="collegeMatch" class="btn btn-pulse text-white">Find Colleges</button>
+                <button id="branchPredict" class="btn btn-pulse text-white">Predict Branches</button>
                 <button id="studyPlan" class="btn btn-pulse text-white">Study Plan</button>
+                <button id="analytics" class="btn btn-pulse text-white">Analytics</button>
                 <button id="reset" class="btn btn-pulse text-white">Reset</button>
             </div>
         </div>
@@ -392,42 +433,71 @@
     <script>
         console.log('Initializing KCET Rank Predictor...');
 
-        const colleges = [
+        let colleges = [
             {
                 name: "RV College of Engineering",
                 branches: [
-                    { name: "Computer Science", cutoff: { GM: 1000, OBC: 1500, SC: 5000, ST: 6000 }, trends: { 2022: 1200, 2023: 1100, 2024: 1000 } },
-                    { name: "Electronics", cutoff: { GM: 3000, OBC: 4000, SC: 8000, ST: 9000 }, trends: { 2022: 3500, 2023: 3200, 2024: 3000 } }
+                    { 
+                        name: "Computer Science", 
+                        cutoff: { GM: 1000, OBC: 1500, SC: 5000, ST: 6000 }, 
+                        trends: { 2022: 1200, 2023: 1100, 2024: 1000 },
+                        demand: "High", 
+                        placement: "95%" 
+                    },
+                    { 
+                        name: "Electronics", 
+                        cutoff: { GM: 3000, OBC: 4000, SC: 8000, ST: 9000 }, 
+                        trends: { 2022: 3500, 2023: 3200, 2024: 3000 },
+                        demand: "Medium", 
+                        placement: "85%" 
+                    }
                 ],
                 location: "Bangalore"
             },
             {
                 name: "PES University",
                 branches: [
-                    { name: "Computer Science", cutoff: { GM: 800, OBC: 1200, SC: 4000, ST: 4500 }, trends: { 2022: 900, 2023: 850, 2024: 800 } },
-                    { name: "Mechanical", cutoff: { GM: 5000, OBC: 6000, SC: 10000, ST: 11000 }, trends: { 2022: 5500, 2023: 5200, 2024: 5000 } }
+                    { 
+                        name: "Computer Science", 
+                        cutoff: { GM: 800, OBC: 1200, SC: 4000, ST: 4500 }, 
+                        trends: { 2022: 900, 2023: 850, 2024: 800 },
+                        demand: "High", 
+                        placement: "92%" 
+                    },
+                    { 
+                        name: "Mechanical", 
+                        cutoff: { GM: 5000, OBC: 6000, SC: 10000, ST: 11000 }, 
+                        trends: { 2022: 5500, 2023: 5200, 2024: 5000 },
+                        demand: "Low", 
+                        placement: "75%" 
+                    }
                 ],
                 location: "Bangalore"
             }
         ];
 
         const rankTable = [
-            { score: 97.5, rank: 250 }, { score: 95, rank: 500 }, { score: 92.5, rank: 750 },
-            { score: 90, rank: 1000 }, { score: 87.5, rank: 2000 }, { score: 85, rank: 3000 },
-            { score: 82.5, rank: 4000 }, { score: 80, rank: 5000 }, { score: 77.5, rank: 7500 },
-            { score: 75, rank: 10000 }, { score: 72.5, rank: 12500 }, { score: 70, rank: 15000 },
-            { score: 67.5, rank: 20000 }, { score: 65, rank: 25000 }, { score: 62.5, rank: 30000 },
-            { score: 60, rank: 35000 }, { score: 57.5, rank: 40000 }, { score: 55, rank: 45000 },
-            { score: 52.5, rank: 50000 }, { score: 50, rank: 60000 }, { score: 47.5, rank: 70000 },
-            { score: 45, rank: 80000 }, { score: 42.5, rank: 90000 }, { score: 40, rank: 100000 }
+            { score: 100, rank: 100 }, { score: 99, rank: 150 }, { score: 98, rank: 200 }, { score: 97, rank: 300 },
+            { score: 96, rank: 400 }, { score: 95, rank: 500 }, { score: 94, rank: 600 }, { score: 93, rank: 750 },
+            { score: 92, rank: 900 }, { score: 91, rank: 1100 }, { score: 90, rank: 1300 }, { score: 89, rank: 1500 },
+            { score: 88, rank: 1800 }, { score: 87, rank: 2100 }, { score: 86, rank: 2500 }, { score: 85, rank: 3000 },
+            { score: 84, rank: 3500 }, { score: 83, rank: 4000 }, { score: 82, rank: 4500 }, { score: 81, rank: 5000 },
+            { score: 80, rank: 5500 }, { score: 79, rank: 6000 }, { score: 78, rank: 6500 }, { score: 77, rank: 7000 },
+            { score: 76, rank: 8000 }, { score: 75, rank: 9000 }, { score: 74, rank: 10000 }, { score: 73, rank: 11000 },
+            { score: 72, rank: 12000 }, { score: 71, rank: 13000 }, { score: 70, rank: 14000 }, { score: 69, rank: 15000 },
+            { score: 68, rank: 16000 }, { score: 67, rank: 18000 }, { score: 66, rank: 20000 }, { score: 65, rank: 22000 },
+            { score: 64, rank: 24000 }, { score: 63, rank: 26000 }, { score: 62, rank: 28000 }, { score: 61, rank: 30000 },
+            { score: 60, rank: 32000 }, { score: 59, rank: 35000 }, { score: 58, rank: 38000 }, { score: 57, rank: 41000 },
+            { score: 56, rank: 44000 }, { score: 55, rank: 47000 }, { score: 54, rank: 50000 }, { score: 53, rank: 53000 },
+            { score: 52, rank: 56000 }, { score: 51, rank: 59000 }, { score: 50, rank: 62000 }, { score: 49, rank: 65000 },
+            { score: 48, rank: 68000 }, { score: 47, rank: 71000 }, { score: 46, rank: 74000 }, { score: 45, rank: 77000 },
+            { score: 44, rank: 80000 }, { score: 43, rank: 83000 }, { score: 42, rank: 86000 }, { score: 41, rank: 89000 },
+            { score: 40, rank: 92000 }, { score: 39, rank: 95000 }, { score: 38, rank: 98000 }, { score: 37, rank: 101000 },
+            { score: 36, rank: 104000 }, { score: 35, rank: 107000 }, { score: 34, rank: 110000 }, { score: 33, rank: 115000 },
+            { score: 32, rank: 120000 }, { score: 31, rank: 125000 }, { score: 30, rank: 130000 }, { score: 29, rank: 135000 },
+            { score: 28, rank: 140000 }, { score: 27, rank: 145000 }, { score: 26, rank: 150000 }, { score: 25, rank: 155000 },
+            { score: 24, rank: 160000 }, { score: 23, rank: 165000 }, { score: 22, rank: 170000 }, { score: 20, rank: 175000 }
         ];
-
-        const categoryModifiers = {
-            GM: 1,
-            OBC: 0.9,
-            SC: 0.7,
-            ST: 0.65
-        };
 
         const tips = [
             'Practice 10 MCQs daily per subject.',
@@ -438,6 +508,7 @@
         ];
 
         let currentRank = 0;
+        let predictions = JSON.parse(localStorage.getItem('kcetPredictions')) || [];
 
         const els = {
             inputs: {
@@ -473,7 +544,9 @@
             calculate: document.getElementById('calculate'),
             save: document.getElementById('save'),
             collegeMatch: document.getElementById('collegeMatch'),
+            branchPredict: document.getElementById('branchPredict'),
             studyPlan: document.getElementById('studyPlan'),
+            analytics: document.getElementById('analytics'),
             reset: document.getElementById('reset'),
             edit: document.getElementById('edit'),
             viewColleges: document.getElementById('viewColleges'),
@@ -485,6 +558,7 @@
             modalActions: document.getElementById('modalActions'),
             closeModal: document.getElementById('closeModal'),
             themeToggle: document.getElementById('themeToggle'),
+            apiWarning: document.getElementById('apiWarning'),
             tipsBtn: document.getElementById('tipsBtn'),
             tipsContent: document.getElementById('tipsContent'),
             tipText: document.getElementById('tipText')
@@ -492,14 +566,17 @@
 
         function init() {
             console.log('Setting up...');
+            if (!els.calculate) console.error('Calculate button not found');
             loadSavedInputs();
+            fetchCutoffs();
             setupInputs();
             setupButtons();
             setupTipsWidget();
             setupTheme();
+            setupParticles();
             updateTotals();
             updateLiveRank();
-            updateTrendBranchOptions();
+            updateTrendCollegeOptions();
         }
 
         function loadSavedInputs() {
@@ -514,13 +591,53 @@
             }
         }
 
+        async function fetchCutoffs() {
+            console.log('Fetching cutoffs...');
+            try {
+                // Mock API (replace with real endpoint if available)
+                const response = await fetch('https://api.example.com/kcet-cutoffs', { method: 'GET' });
+                if (!response.ok) throw new Error('API fetch failed');
+                colleges = await response.json();
+                els.apiWarning.classList.add('hidden');
+                console.log('Cutoffs fetched:', colleges);
+            } catch (err) {
+                console.warn('API error, using static data:', err);
+                els.apiWarning.classList.remove('hidden');
+            }
+            updateTrendCollegeOptions();
+        }
+
+        function setupParticles() {
+            const container = document.getElementById('particles');
+            const particles = 12;
+            for (let i = 0; i < particles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animation = `float ${10 + Math.random() * 4}s infinite linear`;
+                particle.style.animationDelay = `${Math.random() * 10}s`;
+                container.appendChild(particle);
+            }
+            let isScrolling;
+            window.addEventListener('scroll', () => {
+                clearTimeout(isScrolling);
+                container.style.display = 'none';
+                isScrolling = setTimeout(() => {
+                    container.style.display = 'block';
+                }, 150);
+            });
+        }
+
         function setupInputs() {
             const inputConfigs = [
                 { el: els.inputs.pucTotal, error: els.errors.pucTotal, max: 300 },
                 { el: els.inputs.kcetTotal, error: els.errors.kcetTotal, max: 180 }
             ];
             inputConfigs.forEach(({ el, error, max }) => {
-                if (!el || !error) return;
+                if (!el || !error) {
+                    console.error(`Input or error element missing for max ${max}`);
+                    return;
+                }
                 el.addEventListener('input', () => {
                     const value = parseFloat(el.value) || 0;
                     if (value < 0 || value > max || isNaN(value)) {
@@ -557,29 +674,46 @@
         }
 
         function calculateCompositeScore(pucTotal, kcetTotal) {
+            console.log('Calculating composite score:', { pucTotal, kcetTotal });
             const pucPercent = (parseFloat(pucTotal) || 0) / 300 * 100;
             const kcetPercent = (parseFloat(kcetTotal) || 0) / 180 * 100;
-            return { puc: pucPercent, kcet: kcetPercent, composite: (pucPercent * 0.5) + (kcetPercent * 0.5) };
+            const normalization = 1 - 0.1 * Math.abs(pucPercent - kcetPercent) / 100;
+            const composite = ((pucPercent * 0.4) + (kcetPercent * 0.6)) * normalization;
+            console.log('Composite score result:', { pucPercent, kcetPercent, normalization, composite });
+            return { puc: pucPercent, kcet: kcetPercent, composite, normalization };
+        }
+
+        function getCategoryModifier(score, category) {
+            const baseModifiers = { GM: 1, OBC: 0.92, SC: 0.75, ST: 0.7 };
+            const scoreFactor = score < 60 ? 0.85 : score < 80 ? 0.9 : 0.95;
+            const modifier = baseModifiers[category] * scoreFactor;
+            console.log('Category modifier:', { score, category, modifier });
+            return modifier;
         }
 
         function estimateRank(score, category) {
-            if (score >= rankTable[0].score) return Math.round(rankTable[0].rank * categoryModifiers[category]);
-            if (score <= rankTable[rankTable.length - 1].score) return Math.round(rankTable[rankTable.length - 1].rank * categoryModifiers[category]);
+            console.log('Estimating rank:', { score, category });
+            if (isNaN(score) || score < 0) return 175000;
+            if (score >= rankTable[0].score) return Math.round(rankTable[0].rank * getCategoryModifier(score, category));
+            if (score <= rankTable[rankTable.length - 1].score) return Math.round(rankTable[rankTable.length - 1].rank * getCategoryModifier(score, category));
             for (let i = 0; i < rankTable.length - 1; i++) {
                 const high = rankTable[i];
                 const low = rankTable[i + 1];
                 if (score <= high.score && score > low.score) {
                     const fraction = (high.score - score) / (high.score - low.score);
                     const baseRank = high.rank + fraction * (low.rank - high.rank);
-                    const logisticFactor = 1 / (1 + Math.exp(-0.1 * (score - 70)));
-                    const adjustedRank = baseRank * (1 - 0.2 * logisticFactor);
-                    return Math.round(adjustedRank * categoryModifiers[category]);
+                    const logisticFactor = 1 / (1 + Math.exp(-0.12 * (score - 70)));
+                    const adjustedRank = baseRank * (1 - 0.25 * logisticFactor);
+                    const finalRank = Math.round(adjustedRank * getCategoryModifier(score, category));
+                    console.log('Rank calculated:', { baseRank, logisticFactor, adjustedRank, finalRank });
+                    return finalRank;
                 }
             }
-            return 100000;
+            return 175000;
         }
 
         function updateLiveRank() {
+            console.log('Updating live rank');
             const { composite } = calculateCompositeScore(
                 els.inputs.pucTotal.value,
                 els.inputs.kcetTotal.value
@@ -588,45 +722,101 @@
         }
 
         function calculateRank() {
-            console.log('Calculate button clicked');
-            if (Object.values(els.errors).some(error => !error.classList.contains('hidden'))) {
-                alert('Please correct input errors.');
-                return;
+            console.log('Calculate Rank button clicked');
+            try {
+                // Validate inputs
+                const pucTotal = parseFloat(els.inputs.pucTotal.value) || 0;
+                const kcetTotal = parseFloat(els.inputs.kcetTotal.value) || 0;
+                const category = els.inputs.category.value;
+                console.log('Inputs:', { pucTotal, kcetTotal, category });
+
+                if (pucTotal < 0 || pucTotal > 300 || isNaN(pucTotal)) {
+                    els.errors.pucTotal.textContent = 'Enter 0–300';
+                    els.errors.pucTotal.classList.remove('hidden');
+                    throw new Error('Invalid PUC total');
+                }
+                if (kcetTotal < 0 || kcetTotal > 180 || isNaN(kcetTotal)) {
+                    els.errors.kcetTotal.textContent = 'Enter 0–180';
+                    els.errors.kcetTotal.classList.remove('hidden');
+                    throw new Error('Invalid KCET total');
+                }
+                if (!['GM', 'OBC', 'SC', 'ST'].includes(category)) {
+                    throw new Error('Invalid category');
+                }
+
+                // Clear errors
+                els.errors.pucTotal.classList.add('hidden');
+                els.errors.kcetTotal.classList.add('hidden');
+
+                // Calculate scores
+                const scores = calculateCompositeScore(pucTotal, kcetTotal);
+                currentRank = estimateRank(scores.composite, category);
+                console.log('Final rank:', currentRank);
+
+                // Update DOM
+                if (!els.finalRank || !els.rankRange || !els.categoryDisplay) {
+                    throw new Error('Result elements missing');
+                }
+                els.finalRank.textContent = currentRank.toLocaleString();
+                els.rankRange.textContent = `${Math.round(currentRank * 0.97)} to ${Math.round(currentRank * 1.03)}`;
+                els.categoryDisplay.textContent = category;
+                els.stepPuc.textContent = `${pucTotal} / 300 * 100 = ${scores.puc.toFixed(2)}%`;
+                els.stepKcet.textContent = `${kcetTotal} / 180 * 100 = ${scores.kcet.toFixed(2)}%`;
+                els.stepComposite.textContent = `(${scores.puc.toFixed(2)} * 0.4) + (${scores.kcet.toFixed(2)} * 0.6) * ${scores.normalization.toFixed(2)} = ${scores.composite.toFixed(2)}%`;
+
+                // Handle previous rank comparison
+                const prevRank = parseFloat(els.inputs.prevRank.value) || 0;
+                if (prevRank > 0) {
+                    const diff = prevRank - currentRank;
+                    els.rankComparison.textContent = `Compared to previous rank (${prevRank.toLocaleString()}): ${diff > 0 ? 'Improved by' : 'Declined by'} ${Math.abs(diff).toLocaleString()} ranks`;
+                    els.rankComparison.classList.remove('hidden');
+                } else {
+                    els.rankComparison.classList.add('hidden');
+                }
+
+                // Save prediction
+                predictions.push({
+                    timestamp: new Date().toISOString(),
+                    pucPercent: scores.puc,
+                    kcetPercent: scores.kcet,
+                    category,
+                    rank: currentRank
+                });
+                localStorage.setItem('kcetPredictions', JSON.stringify(predictions));
+
+                // Update cutoff table and show result
+                updateCutoffTable();
+                if (els.result) {
+                    els.result.classList.remove('hidden');
+                    els.colleges.classList.add('hidden');
+                } else {
+                    throw new Error('Result container missing');
+                }
+            } catch (err) {
+                console.error('Calculate Rank error:', err);
+                alert('Error calculating rank: ' + err.message);
             }
-            const scores = calculateCompositeScore(
-                els.inputs.pucTotal.value,
-                els.inputs.kcetTotal.value
-            );
-            currentRank = estimateRank(scores.composite, els.inputs.category.value);
-            els.finalRank.textContent = currentRank.toLocaleString();
-            els.rankRange.textContent = `${(currentRank * 0.95).toFixed(0)} to ${(currentRank * 1.05).toFixed(0)}`;
-            els.categoryDisplay.textContent = els.inputs.category.value;
-            els.stepPuc.textContent = `${els.inputs.pucTotal.value} / 300 * 100 = ${scores.puc.toFixed(2)}%`;
-            els.stepKcet.textContent = `${els.inputs.kcetTotal.value} / 180 * 100 = ${scores.kcet.toFixed(2)}%`;
-            els.stepComposite.textContent = `(${scores.puc.toFixed(2)} * 0.5) + (${scores.kcet.toFixed(2)} * 0.5) = ${scores.composite.toFixed(2)}%`;
-            const prevRank = parseFloat(els.inputs.prevRank.value) || 0;
-            if (prevRank > 0) {
-                const diff = prevRank - currentRank;
-                els.rankComparison.textContent = `Compared to previous rank (${prevRank.toLocaleString()}): ${diff > 0 ? 'Improved by' : 'Declined by'} ${Math.abs(diff).toLocaleString()} ranks`;
-                els.rankComparison.classList.remove('hidden');
-            } else {
-                els.rankComparison.classList.add('hidden');
-            }
-            updateCutoffTable();
-            els.result.classList.remove('hidden');
-            els.colleges.classList.add('hidden');
         }
 
         function updateCutoffTable() {
-            const collegeName = els.trendCollege.value;
-            const branchName = els.trendBranch.value;
-            const college = colleges.find(c => c.name === collegeName);
-            const branch = college.branches.find(b => b.name === branchName);
-            els.cutoffTableBody.innerHTML = `
-                <tr><td>2022</td><td>${branch.trends[2022].toLocaleString()}</td></tr>
-                <tr><td>2023</td><td>${branch.trends[2023].toLocaleString()}</td></tr>
-                <tr><td>2024</td><td>${branch.trends[2024].toLocaleString()}</td></tr>
-            `;
+            try {
+                const collegeName = els.trendCollege.value;
+                const branchName = els.trendBranch.value;
+                const college = colleges.find(c => c.name === collegeName);
+                const branch = college.branches.find(b => b.name === branchName);
+                els.cutoffTableBody.innerHTML = `
+                    <tr><td>2022</td><td>${branch.trends[2022].toLocaleString()}</td></tr>
+                    <tr><td>2023</td><td>${branch.trends[2023].toLocaleString()}</td></tr>
+                    <tr><td>2024</td><td>${branch.trends[2024].toLocaleString()}</td></tr>
+                `;
+            } catch (err) {
+                console.error('Cutoff table error:', err);
+            }
+        }
+
+        function updateTrendCollegeOptions() {
+            els.trendCollege.innerHTML = colleges.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            updateTrendBranchOptions();
         }
 
         function updateTrendBranchOptions() {
@@ -691,6 +881,79 @@
             els.modal.classList.remove('hidden');
         }
 
+        function startBranchPredictor() {
+            console.log('Branch Predictor button clicked');
+            els.modalTitle.textContent = 'Branch Predictor';
+            els.modalContent.innerHTML = `
+                <p class="mb-3">Select preferences to find achievable branches:</p>
+                <div class="mb-3">
+                    <label class="block text-xs sm:text-sm font-medium mb-2">Preferred College</label>
+                    <select id="branchCollege" class="w-full p-2 rounded text-xs sm:text-sm">
+                        <option value="all">All Colleges</option>
+                        ${colleges.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs sm:text-sm font-medium mb-2">Location</label>
+                    <select id="branchLocation" class="w-full p-2 rounded text-xs sm:text-sm">
+                        <option value="all">All Locations</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            `;
+            els.modalActions.innerHTML = `
+                <button class="btn btn-pulse text-white" onclick="els.modal.classList.add('hidden')">Cancel</button>
+                <button class="btn btn-pulse text-white" onclick="showBranchResults()">Predict Branches</button>
+            `;
+            els.modal.classList.remove('hidden');
+        }
+
+        function showBranchResults() {
+            console.log('Showing branch predictor results');
+            const college = document.getElementById('branchCollege').value;
+            const location = document.getElementById('branchLocation').value;
+            const category = els.inputs.category.value;
+            let filteredColleges = colleges;
+            if (college !== 'all') filteredColleges = filteredColleges.filter(c => c.name === college);
+            if (location !== 'all') filteredColleges = filteredColleges.filter(c => c.location === location);
+            const branches = [];
+            filteredColleges.forEach(c => {
+                c.branches.forEach(b => {
+                    const cutoff = b.cutoff[category];
+                    const likelihood = currentRank < cutoff * 0.8 ? 'High' : currentRank < cutoff * 1.2 ? 'Medium' : 'Low';
+                    branches.push({
+                        college: c.name,
+                        branch: b.name,
+                        cutoff,
+                        likelihood,
+                        demand: b.demand,
+                        placement: b.placement
+                    });
+                });
+            });
+            branches.sort((a, b) => a.likelihood === 'High' ? -1 : b.likelihood === 'High' ? 1 : a.cutoff - b.cutoff);
+            els.modalContent.innerHTML = `
+                <p class="mb-3">Achievable branches for rank ${currentRank.toLocaleString()} (${category}):</p>
+                ${branches.length ? `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        ${branches.map(b => `
+                            <div class="bg-gray-900 p-3 rounded text-xs sm:text-sm">
+                                <h3 class="text-base font-medium glow-text">${b.branch}</h3>
+                                <p class="text-gray-300">College: ${b.college}</p>
+                                <p class="text-gray-300">Cutoff: ${b.cutoff.toLocaleString()}</p>
+                                <p class="text-gray-300">Likelihood: <span class="${b.likelihood === 'High' ? 'text-green-400' : b.likelihood === 'Medium' ? 'text-yellow-400' : 'text-red-400'}">${b.likelihood}</span></p>
+                                <p class="text-gray-300">Demand: ${b.demand}</p>
+                                <p class="text-gray-300">Placement: ${b.placement}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : '<p>No branches found. Try adjusting preferences or improving your rank.</p>'}
+            `;
+            els.modalActions.innerHTML = `<button class="btn btn-pulse text-white" onclick="els.modal.classList.add('hidden')">Close</button>`;
+            els.modal.classList.remove('hidden');
+        }
+
         function generateStudyPlan() {
             console.log('Study Plan button clicked');
             const pucPercent = (parseFloat(els.inputs.pucTotal.value) || 0) / 300 * 100;
@@ -712,29 +975,144 @@
             els.modal.classList.remove('hidden');
         }
 
+        function showAnalytics() {
+            console.log('Analytics button clicked');
+            els.modalTitle.textContent = 'Rank Trends Analytics';
+            els.modalContent.innerHTML = `
+                <p class="mb-3">View your rank trends over time:</p>
+                <canvas id="rankChart" class="w-full h-64"></canvas>
+                <div class="mt-3">
+                    <label class="block text-xs sm:text-sm font-medium mb-2">Filter by Category</label>
+                    <select id="chartCategory" class="w-full p-2 rounded text-xs sm:text-sm">
+                        <option value="all">All Categories</option>
+                        <option value="GM">General Merit</option>
+                        <option value="OBC">OBC</option>
+                        <option value="SC">SC</option>
+                        <option value="ST">ST</option>
+                    </select>
+                </div>
+            `;
+            els.modalActions.innerHTML = `
+                <button class="btn btn-pulse text-white" onclick="els.modal.classList.add('hidden')">Close</button>
+                <button class="btn btn-pulse text-white" onclick="clearPredictions()">Clear Data</button>
+            `;
+            els.modal.classList.remove('hidden');
+            renderChart();
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('rankChart').getContext('2d');
+            const filterCategory = document.getElementById('chartCategory').value;
+            const filteredPredictions = filterCategory === 'all' ? predictions : predictions.filter(p => p.category === filterCategory);
+            const labels = filteredPredictions.map(p => new Date(p.timestamp).toLocaleDateString());
+            const data = filteredPredictions.map(p => p.rank);
+            const theme = document.documentElement.getAttribute('data-theme');
+            const primaryColor = theme === 'purple' ? '#7b2cbf' : '#6495ed';
+            try {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Predicted Rank',
+                            data: data,
+                            borderColor: primaryColor,
+                            backgroundColor: `${primaryColor}33`,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: false, title: { display: true, text: 'Rank', color: '#e2e8f0' }, ticks: { color: '#e2e8f0' } },
+                            x: { title: { display: true, text: 'Date', color: '#e2e8f0' }, ticks: { color: '#e2e8f0' } }
+                        },
+                        plugins: {
+                            legend: { labels: { color: '#e2e8f0' } },
+                            tooltip: { backgroundColor: '#1a1a3d', titleColor: '#e2e8f0', bodyColor: '#e2e8f0' }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error('Chart rendering error:', err);
+                els.modalContent.innerHTML += '<p class="text-red-300 mt-2">Failed to render chart. Please try again.</p>';
+            }
+            document.getElementById('chartCategory').addEventListener('change', () => {
+                ctx.canvas.remove();
+                els.modalContent.querySelector('#rankChart').outerHTML = '<canvas id="rankChart" class="w-full h-64"></canvas>';
+                renderChart();
+            });
+        }
+
+        function clearPredictions() {
+            console.log('Clear predictions clicked');
+            predictions = [];
+            localStorage.setItem('kcetPredictions', JSON.stringify(predictions));
+            els.modalContent.innerHTML = '<p class="text-gray-300">Prediction data cleared. Make new predictions to view trends.</p>';
+            els.modalActions.innerHTML = `<button class="btn btn-pulse text-white" onclick="els.modal.classList.add('hidden')">Close</button>`;
+        }
+
         function downloadPdf() {
             console.log('Download PDF button clicked');
-            const element = els.result.cloneNode(true);
-            element.classList.remove('hidden');
-            element.style.background = 'rgba(20, 20, 50, 0.95)';
-            element.style.border = 'none';
-            element.style.boxShadow = 'none';
-            element.style.padding = '1rem';
+            const element = document.createElement('div');
+            element.style.padding = '1in';
+            element.style.background = '#1a1a3d';
             element.style.color = '#e2e8f0';
-            element.querySelectorAll('.btn').forEach(btn => btn.remove());
-            const opt = {
-                margin: 0.5,
-                filename: 'KCET_2025_Rank_Prediction.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-            try {
-                html2pdf().set(opt).from(element).save();
-            } catch (err) {
-                console.error('PDF generation error:', err);
-                alert('Failed to generate PDF. Please try again.');
-            }
+            element.style.fontFamily = 'Inter, sans-serif';
+            const timestamp = new Date().toLocaleString();
+            const category = els.inputs.category.value;
+            const resultContent = els.result.cloneNode(true);
+            resultContent.querySelectorAll('.btn').forEach(btn => btn.remove());
+            resultContent.querySelectorAll('.card').forEach(card => {
+                card.style.background = '#1a1a3d';
+                card.style.border = '1px solid #6495ed';
+                card.style.boxShadow = 'none';
+                card.style.backdropFilter = 'none';
+                card.style.padding = '20px';
+            });
+            resultContent.querySelectorAll('.glow-text').forEach(text => {
+                text.style.textShadow = 'none';
+                text.style.color = '#fff';
+            });
+            resultContent.querySelectorAll('.progress-bar').forEach(bar => {
+                bar.style.background = '#6495ed';
+                bar.style.boxShadow = 'none';
+            });
+            element.innerHTML = `
+                <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-align: center; color: #fff;">
+                    KCET 2025 Rank Prediction
+                </h1>
+                <p style="font-size: 12px; text-align: center; color: #e2e8f0; margin: 10px 0;">
+                    Generated on ${timestamp} for ${category}
+                </p>
+                <div style="margin: 20px 0;">
+                    ${resultContent.innerHTML}
+                </div>
+                <p style="font-size: 10px; text-align: center; color: #ffd700; position: fixed; bottom: 0.5in; width: 100%;">
+                    Disclaimer: This is a sample prediction. Verify with official KEA sources.
+                </p>
+            `;
+            document.body.appendChild(element);
+            setTimeout(() => {
+                const opt = {
+                    margin: [0.5, 0.5, 0.5, 0.5],
+                    filename: 'KCET_2025_Rank_Prediction.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 3, useCORS: true, logging: true },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+                try {
+                    html2pdf().set(opt).from(element).save().then(() => {
+                        document.body.removeChild(element);
+                        console.log('PDF generated successfully');
+                    });
+                } catch (err) {
+                    console.error('PDF generation error:', err);
+                    document.body.removeChild(element);
+                    alert('Failed to generate PDF. Please try again.');
+                }
+            }, 100);
         }
 
         function setupTheme() {
@@ -752,9 +1130,13 @@
         }
 
         function setupButtons() {
-            console.log('Setting up buttons:', els.calculate, els.save, els.collegeMatch, els.studyPlan, els.reset, els.edit, els.viewColleges, els.downloadPdf, els.backToResult, els.closeModal);
-            els.calculate.addEventListener('click', calculateRank);
-            els.save.addEventListener('click', () => {
+            console.log('Setting up buttons...');
+            if (!els.calculate) console.error('Calculate button not found in DOM');
+            else els.calculate.addEventListener('click', () => {
+                console.log('Calculate button click detected');
+                calculateRank();
+            });
+            if (els.save) els.save.addEventListener('click', () => {
                 console.log('Save button clicked');
                 const data = {
                     pucTotal: els.inputs.pucTotal.value,
@@ -764,9 +1146,11 @@
                 localStorage.setItem('kcetInputs', JSON.stringify(data));
                 alert('Inputs saved!');
             });
-            els.collegeMatch.addEventListener('click', startCollegeMatch);
-            els.studyPlan.addEventListener('click', generateStudyPlan);
-            els.reset.addEventListener('click', () => {
+            if (els.collegeMatch) els.collegeMatch.addEventListener('click', startCollegeMatch);
+            if (els.branchPredict) els.branchPredict.addEventListener('click', startBranchPredictor);
+            if (els.studyPlan) els.studyPlan.addEventListener('click', generateStudyPlan);
+            if (els.analytics) els.analytics.addEventListener('click', showAnalytics);
+            if (els.reset) els.reset.addEventListener('click', () => {
                 console.log('Reset button clicked');
                 Object.values(els.inputs).forEach(input => input.value = '');
                 Object.values(els.errors).forEach(error => error.classList.add('hidden'));
@@ -775,12 +1159,12 @@
                 els.result.classList.add('hidden');
                 els.colleges.classList.add('hidden');
             });
-            els.edit.addEventListener('click', () => {
+            if (els.edit) els.edit.addEventListener('click', () => {
                 console.log('Edit button clicked');
                 els.result.classList.add('hidden');
                 els.colleges.classList.add('hidden');
             });
-            els.viewColleges.addEventListener('click', () => {
+            if (els.viewColleges) els.viewColleges.addEventListener('click', () => {
                 console.log('View Colleges button clicked');
                 els.collegeList.innerHTML = colleges.map(c => `
                     <div class="bg-gray-900 p-3 rounded text-xs sm:text-sm">
@@ -796,18 +1180,18 @@
                 els.result.classList.add('hidden');
                 els.colleges.classList.remove('hidden');
             });
-            els.downloadPdf.addEventListener('click', downloadPdf);
-            els.backToResult.addEventListener('click', () => {
+            if (els.downloadPdf) els.downloadPdf.addEventListener('click', downloadPdf);
+            if (els.backToResult) els.backToResult.addEventListener('click', () => {
                 console.log('Back to Result button clicked');
                 els.colleges.classList.add('hidden');
                 els.result.classList.remove('hidden');
             });
-            els.closeModal.addEventListener('click', () => {
+            if (els.closeModal) els.closeModal.addEventListener('click', () => {
                 console.log('Close Modal button clicked');
                 els.modal.classList.add('hidden');
             });
-            els.trendCollege.addEventListener('change', updateTrendBranchOptions);
-            els.trendBranch.addEventListener('change', updateCutoffTable);
+            if (els.trendCollege) els.trendCollege.addEventListener('change', updateTrendBranchOptions);
+            if (els.trendBranch) els.trendBranch.addEventListener('change', updateCutoffTable);
         }
 
         init();
