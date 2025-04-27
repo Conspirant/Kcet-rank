@@ -118,6 +118,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             z-index: 20;
+            pointer-events: auto;
         }
         
         .mark-btn:hover {
@@ -170,6 +171,7 @@
             cursor: pointer;
             z-index: 100;
             transition: all 0.3s ease;
+            pointer-events: auto;
         }
         
         .fab:hover {
@@ -201,6 +203,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 10;
+            pointer-events: auto;
         }
         
         .tab-btn.active {
@@ -230,6 +233,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             z-index: 10;
+            pointer-events: auto;
         }
         
         .category-btn.active {
@@ -263,6 +267,7 @@
             background: linear-gradient(145deg, #ffffff, #e6e6e6);
             box-shadow: 5px 5px 10px #d9d9d9, -5px -5px 10px #ffffff;
             transition: all 0.3s ease;
+            pointer-events: auto;
         }
         
         .neumorphic-btn:hover {
@@ -367,7 +372,6 @@
             animation: rankFadeIn 0.5s ease forwards;
         }
         
-        /* Disclaimer Popup */
         .overlay {
             position: fixed;
             top: 0;
@@ -393,7 +397,6 @@
             padding: 1.5rem;
         }
         
-        /* Mobile Optimizations */
         @media (max-width: 768px) {
             .container { padding-left: 1rem; padding-right: 1rem; }
             .glass-card { padding: 1rem; }
@@ -427,7 +430,6 @@
     </style>
 </head>
 <body class="py-4 popup-active">
-    <!-- Disclaimer Popup -->
     <div id="disclaimer-popup" class="overlay">
         <div class="popup animate__animated animate__fadeIn">
             <h2 class="text-lg font-bold mb-4 flex items-center">
@@ -452,7 +454,6 @@
     </div>
     
     <div class="container mx-auto px-4 max-w-6xl" id="main-content">
-        <!-- Header -->
         <header class="text-center mb-6">
             <div class="inline-block p-3 bg-white rounded-xl shadow-lg mb-4 animate__animated animate__fadeInDown glow">
                 <i class="fas fa-calculator text-3xl gradient-text"></i>
@@ -465,7 +466,6 @@
             </p>
         </header>
         
-        <!-- Disclaimer Banner -->
         <div class="glass-card p-4 mb-6 bg-red-50 border border-red-200 animate__animated animate__fadeIn">
             <div class="flex items-start">
                 <div class="flex-shrink-0 pt-1">
@@ -481,9 +481,7 @@
             </div>
         </div>
         
-        <!-- Main Card -->
         <div class="glass-card p-4 md:p-6 mb-6 animate__animated animate__fadeInUp animate__delay-1s">
-            <!-- Tabs Navigation -->
             <div class="flex border-b mb-4 overflow-x-auto">
                 <button class="tab-btn active" data-tab="predictor">
                     <i class="fas fa-calculator mr-2"></i> Rank Predictor
@@ -499,12 +497,9 @@
                 </button>
             </div>
             
-            <!-- Tab Contents -->
             <div class="tab-content active" id="predictor">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-                    <!-- Input Section -->
                     <div class="md:col-span-2">
-                        <!-- Quick Estimate -->
                         <div class="mb-6">
                             <h3 class="text-base font-semibold mb-3 text-gray-700">
                                 <span class="gradient-text">Quick Estimate</span>
@@ -527,7 +522,6 @@
                             </div>
                         </div>
                         
-                        <!-- Detailed Calculator -->
                         <div class="mb-6">
                             <h3 class="text-base font-semibold mb-3 text-gray-700">
                                 <span class="gradient-text">Detailed</span> Calculator
@@ -582,7 +576,6 @@
                             </div>
                         </div>
                         
-                        <!-- Category Selection -->
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-user-tag mr-2 gradient-text"></i> Select Your Category
@@ -594,44 +587,8 @@
                             </div>
                             <input type="hidden" id="category" value="general">
                         </div>
-                        
-                        <!-- Advanced Options -->
-                        <div class="mb-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <label class="text-sm font-medium text-gray-700">
-                                    <i class="fas fa-cog mr-2 gradient-text"></i> Advanced Options
-                                </label>
-                                <button class="text-xs text-blue-600 hover:text-blue-800" id="toggle-advanced">
-                                    <i class="fas fa-chevron-down mr-1"></i> Show/Hide
-                                </button>
-                            </div>
-                            <div id="advanced-options" class="hidden bg-gray-50 p-3 rounded-lg">
-                                <div class="mb-3">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Competition Level</label>
-                                    <div class="flex items-center space-x-4">
-                                        <div class="flex items-center">
-                                            <input type="radio" id="comp-normal" name="competition" value="normal" class="h-4 w-4 text-blue-600" checked>
-                                            <label for="comp-normal" class="ml-2 text-sm text-gray-700">Normal</label>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <input type="radio" id="comp-high" name="competition" value="high" class="h-4 w-4 text-blue-600">
-                                            <label for="comp-high" class="ml-2 text-sm text-gray-700">High</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Prediction Model</label>
-                                    <select id="prediction-model" class="mt-1 block w-full pl-3 pr-10 py-2 text-sm border-gray-300 focus:ring-blue-500 rounded-md">
-                                        <option value="standard">Standard</option>
-                                        <option value="conservative">Conservative</option>
-                                        <option value="optimistic">Optimistic</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     
-                    <!-- Result Section -->
                     <div class="glass-card p-4 gradient-bg text-white rounded-xl">
                         <div class="text-center mb-4">
                             <div class="inline-block p-3 bg-white bg-opacity-20 rounded-full mb-3">
@@ -666,7 +623,6 @@
                 </div>
             </div>
             
-            <!-- Result Breakdown Tab -->
             <div class="tab-content" id="breakdown">
                 <h2 class="text-lg font-bold mb-4 flex items-center">
                     <i class="fas fa-chart-pie mr-2 gradient-text"></i> Result Breakdown
@@ -682,7 +638,6 @@
                 </div>
             </div>
             
-            <!-- How It Works Tab -->
             <div class="tab-content" id="how-it-works">
                 <h2 class="text-lg font-bold mb-4 flex items-center">
                     <i class="fas fa-cogs mr-2 gradient-text"></i> How Our Predictor Works
@@ -771,7 +726,6 @@
                 </div>
             </div>
             
-            <!-- Disclaimer Tab -->
             <div class="tab-content" id="disclaimer">
                 <h2 class="text-lg font-bold mb-4 flex items-center">
                     <i class="fas fa-exclamation-triangle mr-2 text-yellow-500"></i> Disclaimer
@@ -814,16 +768,18 @@
             </div>
         </div>
         
-        <!-- Discord Invite -->
         <div class="text-center mb-8">
             <a href="https://discord.gg/EMwKjsEEc6" target="_blank" class="inline-flex items-center gap-2 text-blue-600 underline text-base font-semibold hover:text-blue-700">
                 <img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" alt="Discord" style="width: 20px; height: 20px;">
                 Join our server to report any casualties or inaccuracies
             </a>
         </div>
+        
+        <footer class="text-center mb-4">
+            <p class="text-gray-500 text-[0.625rem] opacity-80">Special thanks to Flaky-Review6661 for feedback.</p>
+        </footer>
     </div>
     
-    <!-- Floating Action Button -->
     <div class="fab animate__animated animate__bounceIn animate__delay-2s" id="calculate-btn">
         <i class="fas fa-bolt"></i>
     </div>
@@ -834,519 +790,626 @@
         let rankChart = null;
         let disclaimerAccepted = false;
 
-        // Disclaimer Popup Handling
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded');
-            const popup = document.getElementById('disclaimer-popup');
-            const mainContent = document.getElementById('main-content');
-            const acceptBtn = document.getElementById('disclaimer-accept-btn');
-            const declineBtn = document.getElementById('disclaimer-decline');
-
-            // Disable main content interactions
-            mainContent.style.pointerEvents = 'none';
-            mainContent.style.opacity = '0.5';
-
-            acceptBtn.addEventListener('click', () => {
-                console.log('Disclaimer accepted');
-                popup.style.display = 'none';
-                document.body.classList.remove('popup-active');
-                mainContent.style.pointerEvents = 'auto';
-                mainContent.style.opacity = '1';
-                disclaimerAccepted = true;
-                document.getElementById('disclaimer-accept').checked = true;
-            });
-
-            declineBtn.addEventListener('click', () => {
-                console.log('Disclaimer declined');
-                mainContent.style.pointerEvents = 'none';
-                mainContent.style.opacity = '0.5';
-            });
-
-            // Initialize button event listeners
             initializeButtons();
+            setTimeout(() => {
+                if (!document.querySelector('.mark-btn')) {
+                    console.warn('Retrying button initialization');
+                    initializeButtons();
+                }
+            }, 1000);
         });
 
-        // Initialize button event listeners
         function initializeButtons() {
-            // Mark adjustment buttons
-            document.querySelectorAll('.mark-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    console.log(`Mark button clicked: ${btn.dataset.action}, change: ${btn.dataset.change}`);
-                    adjustMark(btn.dataset.action, parseInt(btn.dataset.change));
+            try {
+                const markButtons = document.querySelectorAll('.mark-btn');
+                console.log(`Found ${markButtons.length} mark buttons`);
+                markButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        console.log(`Mark button clicked: ${btn.dataset.action}, change: ${btn.dataset.change}`);
+                        adjustMark(btn.dataset.action, parseInt(btn.dataset.change));
+                    });
+                    btn.addEventListener('touchstart', () => {
+                        console.log(`Mark button touched: ${btn.dataset.action}, change: ${btn.dataset.change}`);
+                        adjustMark(btn.dataset.action, parseInt(btn.dataset.change));
+                    });
                 });
-            });
 
-            // Category buttons
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    console.log(`Category button clicked: ${btn.dataset.category}`);
-                    selectCategory(btn);
+                const categoryButtons = document.querySelectorAll('.category-btn');
+                console.log(`Found ${categoryButtons.length} category buttons`);
+                categoryButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        console.log(`Category button clicked: ${btn.dataset.category}`);
+                        selectCategory(btn);
+                    });
+                    btn.addEventListener('touchstart', () => {
+                        console.log(`Category button touched: ${btn.dataset.category}`);
+                        selectCategory(btn);
+                    });
                 });
-            });
 
-            // FAB (Calculate Rank)
-            document.getElementById('calculate-btn').addEventListener('click', () => {
-                console.log('Calculate button clicked');
-                calculateRank();
-            });
+                const calcButton = document.getElementById('calculate-btn');
+                if (calcButton) {
+                    calcButton.addEventListener('click', () => {
+                        console.log('Calculate button clicked');
+                        calculateRank();
+                    });
+                    calcButton.addEventListener('touchstart', () => {
+                        console.log('Calculate button touched');
+                        calculateRank();
+                    });
+                } else {
+                    console.error('Calculate button not found');
+                }
 
-            // Quick estimate inputs
-            document.getElementById('quick-cet').addEventListener('input', quickEstimate);
-            document.getElementById('quick-puc').addEventListener('input', quickEstimate);
+                const quickCet = document.getElementById('quick-cet');
+                const quickPuc = document.getElementById('quick-puc');
+                if (quickCet && quickPuc) {
+                    quickCet.addEventListener('input', quickEstimate);
+                    quickPuc.addEventListener('input', quickEstimate);
+                    console.log('Quick estimate inputs initialized');
+                } else {
+                    console.error('Quick estimate inputs not found');
+                }
 
-            // Range inputs
-            document.getElementById('kcet-total').addEventListener('input', () => updateMark('kcet-total'));
-            document.getElementById('puc-percentage').addEventListener('input', () => updateMark('puc-percentage'));
+                const kcetTotal = document.getElementById('kcet-total');
+                const pucPercentage = document.getElementById('puc-percentage');
+                if (kcetTotal && pucPercentage) {
+                    kcetTotal.addEventListener('input', () => updateMark('kcet-total'));
+                    pucPercentage.addEventListener('input', () => updateMark('puc-percentage'));
+                    console.log('Range inputs initialized');
+                } else {
+                    console.error('Range inputs not found');
+                }
 
-            // Advanced options toggle
-            document.getElementById('toggle-advanced').addEventListener('click', () => {
-                console.log('Advanced options toggled');
-                toggleAdvancedOptions();
-            });
-
-            // Tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    console.log(`Tab switched: ${btn.dataset.tab}`);
-                    switchTab(btn.dataset.tab);
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                console.log(`Found ${tabButtons.length} tab buttons`);
+                tabButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        console.log(`Tab button clicked: ${btn.dataset.tab}`);
+                        switchTab(btn.dataset.tab);
+                    });
+                    btn.addEventListener('touchstart', () => {
+                        console.log(`Tab button touched: ${btn.dataset.tab}`);
+                        switchTab(btn.dataset.tab);
+                    });
                 });
-            });
 
-            // See Breakdown button
-            document.getElementById('see-breakdown-btn').addEventListener('click', () => {
-                console.log('See Breakdown button clicked');
-                switchTab('breakdown');
-            });
+                const breakdownButton = document.getElementById('see-breakdown-btn');
+                if (breakdownButton) {
+                    breakdownButton.addEventListener('click', () => {
+                        console.log('See Breakdown button clicked');
+                        switchTab('breakdown');
+                    });
+                    breakdownButton.addEventListener('touchstart', () => {
+                        console.log('See Breakdown button touched');
+                        switchTab('breakdown');
+                    });
+                } else {
+                    console.error('See Breakdown button not found');
+                }
+
+                const acceptBtn = document.getElementById('disclaimer-accept-btn');
+                const declineBtn = document.getElementById('disclaimer-decline');
+                if (acceptBtn && declineBtn) {
+                    acceptBtn.addEventListener('click', () => {
+                        console.log('Disclaimer accepted');
+                        document.getElementById('disclaimer-popup').style.display = 'none';
+                        document.body.classList.remove('popup-active');
+                        document.getElementById('main-content').style.pointerEvents = 'auto';
+                        document.getElementById('main-content').style.opacity = '1';
+                        disclaimerAccepted = true;
+                        document.getElementById('disclaimer-accept').checked = true;
+                    });
+                    declineBtn.addEventListener('click', () => {
+                        console.log('Disclaimer declined');
+                        document.getElementById('main-content').style.pointerEvents = 'none';
+                        document.getElementById('main-content').style.opacity = '0.5';
+                    });
+                    console.log('Disclaimer buttons initialized');
+                } else {
+                    console.error('Disclaimer buttons not found');
+                }
+            } catch (error) {
+                console.error('Error initializing buttons:', error);
+            }
         }
 
-        // Tab switching
         function switchTab(tabId) {
-            console.log(`Switching to tab: ${tabId}`);
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.getElementById(tabId).scrollIntoView({ behavior: 'smooth' });
+            try {
+                console.log(`Switching to tab: ${tabId}`);
+                const tabButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+                const tabContent = document.getElementById(tabId);
+                if (!tabButton || !tabContent) {
+                    console.error(`Tab not found: ${tabId}`);
+                    return;
+                }
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                tabButton.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                tabContent.classList.add('active');
+                tabContent.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error switching tab:', error);
+            }
         }
 
-        // Mark adjustment
         function adjustMark(subjectId, change) {
-            console.log(`Adjusting mark: ${subjectId}, change: ${change}`);
-            const input = document.getElementById(subjectId);
-            let value = parseInt(input.value) + change;
-            const max = parseInt(input.max);
-            const min = parseInt(input.min);
-            value = Math.max(min, Math.min(max, value));
-            input.value = value;
-            updateMark(subjectId);
+            try {
+                console.log(`Adjusting mark: ${subjectId}, change: ${change}`);
+                const input = document.getElementById(subjectId);
+                if (!input) {
+                    console.error(`Input not found: ${subjectId}`);
+                    return;
+                }
+                let value = parseInt(input.value) + change;
+                const max = parseInt(input.max);
+                const min = parseInt(input.min);
+                value = Math.max(min, Math.min(max, value));
+                input.value = value;
+                updateMark(subjectId);
+            } catch (error) {
+                console.error('Error adjusting mark:', error);
+            }
         }
 
         function updateMark(subjectId) {
-            console.log(`Updating mark: ${subjectId}`);
-            const input = document.getElementById(subjectId);
-            const valueDisplay = document.getElementById(subjectId + '-value');
-            const max = parseInt(input.max);
-            const min = parseInt(input.min);
-            let value = parseInt(input.value);
-            value = Math.max(min, Math.min(max, value));
-            input.value = value;
-            valueDisplay.textContent = value;
-            const percentage = (value / max) * 100;
-            const circle = input.closest('.mark-selector').querySelector('.mark-circle');
-            if (percentage >= 80) {
-                circle.style.background = 'conic-gradient(var(--success) 0%, #34d399 100%)';
-            } else if (percentage >= 60) {
-                circle.style.background = 'conic-gradient(var(--info) 0%, #93c5fd 100%)';
-            } else if (percentage >= 40) {
-                circle.style.background = 'conic-gradient(var(--warning) 0%, #fbbf24 100%)';
-            } else {
-                circle.style.background = 'conic-gradient(var(--danger) 0%, #f87171 100%)';
+            try {
+                console.log(`Updating mark: ${subjectId}`);
+                const input = document.getElementById(subjectId);
+                const valueDisplay = document.getElementById(subjectId + '-value');
+                if (!input || !valueDisplay) {
+                    console.error(`Elements not found for ${subjectId}`);
+                    return;
+                }
+                const max = parseInt(input.max);
+                const min = parseInt(input.min);
+                let value = parseInt(input.value);
+                value = Math.max(min, Math.min(max, value));
+                input.value = value;
+                valueDisplay.textContent = value;
+                const percentage = (value / max) * 100;
+                const circle = input.closest('.mark-selector').querySelector('.mark-circle');
+                if (percentage >= 80) {
+                    circle.style.background = 'conic-gradient(var(--success) 0%, #34d399 100%)';
+                } else if (percentage >= 60) {
+                    circle.style.background = 'conic-gradient(var(--info) 0%, #93c5fd 100%)';
+                } else if (percentage >= 40) {
+                    circle.style.background = 'conic-gradient(var(--warning) 0%, #fbbf24 100%)';
+                } else {
+                    circle.style.background = 'conic-gradient(var(--danger) 0%, #f87171 100%)';
+                }
+            } catch (error) {
+                console.error('Error updating mark:', error);
             }
         }
 
         function focusInput(subjectId) {
-            console.log(`Focusing input: ${subjectId}`);
-            document.getElementById(subjectId).focus();
+            try {
+                console.log(`Focusing input: ${subjectId}`);
+                const input = document.getElementById(subjectId);
+                if (input) {
+                    input.focus();
+                } else {
+                    console.error(`Input not found: ${subjectId}`);
+                }
+            } catch (error) {
+                console.error('Error focusing input:', error);
+            }
         }
 
-        // Category selection
         function selectCategory(button) {
-            console.log(`Category selected: ${button.dataset.category}`);
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            document.getElementById('category').value = button.dataset.category;
+            try {
+                console.log(`Category selected: ${button.dataset.category}`);
+                const categoryInput = document.getElementById('category');
+                if (!categoryInput) {
+                    console.error('Category input not found');
+                    return;
+                }
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                categoryInput.value = button.dataset.category;
+            } catch (error) {
+                console.error('Error selecting category:', error);
+            }
         }
 
-        // Advanced options toggle
-        function toggleAdvancedOptions() {
-            console.log('Toggling advanced options');
-            document.getElementById('advanced-options').classList.toggle('hidden');
-        }
-
-        // Quick estimate
         function quickEstimate() {
-            console.log('Quick estimate triggered');
-            const cet = parseFloat(document.getElementById('quick-cet').value) || 0;
-            const puc = parseFloat(document.getElementById('quick-puc').value) || 0;
-            if (cet < 0 || cet > 180 || puc < 0 || puc > 100) {
-                alert('Please enter valid inputs.');
-                return;
+            try {
+                console.log('Quick estimate triggered');
+                const cet = parseFloat(document.getElementById('quick-cet').value) || 0;
+                const puc = parseFloat(document.getElementById('quick-puc').value) || 0;
+                if (cet < 0 || cet > 180 || puc < 0 || puc > 100) {
+                    alert('Please enter valid inputs.');
+                    return;
+                }
+                const composite = (puc * 0.5) + (cet / 180 * 50);
+                const rankData = calculateRankFromComposite(composite);
+                document.getElementById('quick-rank').textContent = rankData.likelyRank.toLocaleString();
+                document.getElementById('quick-analysis').textContent = rankData.analysis;
+                document.getElementById('quick-result').classList.remove('hidden');
+            } catch (error) {
+                console.error('Error in quick estimate:', error);
             }
-            const composite = (puc * 0.5) + (cet / 180 * 50);
-            const rankData = calculateRankFromComposite(composite);
-            document.getElementById('quick-rank').textContent = rankData.likelyRank.toLocaleString();
-            document.getElementById('quick-analysis').textContent = rankData.analysis;
-            document.getElementById('quick-result').classList.remove('hidden');
         }
 
-        // Calculate rank
         function calculateRank() {
-            console.log('Calculate rank triggered');
-            if (!disclaimerAccepted) {
-                alert('Please accept the disclaimer.');
-                return;
-            }
-
-            const quickCet = parseFloat(document.getElementById('quick-cet').value) || 0;
-            const quickPuc = parseFloat(document.getElementById('quick-puc').value) || 0;
-            const kcetTotal = parseInt(document.getElementById('kcet-total').value) || 0;
-            const pucPercentage = parseInt(document.getElementById('puc-percentage').value) || 0;
-            const category = document.getElementById('category').value;
-            const competitionLevel = document.querySelector('input[name="competition"]:checked').value;
-            const predictionModel = document.getElementById('prediction-model').value;
-
-            let compositeScore = 0;
-            let isQuick = quickCet > 0 || quickPuc > 0;
-            let pucTotal, cetTotal, pucPercent, cetPercent;
-
-            if (isQuick) {
-                if (quickCet > 180 || quickPuc > 100) {
-                    alert('Please enter valid inputs: CET (0-180), PUC (0-100).');
+            try {
+                console.log('Calculate rank triggered');
+                if (!disclaimerAccepted) {
+                    alert('Please accept the disclaimer.');
                     return;
                 }
-                compositeScore = (quickPuc * 0.5) + (quickCet / 180 * 50);
-                pucTotal = quickPuc * 3;
-                cetTotal = quickCet;
-                pucPercent = quickPuc;
-                cetPercent = (quickCet / 180) * 100;
-            } else {
-                if (kcetTotal > 180 || pucPercentage > 100) {
-                    alert('Please enter valid inputs: KCET (0-180), PUC % (0-100).');
-                    return;
+
+                const quickCet = parseFloat(document.getElementById('quick-cet').value) || 0;
+                const quickPuc = parseFloat(document.getElementById('quick-puc').value) || 0;
+                const kcetTotal = parseInt(document.getElementById('kcet-total').value) || 0;
+                const pucPercentage = parseInt(document.getElementById('puc-percentage').value) || 0;
+                const category = document.getElementById('category').value;
+
+                let compositeScore = 0;
+                let isQuick = quickCet > 0 || quickPuc > 0;
+                let pucTotal, cetTotal, pucPercent, cetPercent;
+
+                if (isQuick) {
+                    if (quickCet > 180 || quickPuc > 100) {
+                        alert('Please enter valid inputs: CET (0-180), PUC (0-100).');
+                        return;
+                    }
+                    compositeScore = (quickPuc * 0.5) + (quickCet / 180 * 50);
+                    pucTotal = quickPuc * 3;
+                    cetTotal = quickCet;
+                    pucPercent = quickPuc;
+                    cetPercent = (quickCet / 180) * 100;
+                } else {
+                    if (kcetTotal > 180 || pucPercentage > 100) {
+                        alert('Please enter valid inputs: KCET (0-180), PUC % (0-100).');
+                        return;
+                    }
+                    pucTotal = pucPercentage * 3;
+                    cetTotal = kcetTotal;
+                    pucPercent = pucPercentage;
+                    cetPercent = (kcetTotal / 180) * 100;
+                    compositeScore = (pucPercent * 0.5) + (cetPercent * 0.5);
                 }
-                pucTotal = pucPercentage * 3;
-                cetTotal = kcetTotal;
-                pucPercent = pucPercentage;
-                cetPercent = (kcetTotal / 180) * 100;
-                compositeScore = (pucPercent * 0.5) + (cetPercent * 0.5);
+
+                const finalPercentage = compositeScore;
+                const rankData = calculateRankFromComposite(compositeScore);
+                let rank = adjustRankByCategory(rankData.likelyRank, category);
+
+                const rankElement = document.getElementById('predicted-rank');
+                rankElement.textContent = rank.toLocaleString();
+                rankElement.classList.add('rank-appear');
+                const progress = (1 - rank / 312000) * 100;
+                document.getElementById('meterCircle').style.setProperty('--progress', `${progress}%`);
+                document.getElementById('competition-note').textContent = finalPercentage >= 95 ? "Top 1%!" :
+                    finalPercentage >= 90 ? "Top 5%!" :
+                    finalPercentage >= 80 ? "Top 15%!" : "2025 is highly competitive";
+                document.getElementById('see-breakdown-btn').classList.remove('hidden');
+
+                generateResultBreakdown(pucTotal, cetTotal, pucPercent, cetPercent, finalPercentage, rank);
+                drawRankChart(compositeScore);
+                generateRankCard(rank, rankData.analysis);
+
+                setTimeout(() => {
+                    rankElement.classList.remove('rank-appear');
+                }, 500);
+            } catch (error) {
+                console.error('Error calculating rank:', error);
+                alert('An error occurred while calculating rank. Please try again.');
             }
-
-            const finalPercentage = compositeScore;
-            let rankData = calculateRankFromComposite(compositeScore);
-            let rank = adjustRankByCategory(rankData.likelyRank, category);
-
-            // Apply advanced options
-            if (competitionLevel === 'high') rank = Math.floor(rank * 0.85);
-            if (predictionModel === 'conservative') rank = Math.floor(rank * 1.05);
-            else if (predictionModel === 'optimistic') rank = Math.floor(rank * 0.95);
-            rank = Math.floor(rank * (0.975 + Math.random() * 0.05));
-
-            // Update UI
-            const rankElement = document.getElementById('predicted-rank');
-            rankElement.textContent = rank.toLocaleString();
-            rankElement.classList.add('rank-appear');
-            const progress = (1 - rank / 312000) * 100;
-            document.getElementById('meterCircle').style.setProperty('--progress', `${progress}%`);
-            document.getElementById('competition-note').textContent = finalPercentage >= 95 ? "Top 5%!" :
-                finalPercentage >= 90 ? "Top 10%!" :
-                finalPercentage >= 80 ? "Above average!" : "2025 is highly competitive";
-            document.getElementById('see-breakdown-btn').classList.remove('hidden');
-
-            generateResultBreakdown(pucTotal, cetTotal, pucPercent, cetPercent, finalPercentage, rank);
-            drawRankChart(compositeScore);
-            generateRankCard(rank, rankData.analysis);
-
-            setTimeout(() => {
-                rankElement.classList.remove('rank-appear');
-            }, 500);
         }
 
-        // Rank calculation
         function calculateRankFromComposite(comp) {
-            let likelyRank = 0;
-            let randomFactor = Math.random() * 0.05; // Reduced randomness
-            if (comp >= 97) likelyRank = 100 + randomFactor * 400; // Top 0.5%
-            else if (comp >= 95) likelyRank = 500 + randomFactor * 500; // Top 1%
-            else if (comp >= 90) likelyRank = 1000 + randomFactor * 1000; // Top 5%
-            else if (comp >= 85) likelyRank = 2500 + randomFactor * 1500; // Top 10%
-            else if (comp >= 80) likelyRank = 5000 + randomFactor * 2000; // Top 15%
-            else if (comp >= 75) likelyRank = 8000 + randomFactor * 2500; // Top 20%
-            else if (comp >= 70) likelyRank = 12000 + randomFactor * 3000;
-            else if (comp >= 65) likelyRank = 18000 + randomFactor * 4000;
-            else if (comp >= 60) likelyRank = 25000 + randomFactor * 5000;
-            else if (comp >= 50) likelyRank = 35000 + randomFactor * 7000;
-            else likelyRank = 50000 + randomFactor * 10000;
+            try {
+                const a = 400000;
+                const b = 0.08;
+                const c = 100;
+                let likelyRank = a * Math.exp(-b * comp) + c;
+                likelyRank = Math.round(likelyRank * 1.01 * (0.995 + Math.random() * 0.01));
+                likelyRank = Math.min(312000, Math.max(100, likelyRank));
 
-            likelyRank = Math.round(likelyRank * 1.015); // Slight adjustment for 2025 trends
-            let analysis = likelyRank <= 1000 ? 'Outstanding! Elite performance.' :
-                likelyRank <= 5000 ? 'Excellent! Top-tier rank.' :
-                likelyRank <= 15000 ? 'Good! Strong competitive rank.' :
-                likelyRank <= 35000 ? 'Average rank, solid performance.' : 'Below average, consider improvement.';
+                let analysis = likelyRank <= 1000 ? 'Outstanding! Elite performance.' :
+                    likelyRank <= 5000 ? 'Excellent! Top-tier rank.' :
+                    likelyRank <= 15000 ? 'Good! Strong competitive rank.' :
+                    likelyRank <= 35000 ? 'Average rank, solid performance.' : 'Below average, consider improvement.';
 
-            return { likelyRank, analysis };
+                return { likelyRank, analysis };
+            } catch (error) {
+                console.error('Error in rank calculation:', error);
+                return { likelyRank: 0, analysis: 'Error calculating rank' };
+            }
         }
 
         function adjustRankByCategory(rank, category) {
-            if (category === 'scst') return Math.round(rank * 0.65);
-            if (category === 'obc') return Math.round(rank * 0.85);
-            return rank;
+            try {
+                if (category === 'scst') return Math.round(rank * 0.65);
+                if (category === 'obc') return Math.round(rank * 0.85);
+                return rank;
+            } catch (error) {
+                console.error('Error adjusting rank by category:', error);
+                return rank;
+            }
         }
 
-        // Result breakdown
         function generateResultBreakdown(pucTotal, cetTotal, pucPercentage, cetPercentage, finalPercentage, rank) {
-            console.log('Generating result breakdown');
-            const container = document.getElementById('breakdown-content');
-            container.innerHTML = '';
+            try {
+                console.log('Generating result breakdown');
+                const container = document.getElementById('breakdown-content');
+                if (!container) {
+                    console.error('Breakdown content container not found');
+                    return;
+                }
+                container.innerHTML = '';
 
-            // Overall performance
-            const performanceCard = document.createElement('div');
-            performanceCard.className = 'glass-card p-4';
-            performanceCard.innerHTML = `
-                <h3 class="text-base font-bold mb-3 flex items-center">
-                    <i class="fas fa-chart-line mr-2 gradient-text"></i> Overall Performance
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div class="bg-blue-50 p-3 rounded-lg text-center">
-                        <div class="text-2xl font-bold gradient-text">${finalPercentage.toFixed(1)}%</div>
-                        <div class="text-xs text-gray-600">Final Percentage</div>
+                const performanceCard = document.createElement('div');
+                performanceCard.className = 'glass-card p-4';
+                performanceCard.innerHTML = `
+                    <h3 class="text-base font-bold mb-3 flex items-center">
+                        <i class="fas fa-chart-line mr-2 gradient-text"></i> Overall Performance
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="bg-blue-50 p-3 rounded-lg text-center">
+                            <div class="text-2xl font-bold gradient-text">${finalPercentage.toFixed(1)}%</div>
+                            <div class="text-xs text-gray-600">Final Percentage</div>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded-lg text-center">
+                            <div class="text-2xl font-bold" style="color: var(--success);">${rank.toLocaleString()}</div>
+                            <div class="text-xs text-gray-600">Predicted Rank</div>
+                        </div>
+                        <div class="bg-purple-50 p-3 rounded-lg text-center">
+                            <div class="text-2xl font-bold" style="color: var(--secondary);">${getPercentile(finalPercentage)}</div>
+                            <div class="text-xs text-gray-600">Percentile</div>
+                        </div>
                     </div>
-                    <div class="bg-green-50 p-3 rounded-lg text-center">
-                        <div class="text-2xl font-bold" style="color: var(--success);">${rank.toLocaleString()}</div>
-                        <div class="text-xs text-gray-600">Predicted Rank</div>
-                    </div>
-                    <div class="bg-purple-50 p-3 rounded-lg text-center">
-                        <div class="text-2xl font-bold" style="color: var(--secondary);">${getPercentile(finalPercentage)}</div>
-                        <div class="text-xs text-gray-600">Percentile</div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(performanceCard);
+                `;
+                container.appendChild(performanceCard);
 
-            // Score breakdown
-            const breakdownCard = document.createElement('div');
-            breakdownCard.className = 'glass-card p-4';
-            breakdownCard.innerHTML = `
-                <h3 class="text-base font-bold mb-3 flex items-center">
-                    <i class="fas fa-chart-pie mr-2 gradient-text"></i> Score Breakdown
-                </h3>
-                <div class="space-y-3">
-                    <div>
-                        <h4 class="font-medium text-gray-700 mb-2">PUC PCM (300)</h4>
-                        <div class="flex items-center justify-between mb-1 text-sm">
-                            <span>Total: ${pucTotal.toFixed(1)}</span>
-                            <span>${pucPercentage.toFixed(1)}%</span>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-bar gradient-bg" style="width: ${pucPercentage}%"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-700 mb-2">CET PCM (180)</h4>
-                        <div class="flex items-center justify-between mb-1 text-sm">
-                            <span>Total: ${cetTotal}</span>
-                            <span>${cetPercentage.toFixed(1)}%</span>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-bar accent-bg" style="width: ${cetPercentage}%"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-700 mb-2">Final Score</h4>
-                        <div class="flex items-center justify-between mb-1 text-sm">
-                            <span>Weighted Score</span>
-                            <span>${finalPercentage.toFixed(1)}%</span>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: ${finalPercentage}%; background: var(--success);"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(breakdownCard);
-
-            // Rank analysis
-            const rankCard = document.createElement('div');
-            rankCard.className = 'glass-card p-4';
-            rankCard.innerHTML = `
-                <h3 class="text-base font-bold mb-3 flex items-center">
-                    <i class="fas fa-chart-bar mr-2 gradient-text"></i> Rank Analysis
-                </h3>
-                <div class="space-y-3">
-                    <div class="bg-blue-50 p-3 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-info-circle text-blue-500"></i>
+                const breakdownCard = document.createElement('div');
+                breakdownCard.className = 'glass-card p-4';
+                breakdownCard.innerHTML = `
+                    <h3 class="text-base font-bold mb-3 flex items-center">
+                        <i class="fas fa-chart-pie mr-2 gradient-text"></i> Score Breakdown
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <h4 class="font-medium text-gray-700 mb-2">PUC PCM (300)</h4>
+                            <div class="flex items-center justify-between mb-1 text-sm">
+                                <span>Total: ${pucTotal.toFixed(1)}</span>
+                                <span>${pucPercentage.toFixed(1)}%</span>
                             </div>
-                            <div class="ml-2">
-                                <h4 class="text-sm font-medium text-blue-800">Rank Range</h4>
-                                <p class="text-xs text-blue-700">
-                                    Likely between 
-                                    <span class="font-bold">${Math.floor(rank * 0.9).toLocaleString()}</span> and 
-                                    <span class="font-bold">${Math.floor(rank * 1.1).toLocaleString()}</span>.
-                                </p>
-                                <p class="text-xs text-blue-600 mt-1">Refined for higher accuracy based on 2023-24 trends.</p>
+                            <div class="progress-container">
+                                <div class="progress-bar gradient-bg" style="width: ${pucPercentage}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-700 mb-2">CET PCM (180)</h4>
+                            <div class="flex items-center justify-between mb-1 text-sm">
+                                <span>Total: ${cetTotal}</span>
+                                <span>${cetPercentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar accent-bg" style="width: ${cetPercentage}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-700 mb-2">Final Score</h4>
+                            <div class="flex items-center justify-between mb-1 text-sm">
+                                <span>Weighted Score</span>
+                                <span>${finalPercentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${finalPercentage}%; background: var(--success);"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm">
-                        <canvas id="rank-chart" class="w-full max-w-md mx-auto"></canvas>
+                `;
+                container.appendChild(breakdownCard);
+
+                const rankCard = document.createElement('div');
+                rankCard.className = 'glass-card p-4';
+                rankCard.innerHTML = `
+                    <h3 class="text-base font-bold mb-3 flex items-center">
+                        <i class="fas fa-chart-bar mr-2 gradient-text"></i> Rank Analysis
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-blue-50 p-3 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                </div>
+                                <div class="ml-2">
+                                    <h4 class="text-sm font-medium text-blue-800">Rank Range</h4>
+                                    <p class="text-xs text-blue-700">
+                                        Likely between 
+                                        <span class="font-bold">${Math.floor(rank * 0.9).toLocaleString()}</span> and 
+                                        <span class="font-bold">${Math.floor(rank * 1.1).toLocaleString()}</span>.
+                                    </p>
+                                    <p class="text-xs text-blue-600 mt-1">Refined for higher accuracy based on 2023-24 trends.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm">
+                            <canvas id="rank-chart" class="w-full max-w-md mx-auto"></canvas>
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-center gap-3">
+                            <button onclick="downloadRankCard()" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center">
+                                <i class="fas fa-download mr-2"></i> Download Rank Card
+                            </button>
+                            <button onclick="resetCalculator()" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center">
+                                <i class="fas fa-redo mr-2"></i> Calculate Again
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex flex-col md:flex-row justify-center gap-3">
-                        <button onclick="downloadRankCard()" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center">
-                            <i class="fas fa-download mr-2"></i> Download Rank Card
-                        </button>
-                        <button onclick="resetCalculator()" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center">
-                            <i class="fas fa-redo mr-2"></i> Calculate Again
-                        </button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(rankCard);
+                `;
+                container.appendChild(rankCard);
+            } catch (error) {
+                console.error('Error generating result breakdown:', error);
+            }
         }
 
         function getPercentile(percentage) {
-            if (percentage >= 97) return 'Top 0.5%';
-            if (percentage >= 95) return 'Top 1%';
-            if (percentage >= 90) return 'Top 5%';
-            if (percentage >= 80) return 'Top 15%';
-            return 'Below Average';
+            try {
+                if (percentage >= 95) return 'Top 1%';
+                if (percentage >= 90) return 'Top 5%';
+                if (percentage >= 80) return 'Top 15%';
+                return 'Below Average';
+            } catch (error) {
+                console.error('Error getting percentile:', error);
+                return 'N/A';
+            }
         }
 
-        // Rank chart
         function drawRankChart(compositeScore) {
-            console.log('Drawing rank chart');
-            const ctx = document.getElementById('rank-chart').getContext('2d');
-            if (rankChart) rankChart.destroy();
+            try {
+                console.log('Drawing rank chart');
+                const ctx = document.getElementById('rank-chart');
+                if (!ctx) {
+                    console.error('Rank chart canvas not found');
+                    return;
+                }
+                if (rankChart) rankChart.destroy();
 
-            rankChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Top 1%', 'Top 5%', 'Top 15%', 'Top 30%', 'Bottom 50%'],
-                    datasets: [{
-                        label: 'Rank Distribution',
-                        data: [1000, 5000, 15000, 35000, 312000],
-                        backgroundColor: [
-                            'rgba(67, 97, 238, 0.6)',
-                            'rgba(58, 12, 163, 0.6)',
-                            'rgba(247, 37, 133, 0.6)',
-                            'rgba(16, 185, 129, 0.6)',
-                            'rgba(245, 158, 11, 0.6)'
-                        ],
-                        borderColor: [
-                            'var(--primary)',
-                            'var(--secondary)',
-                            'var(--accent)',
-                            'var(--success)',
-                            'var(--warning)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `Max Rank: ${context.raw.toLocaleString()}`;
+                rankChart = new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Top 1%', 'Top 5%', 'Top 15%', 'Top 30%', 'Bottom 50%'],
+                        datasets: [{
+                            label: 'Rank Distribution',
+                            data: [1000, 5000, 15000, 35000, 312000],
+                            backgroundColor: [
+                                'rgba(67, 97, 238, 0.6)',
+                                'rgba(58, 12, 163, 0.6)',
+                                'rgba(247, 37, 133, 0.6)',
+                                'rgba(16, 185, 129, 0.6)',
+                                'rgba(245, 158, 11, 0.6)'
+                            ],
+                            borderColor: [
+                                'var(--primary)',
+                                'var(--secondary)',
+                                'var(--accent)',
+                                'var(--success)',
+                                'var(--warning)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Max Rank: ${context.raw.toLocaleString()}`;
+                                    }
                                 }
                             }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return value >= 1000 ? value/1000 + 'k' : value;
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value >= 1000 ? value/1000 + 'k' : value;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            } catch (error) {
+                console.error('Error drawing rank chart:', error);
+            }
         }
 
-        // Rank card
         function generateRankCard(rank, analysis) {
-            console.log(`Generating rank card: rank=${rank}, analysis=${analysis}`);
-            const canvas = document.getElementById('rankCard');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 400;
-            canvas.height = 200;
+            try {
+                console.log(`Generating rank card: rank=${rank}, analysis=${analysis}`);
+                const canvas = document.getElementById('rankCard');
+                if (!canvas) {
+                    console.error('Rank card canvas not found');
+                    return;
+                }
+                const ctx = canvas.getContext('2d');
+                canvas.width = 400;
+                canvas.height = 200;
 
-            const gradient = ctx.createLinearGradient(0, 0, 400, 200);
-            gradient.addColorStop(0, '#4361ee');
-            gradient.addColorStop(1, '#3a0ca3');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 400, 200);
+                const gradient = ctx.createLinearGradient(0, 0, 400, 200);
+                gradient.addColorStop(0, '#4361ee');
+                gradient.addColorStop(1, '#3a0ca3');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 400, 200);
 
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 24px Poppins';
-            ctx.textAlign = 'center';
-            ctx.fillText('KCET 2025 Rank', 200, 40);
-            ctx.font = 'bold 36px Poppins';
-            ctx.fillText(rank.toLocaleString(), 200, 100);
-            ctx.font = '16px Poppins';
-            ctx.fillText(analysis, 200, 130);
-            ctx.fillText('Among ~3,12,000 candidates', 200, 160);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 24px Poppins';
+                ctx.textAlign = 'center';
+                ctx.fillText('KCET 2025 Rank', 200, 40);
+                ctx.font = 'bold 36px Poppins';
+                ctx.fillText(rank.toLocaleString(), 200, 100);
+                ctx.font = '16px Poppins';
+                ctx.fillText(analysis, 200, 130);
+                ctx.fillText('Among ~3,12,000 candidates', 200, 160);
 
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(2, 2, 396, 196);
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(2, 2, 396, 196);
+            } catch (error) {
+                console.error('Error generating rank card:', error);
+            }
         }
 
-        // Download rank card
         function downloadRankCard() {
-            console.log('Downloading rank card');
-            const canvas = document.getElementById('rankCard');
-            const link = document.createElement('a');
-            link.download = 'kcet_rank_card.png';
-            link.href = canvas.toDataURL();
-            link.click();
+            try {
+                console.log('Downloading rank card');
+                const canvas = document.getElementById('rankCard');
+                if (!canvas) {
+                    console.error('Rank card canvas not found');
+                    return;
+                }
+                const link = document.createElement('a');
+                link.download = 'kcet_rank_card.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            } catch (error) {
+                console.error('Error downloading rank card:', error);
+            }
         }
 
-        // Reset calculator
         function resetCalculator() {
-            console.log('Resetting calculator');
-            document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
-            document.getElementById('kcet-total').value = 90;
-            document.getElementById('puc-percentage').value = 60;
-            updateMark('kcet-total');
-            updateMark('puc-percentage');
-            document.getElementById('quick-result').classList.add('hidden');
-            document.getElementById('breakdown-content').innerHTML = `
-                <div class="text-center py-8">
-                    <div class="inline-block p-3 bg-blue-50 rounded-full mb-3">
-                        <i class="fas fa-search text-2xl text-blue-500"></i>
+            try {
+                console.log('Resetting calculator');
+                document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+                document.getElementById('kcet-total').value = 90;
+                document.getElementById('puc-percentage').value = 60;
+                updateMark('kcet-total');
+                updateMark('puc-percentage');
+                document.getElementById('quick-result').classList.add('hidden');
+                document.getElementById('breakdown-content').innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="inline-block p-3 bg-blue-50 rounded-full mb-3">
+                            <i class="fas fa-search text-2xl text-blue-500"></i>
+                        </div>
+                        <h3 class="text-base font-medium text-gray-600 mb-2">Calculate your rank to see breakdown</h3>
+                        <p class="text-sm text-gray-500">Performance analysis will appear here</p>
                     </div>
-                    <h3 class="text-base font-medium text-gray-600 mb-2">Calculate your rank to see breakdown</h3>
-                    <p class="text-sm text-gray-500">Performance analysis will appear here</p>
-                </div>
-            `;
-            document.getElementById('predicted-rank').textContent = '---';
-            document.getElementById('meterCircle').style.setProperty('--progress', '0%');
-            document.getElementById('see-breakdown-btn').classList.add('hidden');
-            if (rankChart) rankChart.destroy();
-            document.querySelector('.category-btn[data-category="general"]').click();
-            document.getElementById('disclaimer-accept').checked = false;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+                `;
+                document.getElementById('predicted-rank').textContent = '---';
+                document.getElementById('meterCircle').style.setProperty('--progress', '0%');
+                document.getElementById('see-breakdown-btn').classList.add('hidden');
+                if (rankChart) rankChart.destroy();
+                const generalBtn = document.querySelector('.category-btn[data-category="general"]');
+                if (generalBtn) generalBtn.click();
+                document.getElementById('disclaimer-accept').checked = false;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error resetting calculator:', error);
+            }
         }
 
-        // Initialize marks
         updateMark('kcet-total');
         updateMark('puc-percentage');
     </script>
 </body>
-        </html>
+</html>
