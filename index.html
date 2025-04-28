@@ -9,453 +9,261 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-        
-        :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --accent: #f72585;
-            --light: #f1f5f9;
-            --dark: #1f2937;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #3b82f6;
-            --bg: #ffffff;
-            --text: #1f2937;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-        
-        [data-theme="dark"] {
-            --bg: #1f2937;
-            --text: #f1f5f9;
-            --card-bg: rgba(31, 41, 55, 0.95);
-            --light: #374151;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg);
-            min-height: 100vh;
-            color: var(--text);
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-        
-        body.popup-active {
-            overflow: hidden;
-        }
-        
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .glass-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .gradient-text {
-            background-clip: text;
-            color: transparent;
-            background-image: linear-gradient(90deg, var(--primary), var(--secondary));
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-        }
-        
-        .accent-bg {
-            background: var(--accent);
-        }
-        
-        .mark-selector {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            margin: 0 auto;
-        }
-        
-        .mark-circle {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(var(--primary) 0%, var(--secondary) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.2);
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .mark-circle:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 24px rgba(67, 97, 238, 0.3);
-        }
-        
-        .mark-value {
-            width: 70%;
-            height: 70%;
-            border-radius: 50%;
-            background: var(--bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1.25rem;
-            color: var(--primary);
-            box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
-        }
-        
-        .mark-controls {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-        }
-        
-        .mark-btn {
-            position: absolute;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--bg);
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 20;
-        }
-        
-        .mark-btn:hover {
-            background: var(--primary);
-            color: #fff;
-            transform: scale(1.1);
-        }
-        
-        .mark-btn:active {
-            transform: scale(0.95);
-        }
-        
-        .mark-btn.increment { top: -14px; left: 50%; transform: translateX(-50%); }
-        .mark-btn.decrement { bottom: -14px; left: 50%; transform: translateX(-50%); }
-        .mark-btn.large-inc { right: -14px; top: 50%; transform: translateY(-50%); }
-        .mark-btn.large-dec { left: -14px; top: 50%; transform: translateY(-50%); }
-        
-        .fab {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            box-shadow: 0 4px 20px rgba(247, 37, 133, 0.3);
-            cursor: pointer;
-            z-index: 100;
-            transition: all 0.3s ease;
-        }
-        
-        .fab:hover {
-            transform: scale(1.1) rotate(10deg);
-            box-shadow: 0 6px 24px rgba(247, 37, 133, 0.5);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .tab-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            background: transparent;
-            color: var(--text);
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-        
-        .tab-btn.active {
-            color: var(--primary);
-        }
-        
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--primary);
-            border-radius: 3px;
-        }
-        
-        .category-btn {
-            padding: 0.5rem 0.75rem;
-            border-radius: 10px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-align: center;
-            background: var(--bg);
-            color: var(--text);
-            border: 1px solid var(--light);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-        
-        .category-btn.active {
-            background: var(--primary);
-            color: #fff;
-            border-color: var(--primary);
-            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.2);
-        }
-        
-        .category-btn:hover:not(.active) {
-            background: var(--light);
-            transform: translateY(-2px);
-        }
-        
-        .progress-container {
-            height: 8px;
-            background: var(--light);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 0.5rem;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease-in-out;
-        }
-        
-        .neumorphic-btn {
-            border-radius: 12px;
-            background: var(--bg);
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.5);
-            transition: all 0.3s ease;
-        }
-        
-        .neumorphic-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 6px 6px 15px rgba(0,0,0,0.1), -6px -6px 15px rgba(255,255,255,0.7);
-        }
-        
-        .neumorphic-btn:active {
-            transform: translateY(0);
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.05), -2px -2px 5px rgba(255,255,255,0.5);
-        }
-        
-        .glow {
-            animation: glow 2s infinite alternate;
-        }
-        
-        @keyframes glow {
-            from { box-shadow: 0 0 5px rgba(67, 97, 238, 0.3); }
-            to { box-shadow: 0 0 15px rgba(67, 97, 238, 0.6); }
-        }
-        
-        .flip-card {
-            perspective: 1000px;
-            max-width: 100%;
-            width: auto;
-        }
-        
-        .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s ease;
-            transform-style: preserve-3d;
-        }
-        
-        .flip-card:hover .flip-card-inner {
-            transform: rotateY(180deg);
-        }
-        
-        .flip-card-front, .flip-card-back {
-            position: absolute;
-            width: 100%;
-            min-height: 200px;
-            backface-visibility: hidden;
-            border-radius: 20px;
-        }
-        
-        .flip-card-back {
-            transform: rotateY(180deg);
-            overflow: auto;
-        }
-        
-        .rank-meter {
-            width: 150px;
-            height: 150px;
-            margin: 20px auto;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .meter-circle {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(var(--primary) 0% var(--progress, 0%), var(--light) var(--progress, 0%) 100%);
-            box-shadow: 0 0 15px rgba(67, 97, 238, 0.2);
-            animation: glow 2s infinite alternate;
-            position: relative;
-            transition: --progress 0.5s ease-in-out;
-        }
-        
-        .meter-circle::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            background: var(--bg);
-            border-radius: 50%;
-        }
-        
-        .meter-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-weight: 600;
-            color: var(--primary);
-            text-align: center;
-            width: 80%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            transition: all 0.3s ease;
-        }
-        
-        @keyframes rankFadeIn {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-        
-        .rank-appear {
-            animation: rankFadeIn 0.5s ease forwards;
-        }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .popup {
-            max-width: 90%;
-            width: 400px;
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: var(--shadow);
-            padding: 1.5rem;
-            transition: transform 0.3s ease;
-        }
-        
-        .tooltip {
-            position: relative;
-        }
-        
-        .tooltip:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--dark);
-            color: #fff;
-            padding: 0.5rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            z-index: 10;
-            opacity: 0.9;
-        }
-        
-        input:focus, select:focus {
-            outline: none;
-            ring: 2px var(--primary);
-            box-shadow: 0 0 8px rgba(67, 97, 238, 0.3);
-        }
-        
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        @media (max-width: 768px) {
-            .container { padding-left: 1rem; padding-right: 1rem; }
-            .glass-card { padding: 1rem; }
-            .rank-meter { width: 120px; height: 120px; }
-            .meter-text { font-size: 1rem; }
-            .mark-selector { width: 70px; height: 70px; }
-            .mark-value { font-size: 1rem; }
-            .mark-btn { width: 24px; height: 24px; font-size: 0.75rem; }
-            .fab { width: 48px; height: 48px; font-size: 1rem; bottom: 1rem; right: 1rem; }
-            .category-btn { font-size: 0.75rem; padding: 0.4rem 0.6rem; }
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.5rem; }
-            h3 { font-size: 1.25rem; }
-            label { font-size: 0.875rem; }
-            input, select { font-size: 0.875rem; }
-            .popup { padding: 1rem; width: 90%; }
-            .flip-card-front, .flip-card-back { min-height: 220px; }
-        }
-        
-        @media (max-width: 480px) {
-            .meter-text { font-size: 0.875rem; }
-            .mark-selector { width: 60px; height: 60px; }
-            .mark-value { font-size: 0.875rem; }
-            .mark-btn { width: 20px; height: 20px; font-size: 0.625rem; }
-            .grid-cols-2 { grid-template-columns: 1fr; }
-            h1 { font-size: 1.75rem; }
-            h2 { font-size: 1.25rem; }
-            h3 { font-size: 1rem; }
-            .flip-card-front, .flip-card-back { min-height: 240px; }
-        }
-    </style>
+   <style>
+    :root {
+        --primary: #4361ee;
+        --secondary: #7209b7;
+        --accent: #f72585;
+        --success: #34d399;
+        --info: #3abff8;
+        --warning: #fbbf24;
+        --danger: #f87171;
+        --light: #f8f9fa;
+        --dark: #1f2937;
+        --gradient: linear-gradient(45deg, #4361ee, #7209b7, #f72585);
+    }
+
+    [data-theme="dark"] {
+        --primary: #60a5fa;
+        --secondary: #a78bfa;
+        --accent: #fb7185;
+        --success: #4ade80;
+        --info: #36d1dc;
+        --warning: #facc15;
+        --danger: #ef4444;
+        --light: #1f2937;
+        --dark: #f8f9fa;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', Arial, sans-serif;
+        background: var(--light);
+        color: var(--dark);
+        line-height: 1.6;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .glass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .neumorphic-btn {
+        background: var(--gradient);
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .neumorphic-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .neumorphic-btn:active {
+        transform: scale(0.95);
+    }
+
+    .gradient-text {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .progress-container {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 8px;
+        transition: width 0.5s ease;
+    }
+
+    .gradient-bg {
+        background: var(--gradient);
+    }
+
+    .accent-bg {
+        background: var(--accent);
+    }
+
+    .mark-selector {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .mark-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #fff;
+        transition: background 0.3s ease;
+    }
+
+    .fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--gradient);
+        color: #fff;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+
+    .fab:hover {
+        transform: scale(1.1);
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        display: none;
+    }
+
+    .popup {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 500px;
+        margin: 2rem auto;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transform: translateY(-20px);
+        animation: slideIn 0.5s ease forwards;
+        z-index: 1000;
+    }
+
+    @keyframes slideIn {
+        to { transform: translateY(0); }
+    }
+
+    .popup-active .overlay {
+        display: block;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: color 0.3s ease, border-bottom 0.3s ease;
+    }
+
+    .tab-btn.active {
+        color: var(--primary);
+        border-bottom: 3px solid var(--primary);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .rank-appear {
+        animation: rankPop 0.5s ease;
+    }
+
+    @keyframes rankPop {
+        0% { transform: scale(0.8); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .meter-circle {
+        --progress: 0%;
+        width: 120px;
+        height: 120px;
+        background: conic-gradient(var(--primary) var(--progress), #e5e7eb calc(var(--progress) + 1%));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.5s ease;
+    }
+
+    .meter-circle::before {
+        content: '';
+        width: 100px;
+        height: 100px;
+        background: var(--light);
+        border-radius: 50%;
+    }
+
+    input[type="number"] {
+        appearance: none;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 0.5rem;
+        width: 100%;
+        transition: border 0.3s ease;
+    }
+
+    input[type="number"]:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 8px rgba(67, 97, 238, 0.3);
+    }
+</style>
 </head>
 <body class="py-4 popup-active">
     <div id="disclaimer-popup" class="overlay">
