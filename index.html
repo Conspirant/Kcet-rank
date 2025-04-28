@@ -717,11 +717,23 @@
         updateMark('puc-percentage');
         loadSavedResults();
         initializeTheme();
+        updateRankTrend(); // Initialize rank trend feature
     });
 
     function calculateRank() {
         console.log('calculateRank triggered');
-        updateRankLive('detailed');
+        try {
+            const cet = parseInt(document.getElementById('kcet-total').value) || 0;
+            const puc = parseInt(document.getElementById('puc-percentage').value) || 0;
+            if (cet < 0 || cet > 180 || puc < 0 || puc > 100) {
+                alert('Please enter valid marks (KCET: 0-180, PUC: 0-100).');
+                return;
+            }
+            updateRankLive('detailed');
+        } catch (err) {
+            console.error('calculateRank failed:', err);
+            throw err; // Re-throw to be caught by handleButtonClick
+        }
     }
 
     function initializeTheme() {
@@ -739,7 +751,7 @@
 
     function handleButtonClick(callback, e) {
         e.preventDefault();
-        console.log('Button clicked or touched:', e.target);
+        console.log('Button clicked or touched:', e.target.id || e.target.className);
         if (!disclaimerAccepted && e.target.id !== 'disclaimer-accept-btn') {
             alert('Please accept the disclaimer to proceed.');
             return;
@@ -776,15 +788,16 @@
                 console.log('Disclaimer Decline button triggered');
                 document.getElementById('main-content').style.pointerEvents = 'none';
                 document.getElementById('main-content').style.opacity = '0.5';
-            }}
+            }},
+            { selector: '#compare-btn', handler: compareWithFriend } // New feature: Compare ranks
         ];
 
-        // Add event listeners for buttons
         buttons.forEach(({ selector, handler }) => {
             document.querySelectorAll(selector).forEach(btn => {
-                // Remove existing listeners to prevent duplicates
+                // Remove existing listeners
                 btn.removeEventListener('click', handleButtonClick);
                 btn.removeEventListener('touchstart', handleButtonClick);
+                btn.removeEventListener('touchend', handleButtonClick);
 
                 // Add new listeners
                 btn.addEventListener('click', (e) => {
@@ -796,24 +809,28 @@
                     console.log(`Touchstart on ${selector}`);
                     handleButtonClick(handler.bind(null, btn), e);
                 });
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    console.log(`Touchend on ${selector}`);
+                    handleButtonClick(handler.bind(null, btn), e);
+                });
             });
         });
 
-        // Add event listeners for inputs
         const inputs = [
             { id: 'quick-cet', handler: () => updateRankLive('quick') },
             { id: 'quick-puc', handler: () => updateRankLive('quick') },
             { id: 'kcet-total', handler: () => { updateMark('kcet-total'); updateRankLive('detailed'); } },
-            { id: 'puc-percentage', handler: () => { updateMark('puc-percentage'); updateRankLive('detailed'); } }
+            { id: 'puc-percentage', handler: () => { updateMark('puc-percentage'); updateRankLive('detailed'); } },
+            { id: 'friend-cet', handler: updateFriendRank }, // New feature: Friend's rank
+            { id: 'friend-puc', handler: updateFriendRank }
         ];
 
         inputs.forEach(({ id, handler }) => {
             const input = document.getElementById(id);
-            // Remove existing listeners
+            if (!input) return; // Skip if input doesn't exist
             input.removeEventListener('input', handler);
             input.removeEventListener('touchend', handler);
-
-            // Add new listeners
             input.addEventListener('input', handler);
             input.addEventListener('touchend', handler);
         });
@@ -864,10 +881,6 @@
         }
     }
 
-    function focusInput(subjectId) {
-        document.getElementById(subjectId).focus();
-    }
-
     function selectCategory(button) {
         console.log(`Selected category: ${button.dataset.category}`);
         document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
@@ -875,6 +888,7 @@
         document.getElementById('category').value = button.dataset.category;
         updateRankLive('quick');
         updateRankLive('detailed');
+        updateFriendRank(); // Update friend's rank if category changes
     }
 
     function updateRankLive(type) {
@@ -927,7 +941,7 @@
         generateResultBreakdown(pucTotal, cetTotal, pucPercent, cetPercent, composite, rank, document.getElementById('category').value, rankData.analysis);
         drawRankChart(composite);
         generateRankCard(rank, rankData.analysis);
-
+        updateRankTrend(); // Update rank trend chart
         setTimeout(() => rankElement.classList.remove('rank-appear'), 500);
     }
 
@@ -949,22 +963,6 @@
             rank <= 35000 ? 'Average rank, solid performance.' : 'Below average, consider improvement.';
 
         return { likelyRank: rank, analysis };
-    }
-
-    function getCollegeSuggestions(rank, category) {
-        const colleges = [
-            { name: "RV College of Engineering, Bangalore", cutoff: { general: 1000, obc: 1500, scst: 3000 }, course: "CSE" },
-            { name: "BMS College of Engineering, Bangalore", cutoff: { general: 2000, obc: 3000, scst: 5000 }, course: "ECE" },
-            { name: "MS Ramaiah Institute of Technology, Bangalore", cutoff: { general: 3000, obc: 4500, scst: 7000 }, course: "ISE" },
-            { name: "PES University, Bangalore", cutoff: { general: 5000, obc: 7000, scst: 10000 }, course: "ME" },
-            { name: "Dayananda Sagar College of Engineering, Bangalore", cutoff: { general: 8000, obc: 10000, scst: 15000 }, course: "CE" },
-            { name: "Bangalore Institute of Technology", cutoff: { general: 12000, obc: 15000, scst: 20000 }, course: "CSE" },
-            { name: "Sir M Visvesvaraya Institute of Technology", cutoff: { general: 20000, obc:  girlfriend25000, scst: 35000 }, course: "ECE" },
-            { name: "Nitte Meenakshi Institute of Technology", cutoff: { general: 30000, obc: 35000, scst: 45000 }, course: "ISE" },
-            { name: "Siddaganga Institute of Technology, Tumkur", cutoff: { general: 40000, obc: 45000, scst: 55000 }, course: "ME" },
-            { name: "KLE Technological University, Hubli", cutoff: { general: 50000, obc: 60000, scst: 70000 }, course: "CE" }
-        ];
-        return colleges.filter(college => rank <= college.cutoff[category]).map(college => `${college.name} (${college.course})`);
     }
 
     function generateResultBreakdown(pucTotal, cetTotal, pucPercent, cetPercent, finalPercentage, rank, category, analysis) {
@@ -1026,16 +1024,30 @@
         `;
         container.appendChild(breakdownCard);
 
-        const collegeCard = document.createElement('div');
-        collegeCard.className = 'glass-card p-4';
-        const suggestions = getCollegeSuggestions(rank, category);
-        collegeCard.innerHTML = `
-            <h3 class="text-base font-bold mb-3 flex items-center"><i class="fas fa-university mr-2 gradient-text"></i> College Suggestions</h3>
-            <div class="space-y-2">
-                ${suggestions.length > 0 ? suggestions.map(college => `<p class="text-sm text-gray-600">${college}</p>`).join('') : '<p class="text-sm text-gray-600">No colleges match your rank. Consider lower-tier options or consult KEA.</p>'}
+        // Add Compare with Friend section
+        const compareCard = document.createElement('div');
+        compareCard.className = 'glass-card p-4';
+        compareCard.innerHTML = `
+            <h3 class="text-base font-bold mb-3 flex items-center"><i class="fas fa-users mr-2 gradient-text"></i> Compare with Friend</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Friend's KCET Marks (0-180)</label>
+                    <input type="number" id="friend-cet" min="0" max="180" value="0" class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Friend's PUC Percentage (0-100)</label>
+                    <input type="number" id="friend-puc" min="0" max="100" value="0" class="w-full p-2 border rounded">
+                </div>
+                <button id="compare-btn" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center">
+                    <i class="fas fa-balance-scale mr-2"></i> Compare Ranks
+                </button>
+                <div id="compare-result" class="hidden mt-3 p-3 bg-blue-50 rounded-lg">
+                    <p id="friend-rank" class="text-sm text-gray-600"></p>
+                    <p id="compare-analysis" class="text-sm text-gray-600"></p>
+                </div>
             </div>
         `;
-        container.appendChild(collegeCard);
+        container.appendChild(compareCard);
 
         const rankCard = document.createElement('div');
         rankCard.className = 'glass-card p-4';
@@ -1057,8 +1069,9 @@
                     </div>
                 </div>
                 <div class="bg-white p-3 rounded-lg shadow-sm"><canvas id="rank-chart" class="w-full max-w-md mx-auto"></canvas></div>
+                <div class="bg-white p-3 rounded-lg shadow-sm"><canvas id="trend-chart" class="w-full max-w-md mx-auto"></canvas></div>
                 <div class="flex flex-col md:flex-row justify-center gap-3">
-                    <button onclick="downloadRankCard()" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center"><i class="fas fa-download mr-2"></i> Download Rank Card PSTricks for the rank chart buttons
+                    <button onclick="downloadRankCard()" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center"><i class="fas fa-download mr-2"></i> Download Rank Card</button>
                     <button onclick="resetCalculator()" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center"><i class="fas fa-redo mr-2"></i> Calculate Again</button>
                 </div>
             </div>
@@ -1076,6 +1089,10 @@
     function drawRankChart(compositeScore) {
         console.log('Drawing rank chart');
         const ctx = document.getElementById('rank-chart');
+        if (!ctx) {
+            console.error('Rank chart canvas not found');
+            return;
+        }
         if (rankChart) rankChart.destroy();
         rankChart = new Chart(ctx.getContext('2d'), {
             type: 'bar',
@@ -1104,10 +1121,16 @@
     function generateRankCard(rank, analysis) {
         console.log('Generating rank card');
         const canvas = document.getElementById('rankCard');
+        if (!canvas) {
+            console.error('Rank card canvas not found');
+            throw new Error('Rank card canvas not found');
+        }
         const ctx = canvas.getContext('2d');
         canvas.width = 400;
         canvas.height = 200;
 
+        // Fallback font if Poppins is unavailable
+        ctx.font = 'bold 24px Arial';
         const gradient = ctx.createLinearGradient(0, 0, 400, 200);
         gradient.addColorStop(0, '#4361ee');
         gradient.addColorStop(1, '#3a0ca3');
@@ -1115,12 +1138,11 @@
         ctx.fillRect(0, 0, 400, 200);
 
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 24px Poppins';
         ctx.textAlign = 'center';
         ctx.fillText('KCET 2025 Rank', 200, 40);
-        ctx.font = 'bold 36px Poppins';
+        ctx.font = 'bold 36px Arial';
         ctx.fillText(rank.toLocaleString(), 200, 100);
-        ctx.font = '16px Poppins';
+        ctx.font = '16px Arial';
         ctx.fillText(analysis, 200, 130);
         ctx.fillText('Among ~3,12,000 candidates', 200, 160);
 
@@ -1132,10 +1154,20 @@
     function downloadRankCard() {
         console.log('Downloading rank card');
         const canvas = document.getElementById('rankCard');
-        const link = document.createElement('a');
-        link.download = 'kcet_rank_card.png';
-        link.href = canvas.toDataURL();
-        link.click();
+        if (!canvas || !canvas.toDataURL()) {
+            console.error('Canvas not ready for download');
+            alert('Unable to download rank card. Please calculate your rank first.');
+            return;
+        }
+        try {
+            const link = document.createElement('a');
+            link.download = 'kcet_rank_card.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (err) {
+            console.error('Download failed:', err);
+            throw err;
+        }
     }
 
     function generatePDF() {
@@ -1145,10 +1177,9 @@
         const cetMarks = parseInt(document.getElementById('kcet-total').value) || 0;
         const pucPercentage = parseInt(document.getElementById('puc-percentage').value) || 0;
         const compositeScore = (pucPercentage * 0.5) + ((cetMarks / 180) * 50);
-        const rank = parseInt(document.getElementById('predicted-rank').textContent.replace(/,/g, ''));
+        const rank = parseInt(document.getElementById('predicted-rank').textContent.replace(/,/g, '')) || 0;
         const category = document.getElementById('category').value.toUpperCase();
         const analysis = document.getElementById('quick-analysis').textContent || 'N/A';
-        const suggestions = getCollegeSuggestions(rank, document.getElementById('category').value);
 
         doc.setFontSize(16);
         doc.setTextColor(40);
@@ -1163,19 +1194,12 @@
         doc.text(`Category: ${category}`, 20, 80);
         doc.text(`Analysis: ${analysis}`, 20, 90);
 
-        doc.text('College Suggestions:', 20, 110);
-        let y = 120;
-        suggestions.forEach(suggestion => {
-            doc.text(`- ${suggestion}`, 25, y);
-            y += 10;
-        });
-
         doc.setFontSize(10);
         doc.setTextColor(100);
-        doc.text('Scan QR code to try the predictor:', 20, y + 10);
-        doc.addImage('https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://kcetrankpredictor2025.netlify.app', 'PNG', 20, y + 20, 30, 30);
-        doc.text('Note: This is an estimate. Check official KEA results at kea.kar.nic.in.', 20, y + 60);
-        doc.text('Generated by KCET 2025 Rank Predictor', 20, y + 70);
+        doc.text('Scan QR code to try the predictor:', 20, 110);
+        doc.addImage('https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://kcetrankpredictor2025.netlify.app', 'PNG', 20, 120, 30, 30);
+        doc.text('Note: This is an estimate. Check official KEA results at kea.kar.nic.in.', 20, 160);
+        doc.text('Generated by KCET 2025 Rank Predictor', 20, 170);
 
         doc.save('kcet_rank_prediction_2025.pdf');
     }
@@ -1247,8 +1271,83 @@
         document.querySelector('.category-btn[data-category="general"]').click();
         document.getElementById('disclaimer-accept').checked = false;
         localStorage.removeItem('kcetResult');
-        localStorage.removeItem('disclaimerAccepted'); // Reset disclaimer state
+        localStorage.removeItem('disclaimerAccepted');
         window.scrollTo({ behavior: 'smooth' });
+    }
+
+    // New Feature: Compare with Friend
+    function compareWithFriend() {
+        console.log('Comparing with friend');
+        const friendCet = parseInt(document.getElementById('friend-cet').value) || 0;
+        const friendPuc = parseInt(document.getElementById('friend-puc').value) || 0;
+        const category = document.getElementById('category').value;
+        if (friendCet < 0 || friendCet > 180 || friendPuc < 0 || friendPuc > 100) {
+            alert('Please enter valid friend’s marks (KCET: 0-180, PUC: 0-100).');
+            return;
+        }
+        const friendComposite = (friendPuc * 0.5) + ((friendCet / 180) * 50);
+        const friendRankData = calculateRankFromComposite(friendComposite, category);
+        const myRank = parseInt(document.getElementById('predicted-rank').textContent.replace(/,/g, '')) || 0;
+
+        document.getElementById('friend-rank').textContent = `Friend's Predicted Rank: ${friendRankData.likelyRank.toLocaleString()}`;
+        document.getElementById('compare-analysis').textContent = friendRankData.likelyRank < myRank ?
+            'Your friend is ranked higher than you!' :
+            friendRankData.likelyRank > myRank ?
+            'You are ranked higher than your friend!' :
+            'You and your friend have the same rank!';
+        document.getElementById('compare-result').classList.remove('hidden');
+    }
+
+    function updateFriendRank() {
+        if (document.getElementById('friend-cet').value && document.getElementById('friend-puc').value) {
+            compareWithFriend();
+        }
+    }
+
+    // New Feature: Rank Trend Chart
+    let trendChart = null;
+    function updateRankTrend() {
+        console.log('Updating rank trend chart');
+        const ctx = document.getElementById('trend-chart');
+        if (!ctx) {
+            console.error('Trend chart canvas not found');
+            return;
+        }
+        if (trendChart) trendChart.destroy();
+
+        const composite = parseFloat(document.getElementById('predicted-rank').textContent.replace(/,/g, '')) ?
+            (parseInt(document.getElementById('puc-percentage').value) * 0.5) + ((parseInt(document.getElementById('kcet-total').value) / 180) * 50) : 0;
+        const years = ['2021', '2022', '2023', '2024', '2025 (Predicted)'];
+        const ranks = years.map(year => {
+            // Simulate historical ranks (adjusted for simplicity)
+            const factor = year === '2025 (Predicted)' ? 1 : 1 + (2025 - parseInt(year)) * 0.05;
+            return Math.round(calculateRankFromComposite(composite * factor, document.getElementById('category').value).likelyRank);
+        });
+
+        trendChart = new Chart(ctx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [{
+                    label: 'Rank Trend',
+                    data: ranks,
+                    borderColor: 'var(--primary)',
+                    backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                    title: { display: true, text: 'Rank Trend Over Years' }
+                },
+                scales: {
+                    y: { beginAtZero: false, title: { display: true, text: 'Rank' } }
+                }
+            }
+        });
     }
 </script>
 </body>
