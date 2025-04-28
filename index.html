@@ -698,11 +698,12 @@
     
     <canvas id="rankCard" width="400" height="200" style="display: none;"></canvas>
 
- <script>
+<script>
     let rankChart = null;
     let disclaimerAccepted = false;
 
     document.addEventListener('DOMContentLoaded', () => {
+        // Check if disclaimer was previously accepted
         if (localStorage.getItem('disclaimerAccepted') === 'true') {
             disclaimerAccepted = true;
             document.getElementById('disclaimer-popup').style.display = 'none';
@@ -738,8 +739,8 @@
 
     function handleButtonClick(callback, e) {
         e.preventDefault();
-        console.log('Button clicked:', e.target);
-        if (!disclaimerAccepted) {
+        console.log('Button clicked or touched:', e.target);
+        if (!disclaimerAccepted && e.target.id !== 'disclaimer-accept-btn') {
             alert('Please accept the disclaimer to proceed.');
             return;
         }
@@ -762,7 +763,7 @@
             { selector: '#save-result-btn', handler: saveResult },
             { selector: '.tab-btn', handler: (btn) => switchTab(btn.dataset.tab) },
             { selector: '#disclaimer-accept-btn', handler: () => {
-                console.log('Disclaimer Accept button clicked');
+                console.log('Disclaimer Accept button triggered');
                 document.getElementById('disclaimer-popup').style.display = 'none';
                 document.body.classList.remove('popup-active');
                 document.getElementById('main-content').style.pointerEvents = 'auto';
@@ -772,32 +773,33 @@
                 localStorage.setItem('disclaimerAccepted', 'true');
             }},
             { selector: '#disclaimer-decline', handler: () => {
+                console.log('Disclaimer Decline button triggered');
                 document.getElementById('main-content').style.pointerEvents = 'none';
                 document.getElementById('main-content').style.opacity = '0.5';
             }}
         ];
 
-        buttons.forEach(({ selector }) => {
-            document.querySelectorAll(selector).forEach(btn => {
-                const clone = btn.cloneNode(true);
-                btn.parentNode.replaceChild(clone, btn);
-            });
-        });
-
+        // Add event listeners for buttons
         buttons.forEach(({ selector, handler }) => {
             document.querySelectorAll(selector).forEach(btn => {
+                // Remove existing listeners to prevent duplicates
+                btn.removeEventListener('click', handleButtonClick);
+                btn.removeEventListener('touchstart', handleButtonClick);
+
+                // Add new listeners
                 btn.addEventListener('click', (e) => {
-                    console.log(`Button ${selector} clicked`);
+                    console.log(`Click on ${selector}`);
                     handleButtonClick(handler.bind(null, btn), e);
                 });
                 btn.addEventListener('touchstart', (e) => {
                     e.preventDefault();
-                    console.log(`Touch event on ${selector}`);
+                    console.log(`Touchstart on ${selector}`);
                     handleButtonClick(handler.bind(null, btn), e);
                 });
             });
         });
 
+        // Add event listeners for inputs
         const inputs = [
             { id: 'quick-cet', handler: () => updateRankLive('quick') },
             { id: 'quick-puc', handler: () => updateRankLive('quick') },
@@ -807,12 +809,18 @@
 
         inputs.forEach(({ id, handler }) => {
             const input = document.getElementById(id);
+            // Remove existing listeners
+            input.removeEventListener('input', handler);
+            input.removeEventListener('touchend', handler);
+
+            // Add new listeners
             input.addEventListener('input', handler);
             input.addEventListener('touchend', handler);
         });
     }
 
     function switchTab(tabId) {
+        console.log(`Switching to tab: ${tabId}`);
         const tabButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
         const tabContent = document.getElementById(tabId);
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -823,6 +831,7 @@
     }
 
     function adjustMark(subjectId, change) {
+        console.log(`Adjusting mark for ${subjectId} by ${change}`);
         const input = document.getElementById(subjectId);
         let value = parseInt(input.value) + change;
         const max = parseInt(input.max);
@@ -860,6 +869,7 @@
     }
 
     function selectCategory(button) {
+        console.log(`Selected category: ${button.dataset.category}`);
         document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
         document.getElementById('category').value = button.dataset.category;
@@ -869,6 +879,7 @@
 
     function updateRankLive(type) {
         if (!disclaimerAccepted) return;
+        console.log(`Updating rank for type: ${type}`);
         let cet, puc, category = document.getElementById('category').value;
         if (type === 'quick') {
             cet = parseFloat(document.getElementById('quick-cet').value) || 0;
@@ -894,6 +905,7 @@
     }
 
     function updateMainRank(composite, rankData, cet, puc, type) {
+        console.log(`Updating main rank: ${rankData.likelyRank}`);
         const rank = rankData.likelyRank;
         const rankElement = document.getElementById('predicted-rank');
         rankElement.textContent = rank.toLocaleString();
@@ -922,7 +934,7 @@
     function calculateRankFromComposite(comp, category) {
         let adjustedComposite = comp;
         if (comp < 80) adjustedComposite *= 0.95;
-        let&v rank = 1.2e7 * Math.exp(-9.8 * (adjustedComposite / 100)) + 50;
+        let rank = 1.2e7 * Math.exp(-9.8 * (adjustedComposite / 100)) + 50;
         rank *= 1.05;
         rank = Math.round(rank);
 
@@ -947,7 +959,7 @@
             { name: "PES University, Bangalore", cutoff: { general: 5000, obc: 7000, scst: 10000 }, course: "ME" },
             { name: "Dayananda Sagar College of Engineering, Bangalore", cutoff: { general: 8000, obc: 10000, scst: 15000 }, course: "CE" },
             { name: "Bangalore Institute of Technology", cutoff: { general: 12000, obc: 15000, scst: 20000 }, course: "CSE" },
-            { name: "Sir M Visvesvaraya Institute of Technology", cutoff: { general: 20000, obc: 25000, scst: 35000 }, course: "ECE" },
+            { name: "Sir M Visvesvaraya Institute of Technology", cutoff: { general: 20000, obc:  girlfriend25000, scst: 35000 }, course: "ECE" },
             { name: "Nitte Meenakshi Institute of Technology", cutoff: { general: 30000, obc: 35000, scst: 45000 }, course: "ISE" },
             { name: "Siddaganga Institute of Technology, Tumkur", cutoff: { general: 40000, obc: 45000, scst: 55000 }, course: "ME" },
             { name: "KLE Technological University, Hubli", cutoff: { general: 50000, obc: 60000, scst: 70000 }, course: "CE" }
@@ -956,6 +968,7 @@
     }
 
     function generateResultBreakdown(pucTotal, cetTotal, pucPercent, cetPercent, finalPercentage, rank, category, analysis) {
+        console.log('Generating result breakdown');
         const container = document.getElementById('breakdown-content');
         container.innerHTML = '';
 
@@ -1045,7 +1058,7 @@
                 </div>
                 <div class="bg-white p-3 rounded-lg shadow-sm"><canvas id="rank-chart" class="w-full max-w-md mx-auto"></canvas></div>
                 <div class="flex flex-col md:flex-row justify-center gap-3">
-                    <button onclick="downloadRankCard()" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center"><i class="fas fa-download mr-2"></i> Download Rank Card</button>
+                    <button onclick="downloadRankCard()" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center"><i class="fas fa-download mr-2"></i> Download Rank Card PSTricks for the rank chart buttons
                     <button onclick="resetCalculator()" class="neumorphic-btn py-2 px-4 text-sm font-medium flex items-center justify-center"><i class="fas fa-redo mr-2"></i> Calculate Again</button>
                 </div>
             </div>
@@ -1060,7 +1073,8 @@
         return 'Below Average';
     }
 
-    function draw.sunRankChart(compositeScore) {
+    function drawRankChart(compositeScore) {
+        console.log('Drawing rank chart');
         const ctx = document.getElementById('rank-chart');
         if (rankChart) rankChart.destroy();
         rankChart = new Chart(ctx.getContext('2d'), {
@@ -1088,6 +1102,7 @@
     }
 
     function generateRankCard(rank, analysis) {
+        console.log('Generating rank card');
         const canvas = document.getElementById('rankCard');
         const ctx = canvas.getContext('2d');
         canvas.width = 400;
@@ -1115,6 +1130,7 @@
     }
 
     function downloadRankCard() {
+        console.log('Downloading rank card');
         const canvas = document.getElementById('rankCard');
         const link = document.createElement('a');
         link.download = 'kcet_rank_card.png';
@@ -1123,6 +1139,7 @@
     }
 
     function generatePDF() {
+        console.log('Generating PDF');
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const cetMarks = parseInt(document.getElementById('kcet-total').value) || 0;
@@ -1164,6 +1181,7 @@
     }
 
     function shareResult() {
+        console.log('Sharing result');
         const rank = document.getElementById('predicted-rank').textContent;
         const analysis = document.getElementById('quick-analysis').textContent || 'Check my KCET 2025 rank!';
         const text = `I got a predicted KCET 2025 rank of ${rank}! ${analysis} Try it at kcetrankpredictor2025.netlify.app`;
@@ -1176,6 +1194,7 @@
     }
 
     function saveResult() {
+        console.log('Saving result');
         const result = {
             cetMarks: parseInt(document.getElementById('kcet-total').value) || 0,
             pucPercentage: parseInt(document.getElementById('puc-percentage').value) || 0,
@@ -1188,6 +1207,7 @@
     }
 
     function loadSavedResults() {
+        console.log('Loading saved results');
         const savedResult = localStorage.getItem('kcetResult');
         if (savedResult) {
             const result = JSON.parse(savedResult);
@@ -1202,6 +1222,7 @@
     }
 
     function resetCalculator() {
+        console.log('Resetting calculator');
         if (!confirm('Are you sure you want to reset the calculator?')) return;
         document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
         document.getElementById('kcet-total').value = 90;
@@ -1226,6 +1247,7 @@
         document.querySelector('.category-btn[data-category="general"]').click();
         document.getElementById('disclaimer-accept').checked = false;
         localStorage.removeItem('kcetResult');
+        localStorage.removeItem('disclaimerAccepted'); // Reset disclaimer state
         window.scrollTo({ behavior: 'smooth' });
     }
 </script>
