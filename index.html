@@ -389,6 +389,10 @@
             #disclaimer-scroll { max-height: 50vh; padding: 0.75rem; }
             .info-btn .tooltip-text { width: 120px; font-size: 0.65rem; }
         }
+
+        #unlock-btn:not(:disabled) {
+            animation: pulse 1s infinite;
+        }
     </style>
 </head>
 <body>
@@ -411,7 +415,7 @@
         <div class="mt-4 w-full bg-gray-700/50 rounded-full h-1.5 overflow-hidden">
             <div id="scroll-progress" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
         </div>
-        <button id="unlock-btn" class="mt-3 w-full gradient-bg text-white py-2 px-4 rounded-xl text-sm font-semibold hover:opacity-90 disabled:opacity-50 animate__animated animate__pulse" disabled>
+        <button id="unlock-btn" class="mt-3 w-full gradient-bg text-white py-2 px-4 rounded-xl text-sm font-semibold hover:opacity-90 disabled:opacity-50 animate__animated" disabled>
             <i class="fas fa-unlock-alt mr-2"></i> Unlock Predictor
         </button>
     </div>
@@ -432,7 +436,7 @@
             <div class="flex items-start">
                 <div class="flex-shrink-0 pt-1">
                     <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
-                </div>
+                </div)
                 <div class="ml-3">
                     <h3 class="text-lg font-semibold text-red-800">Important Disclaimer</h3>
                     <p class="text-sm text-red-700">
@@ -747,21 +751,30 @@
             const closeBtn = document.getElementById('close-disclaimer');
             const mainContent = document.getElementById('main-content');
 
-            disclaimerScroll.addEventListener('scroll', () => {
+            // Function to check if user has scrolled to the bottom
+            function updateScrollProgress() {
                 const scrollHeight = disclaimerScroll.scrollHeight - disclaimerScroll.clientHeight;
                 const scrolled = disclaimerScroll.scrollTop;
-                const progress = (scrolled / scrollHeight) * 100;
+                const progress = scrollHeight > 0 ? (scrolled / scrollHeight) * 100 : 100;
                 scrollProgress.style.width = `${Math.min(progress, 100)}%`;
 
-               if (scrolled >= scrollHeight - 10) {
-    unlockBtn.disabled = false;
-    unlockBtn.classList.remove('disabled:opacity-50');
-    unlockBtn.classList.add('animate__pulse', 'animate__infinite');
-}
-
+                // Enable button if scrolled to within 10px of the bottom
+                if (scrollHeight <= 0 || scrolled >= scrollHeight - 10) {
+                    unlockBtn.disabled = false;
+                    unlockBtn.classList.add('animate__pulse', 'animate__infinite');
+                } else {
+                    unlockBtn.disabled = true;
+                    unlockBtn.classList.remove('animate__pulse', 'animate__infinite');
                 }
-            });
+            }
 
+            // Add scroll event listener with passive option for better performance
+            disclaimerScroll.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+            // Initial check in case content is short
+            updateScrollProgress();
+
+            // Unlock button click handler
             unlockBtn.addEventListener('click', () => {
                 if (unlockBtn.disabled) return;
                 disclaimerAccepted = true;
@@ -772,21 +785,24 @@
                     mainContent.style.pointerEvents = 'auto';
                     mainContent.style.opacity = '1';
                     initializeApp();
-                }, 400);
+                }, 500); // Match animation duration
             });
 
+            // Close button handler
             closeBtn.addEventListener('click', () => {
                 disclaimerScroll.classList.add('animate__slideOutDown');
                 setTimeout(() => {
                     disclaimerScroll.style.display = 'none';
+                    // Only initialize app if disclaimer was accepted
                     if (disclaimerAccepted) {
                         mainContent.style.pointerEvents = 'auto';
                         mainContent.style.opacity = '1';
                         initializeApp();
                     }
-                }, 400);
+                }, 500);
             });
 
+            // Check if disclaimer was previously accepted
             if (localStorage.getItem('disclaimerAccepted') === 'true') {
                 disclaimerAccepted = true;
                 disclaimerScroll.style.display = 'none';
@@ -1055,109 +1071,208 @@
             const collegeCard = document.createElement('div');
             collegeCard.className = 'glass-card p-4 animate__animated animate__fadeIn animate__delay-2s';
             const suggestions = getCollegeSuggestions(rank, category, customCutoff);
-            collegeCard.innerHTML = `
-                <h3 class="text-lg font-bold mb-3 flex items-center"><i class="fas fa-university mr-2 gradient-text"></i> Suggestions</h3>
-                <div class="space-y-2">
-                    ${suggestions.length > 0 ? suggestions.map(college => `<p class="text-sm text-gray-600">${college}</p>`).join('') : '<p class="text-sm text-gray-600">No matches; explore lower-tier colleges.</p>'}
+            collegeCard.innerHTML = `                <h3 class="text-lg font-bold mb-3 flex items-center"><i class="fas fa-graduation-cap mr-2 gradient-text"></i> College Suggestions</h3>
+                <div class="space-y-2 text-sm">
+                    ${suggestions.length ? suggestions.map(c => `<div class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-400"></i>${c}</div>`).join('') : '<div class="text-gray-500">No colleges meet the cutoff.</div>'}
                 </div>
+                <p class="text-xs text-gray-500 mt-2">Based on ${customCutoff ? 'custom cutoff' : category} cutoffs.</p>
             `;
             container.appendChild(collegeCard);
 
-            const rankCard = document.createElement('div');
-            rankCard.className = 'glass-card p-4 animate__animated animate__fadeIn animate__delay-3s';
-            rankCard.innerHTML = `
-                <h3 class="text-lg font-bold mb-3 flex items-center"><i class="fas fa-chart-bar mr-2 gradient-text"></i> Analysis</h3>
-                <div class="space-y-3">
-                    <div class="bg-blue-50 p-3 rounded-xl">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0"><i class="fas fa-info-circle text-blue-600 text-sm"></i></div>
-                            <div class="ml-2">
-                                <h4 class="text-sm font-medium text-blue-800">Range</h4>
-                                <p class="text-xs text-blue-700 mt-1">
-                                    Likely between <span class="font-bold">${Math.floor(rank * 0.95).toLocaleString()}</span> and <span class="font-bold">${Math.floor(rank * 1.05).toLocaleString()}</span>.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-3 rounded-xl shadow-md"><canvas id="rank-chart" class="w-full max-w-xs mx-auto"></canvas></div>
-                    <div class="flex flex-col sm:flex-row justify-center gap-2">
-                        <button onclick="downloadRankCard()" class="neumorphic-btn py-2 px-4 text-sm font-semibold flex items-center justify-center animate__animated animate__fadeIn"><i class="fas fa-download mr-1 text-xs"></i> Download</button>
-                        <button onclick="resetCalculator()" class="neumorphic-btn py-2 px-4 text-sm font-semibold flex items-center justify-center animate__animated animate__fadeIn"><i class="fas fa-redo mr-1 text-xs"></i> Recalculate</button>
-                    </div>
-                </div>
+            const analysisCard = document.createElement('div');
+            analysisCard.className = 'glass-card p-4 animate__animated animate__fadeIn animate__delay-3s';
+            analysisCard.innerHTML = `
+                <h3 class="text-lg font-bold mb-3 flex items-center"><i class="fas fa-comment-dots mr-2 gradient-text"></i> Analysis</h3>
+                <p class="text-sm">${analysis}</p>
             `;
-            container.appendChild(rankCard);
+            container.appendChild(analysisCard);
         }
 
-        function getPercentile(percentage) {
-            return percentage >= 95 ? 'Top 1%' : percentage >= 90 ? 'Top 5%' : percentage >= 80 ? 'Top 15%' : 'Below Average';
+        function getPercentile(score) {
+            return score >= 95 ? '99.9' : score >= 90 ? '99' : score >= 80 ? '95' : score >= 70 ? '85' : score >= 60 ? '70' : '50';
         }
 
-        function drawRankChart(compositeScore) {
-            const ctx = document.getElementById('rank-chart');
+        function drawRankChart(composite) {
+            const ctx = document.getElementById('rankCard').getContext('2d');
             if (rankChart) rankChart.destroy();
-            rankChart = new Chart(ctx.getContext('2d'), {
-                type: 'bar',
+            rankChart = new Chart(ctx, {
+                type: 'doughnut',
                 data: {
-                    labels: ['PUC %', 'CET %', 'Composite %'],
+                    labels: ['Composite Score', 'Remaining'],
                     datasets: [{
-                        label: 'Scores',
-                        data: [parseFloat(document.getElementById('puc-percentage').value) || 0, (parseFloat(document.getElementById('kcet-total').value) / 180) * 100 || 0, compositeScore],
-                        backgroundColor: ['var(--primary)', 'var(--accent)', 'var(--success)'],
-                        borderRadius: 4
+                        data: [composite, 100 - composite],
+                        backgroundColor: ['#4361ee', '#e5e7eb'],
+                        borderColor: ['#ffffff', '#ffffff'],
+                        borderWidth: 2
                     }]
                 },
                 options: {
-                    responsive: true,
-                    plugins: { legend: { display: false }, title: { display: true, text: 'Score Distribution', font: { size: 14, weight: '600' } } },
-                    scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: 'Percentage', font: { weight: '500' } } } }
+                    cutout: '70%',
+                    plugins: { legend: { display: false } },
+                    animation: { animateScale: true, animateRotate: true }
                 }
             });
         }
 
-        function drawTrendChart(currentRank) {
-            const ctx = document.getElementById('trend-chart');
+        function drawTrendChart(rank) {
+            const ctx = document.getElementById('trend-chart').getContext('2d');
             if (trendChart) trendChart.destroy();
-            const savedResults = JSON.parse(localStorage.getItem('kcetResults') || '[]');
-            const ranks = savedResults.map(r => parseInt(r.rank.replace(/,/g, ''))).concat(currentRank);
-            trendChart = new Chart(ctx.getContext('2d'), {
+            const labels = rankTable.map(item => item.score);
+            const data = rankTable.map(item => item.rank);
+            trendChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: Array.from({ length: ranks.length }, (_, i) => `Attempt ${i + 1}`),
+                    labels: labels,
                     datasets: [{
-                        label: 'Rank Trend',
-                        data: ranks,
-                        borderColor: 'var(--primary)',
-                        fill: false,
-                        tension: 0.1
+                        label: 'Rank vs Score',
+                        data: data,
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
-                    responsive: true,
-                    plugins: { title: { display: true, text: 'Performance Trend', font: { size: 14, weight: '600' } } },
-                    scales: { y: { reverse: true, beginAtZero: false, title: { display: true, text: 'Rank', font: { weight: '500' } } } }
+                    scales: {
+                        x: { title: { display: true, text: 'Composite Score (%)' } },
+                        y: { title: { display: true, text: 'Rank' }, reverse: true }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        annotation: {
+                            annotations: {
+                                rankLine: {
+                                    type: 'line',
+                                    yMin: rank,
+                                    yMax: rank,
+                                    borderColor: '#f72585',
+                                    borderWidth: 2,
+                                    borderDash: [5, 5],
+                                    label: {
+                                        content: `Your Rank: ${rank.toLocaleString()}`,
+                                        enabled: true,
+                                        position: 'end',
+                                        backgroundColor: '#f72585',
+                                        color: '#fff'
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-});
+            });
+        }
 
-        function calculateRank() {
-            if (!disclaimerAccepted) {
-                alert('Please unlock the tool by scrolling through and accepting the disclaimer.');
-                return;
-            }
-            const cet = parseInt(document.getElementById('kcet-total').value) || 0;
-            const puc = parseInt(document.getElementById('puc-percentage').value) || 0;
+        function generateRankCard(rank, analysis) {
+            const canvas = document.getElementById('rankCard');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = 'bold 20px Poppins';
+            ctx.fillStyle = '#1f2937';
+            ctx.textAlign = 'center';
+            ctx.fillText('KCET 2025 Rank', canvas.width / 2, 30);
+            ctx.font = 'bold 30px Poppins';
+            ctx.fillStyle = '#4361ee';
+            ctx.fillText(rank.toLocaleString(), canvas.width / 2, 80);
+            ctx.font = '14px Poppins';
+            ctx.fillStyle = '#6b7280';
+            ctx.fillText(analysis, canvas.width / 2, 110);
+            ctx.font = '12px Poppins';
+            ctx.fillText('Generated by KCET Predictor', canvas.width / 2, 140);
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const rank = document.getElementById('predicted-rank').textContent;
+            const cet = document.getElementById('kcet-total').value;
+            const puc = document.getElementById('puc-percentage').value;
             const category = document.getElementById('category').value;
-            const customCutoff = parseInt(document.getElementById('custom-cutoff').value) || null;
+            const suggestions = getCollegeSuggestions(parseInt(rank.replace(/,/g, '')), category, parseInt(document.getElementById('custom-cutoff').value) || null);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text('KCET 2025 Rank Prediction', 20, 20);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Predicted Rank: ${rank}`, 20, 40);
+            doc.text(`KCET PCM: ${cet}/180`, 20, 50);
+            doc.text(`PUC PCM: ${puc}%`, 20, 60);
+            doc.text(`Category: ${category.toUpperCase()}`, 20, 70);
+            doc.text('College Suggestions:', 20, 90);
+            suggestions.forEach((college, i) => doc.text(`- ${college}`, 25, 100 + i * 10));
+            const canvas = document.getElementById('rankCard');
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 20, 120 + suggestions.length * 10, 90, 45);
+            doc.save('KCET_2025_Rank_Prediction.pdf');
+        }
 
-            if (cet < 0 || cet > 180 || puc < 0 || puc > 100) {
-                alert('Please enter valid scores (CET: 0-180, PUC: 0-100).');
-                return;
+        function shareResult() {
+            const rank = document.getElementById('predicted-rank').textContent;
+            const text = `I got a predicted rank of ${rank} in KCET 2025! Check yours at KCET Predictor!`;
+            if (navigator.share) {
+                navigator.share({ title: 'KCET Rank Prediction', text, url: window.location.href })
+                    .catch(() => alert('Sharing failed. Copy the link manually.'));
+            } else {
+                navigator.clipboard.writeText(text).then(() => alert('Result copied to clipboard!'));
             }
+        }
 
-            const rankData = predictKCETRank(cet, puc, category);
-            const composite = (puc * 0.5) + ((cet / 180) * 50);
-            const analysis = getAnalysis(rankData.medium);
-            updateMainRank(composite, rankData, cet, puc, 'detailed', analysis, customCutoff);
+        function saveResult() {
+            const rank = document.getElementById('predicted-rank').textContent;
+            const cet = document.getElementById('kcet-total').value;
+            const puc = document.getElementById('puc-percentage').value;
+            const category = document.getElementById('category').value;
+            const timestamp = new Date().toLocaleString();
+            const result = { rank, cet, puc, category, timestamp };
+            let savedResults = JSON.parse(localStorage.getItem('savedResults') || '[]');
+            savedResults.push(result);
+            localStorage.setItem('savedResults', JSON.stringify(savedResults));
+            loadSavedResults();
+        }
+
+        function loadSavedResults() {
+            const container = document.getElementById('history-content');
+            const savedResults = JSON.parse(localStorage.getItem('savedResults') || '[]');
+            container.innerHTML = savedResults.length ? '' : '<p class="text-center text-gray-600 text-sm">No saved results yet. Calculate and save to view.</p>';
+            savedResults.forEach((result, index) => {
+                const card = document.createElement('div');
+                card.className = 'glass-card p-4 mb-4 animate__animated animate__fadeIn';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-base">Result #${index + 1}</h3>
+                        <span class="text-xs text-gray-500">${result.timestamp}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div><span class="font-medium">Rank:</span> ${result.rank}</div>
+                        <div><span class="font-medium">KCET:</span> ${result.cet}/180</div>
+                        <div><span class="font-medium">PUC:</span> ${result.puc}%</div>
+                        <div><span class="font-medium">Category:</span> ${result.category.toUpperCase()}</div>
+                    </div>
+                    <button class="delete-result-btn w-full mt-2 bg-red-500 text-white py-1 px-2 rounded-xl text-xs font-semibold hover:bg-red-600 transition" data-index="${index}"><i class="fas fa-trash mr-1"></i> Delete</button>
+                `;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.delete-result-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const index = parseInt(btn.dataset.index);
+                    let savedResults = JSON.parse(localStorage.getItem('savedResults') || '[]');
+                    savedResults.splice(index, 1);
+                    localStorage.setItem('savedResults', JSON.stringify(savedResults));
+                    loadSavedResults();
+                });
+            });
+        }
+
+        function emailResult() {
+            const rank = document.getElementById('predicted-rank').textContent;
+            const cet = document.getElementById('kcet-total').value;
+            const puc = document.getElementById('puc-percentage').value;
+            const category = document.getElementById('category').value;
+            const subject = 'My KCET 2025 Rank Prediction';
+            const body = `I predicted my KCET 2025 rank using the KCET Rank Predictor!\n\nRank: ${rank}\nKCET PCM: ${cet}/180\nPUC PCM: ${puc}%\nCategory: ${category.toUpperCase()}\n\nTry it yourself at ${window.location.href}`;
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         }
 
         function resetCalculator() {
@@ -1175,8 +1290,6 @@
             document.getElementById('share-result-btn').classList.add('hidden');
             document.getElementById('save-result-btn').classList.add('hidden');
             document.getElementById('email-result-btn').classList.add('hidden');
-            if (rankChart) rankChart.destroy();
-            if (trendChart) trendChart.destroy();
             document.getElementById('breakdown-content').innerHTML = `
                 <div class="text-center py-8">
                     <div class="inline-block p-4 bg-blue-50 rounded-full mb-2 animate__animated animate__pulse"><i class="fas fa-search text-2xl text-blue-600"></i></div>
@@ -1184,141 +1297,8 @@
                     <p class="text-sm text-gray-500">Detailed insights await</p>
                 </div>
             `;
-            document.getElementById('rank-chart').remove();
             updateMark('kcet-total');
             updateMark('puc-percentage');
-        }
-
-        function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const rank = document.getElementById('predicted-rank').textContent.replace(/,/g, '');
-            const cet = parseInt(document.getElementById('kcet-total').value);
-            const puc = parseInt(document.getElementById('puc-percentage').value);
-            const category = document.getElementById('category').value;
-            const analysis = getAnalysis(parseInt(rank));
-
-            doc.setFontSize(20);
-            doc.text('KCET 2025 Rank Prediction', 10, 20);
-            doc.setFontSize(12);
-            doc.text(`Rank: ${rank}`, 10, 30);
-            doc.text(`CET Score: ${cet}/180`, 10, 40);
-            doc.text(`PUC PCM: ${puc}%`, 10, 50);
-            doc.text(`Category: ${category.charAt(0).toUpperCase() + category.slice(1)}`, 10, 60);
-            doc.text(`Analysis: ${analysis}`, 10, 70);
-            doc.save('kcet_rank_prediction.pdf');
-        }
-
-        function shareResult() {
-            const rank = document.getElementById('predicted-rank').textContent;
-            const cet = document.getElementById('kcet-total').value;
-            const puc = document.getElementById('puc-percentage').value;
-            const shareText = `My KCET 2025 Rank Prediction: ${rank} with CET ${cet}/180 and PUC ${puc}%! Check yours at [your-link] #KCET2025 #RankPredictor`;
-            if (navigator.share) {
-                navigator.share({
-                    title: 'KCET 2025 Rank',
-                    text: shareText,
-                    url: window.location.href
-                }).catch(err => alert('Sharing failed: ' + err.message));
-            } else {
-                alert('Share this: ' + shareText);
-            }
-        }
-
-        function saveResult() {
-            const rank = document.getElementById('predicted-rank').textContent;
-            const cet = document.getElementById('kcet-total').value;
-            const puc = document.getElementById('puc-percentage').value;
-            const category = document.getElementById('category').value;
-            const timestamp = new Date().toLocaleString();
-            const result = { rank, cet, puc, category, timestamp };
-            let results = JSON.parse(localStorage.getItem('kcetResults') || '[]');
-            results.unshift(result);
-            localStorage.setItem('kcetResults', JSON.stringify(results.slice(0, 10)));
-            loadSavedResults();
-            alert('Result saved successfully!');
-        }
-
-        function emailResult() {
-            const rank = document.getElementById('predicted-rank').textContent;
-            const cet = document.getElementById('kcet-total').value;
-            const puc = document.getElementById('puc-percentage').value;
-            const category = document.getElementById('category').value;
-            const body = `KCET 2025 Rank: ${rank}\nCET Score: ${cet}/180\nPUC PCM: ${puc}%\nCategory: ${category}`;
-            const mailtoLink = `mailto:?subject=KCET 2025 Rank Prediction&body=${encodeURIComponent(body)}`;
-            window.location.href = mailtoLink;
-        }
-
-        function loadSavedResults() {
-            const container = document.getElementById('history-content');
-            container.innerHTML = '';
-            const results = JSON.parse(localStorage.getItem('kcetResults') || '[]');
-            if (results.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-600 text-sm">No saved results yet. Calculate and save to view.</p>';
-                return;
-            }
-            results.forEach((result, index) => {
-                const card = document.createElement('div');
-                card.className = 'glass-card p-3 mb-2 animate__animated animate__fadeIn';
-                card.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-semibold">Rank: ${result.rank}</p>
-                            <p class="text-xs text-gray-500">CET: ${result.cet}/180, PUC: ${result.puc}%, Cat: ${result.category}</p>
-                        </div>
-                        <span class="text-xs text-gray-400">${result.timestamp}</span>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function generateRankCard(rank, analysis) {
-            const canvas = document.getElementById('rankCard');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#1e293b';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 24px Poppins';
-            ctx.fillText('KCET 2025 Rank', 10, 40);
-            ctx.font = 'bold 32px Poppins';
-            ctx.fillText(rank, 10, 80);
-            ctx.font = '16px Poppins';
-            ctx.fillText(analysis, 10, 110);
-        }
-
-        function downloadRankCard() {
-            const canvas = document.getElementById('rankCard');
-            const link = document.createElement('a');
-            link.download = 'kcet_rank_card.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }
-
-        function drawTrendChart(rank) {
-            const ctx = document.getElementById('trend-chart').getContext('2d');
-            if (trendChart) trendChart.destroy();
-            const savedResults = JSON.parse(localStorage.getItem('kcetResults') || '[]');
-            const ranks = savedResults.map(r => parseInt(r.rank.replace(/,/g, ''))).concat(rank);
-            trendChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: Array.from({ length: ranks.length }, (_, i) => `Attempt ${i + 1}`),
-                    datasets: [{
-                        label: 'Rank Trend',
-                        data: ranks,
-                        borderColor: 'var(--primary)',
-                        fill: false,
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { title: { display: true, text: 'Performance Trend', font: { size: 14, weight: '600' } } },
-                    scales: { y: { reverse: true, beginAtZero: false, title: { display: true, text: 'Rank', font: { weight: '500' } } } }
-                }
-            });
         }
     </script>
 </body>
