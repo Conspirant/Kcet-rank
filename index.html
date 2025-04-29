@@ -262,7 +262,7 @@
             border-radius: 50%;
             background: conic-gradient(var(--primary) 0% var(--progress, 0%), var(--light) var(--progress, 0%) 100%);
             box-shadow: 0 0 15px rgba(67, 97, 238, 0.2);
-            animation: rotate 3s linear infinite;
+            animation: rotate 6s linear infinite; /* Slowed down from 3s to 6s */
             position: relative;
         }
 
@@ -436,7 +436,7 @@
             <div class="flex items-start">
                 <div class="flex-shrink-0 pt-1">
                     <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
-                </div)
+                </div>
                 <div class="ml-3">
                     <h3 class="text-lg font-semibold text-red-800">Important Disclaimer</h3>
                     <p class="text-sm text-red-700">
@@ -766,6 +766,7 @@
                     unlockBtn.disabled = true;
                     unlockBtn.classList.remove('animate__pulse', 'animate__infinite');
                 }
+                // console.log(`Scroll Progress: ${progress}%`); // Debug
             }
 
             // Add scroll event listener with passive option for better performance
@@ -786,6 +787,7 @@
                     mainContent.style.opacity = '1';
                     initializeApp();
                 }, 500); // Match animation duration
+                // console.log('Disclaimer accepted'); // Debug
             });
 
             // Close button handler
@@ -823,6 +825,7 @@
                 themeToggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun text-yellow-400 text-sm"></i>' : '<i class="fas fa-moon text-gray-600 text-sm"></i>';
             });
 
+            // Reinitialize button event listeners to ensure they work
             const buttons = [
                 { selector: '.mark-btn', handler: (btn) => adjustMark(btn.dataset.action, parseInt(btn.dataset.change)) },
                 { selector: '.category-btn', handler: selectCategory },
@@ -835,6 +838,15 @@
                 { selector: '.tab-btn', handler: (btn) => switchTab(btn.dataset.tab) },
             ];
 
+            // Remove existing listeners to prevent duplicates
+            buttons.forEach(({ selector }) => {
+                document.querySelectorAll(selector).forEach(btn => {
+                    const clone = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(clone, btn);
+                });
+            });
+
+            // Add new listeners
             buttons.forEach(({ selector, handler }) => {
                 document.querySelectorAll(selector).forEach(btn => {
                     btn.addEventListener('click', (e) => handleClick(handler.bind(null, btn), e));
@@ -862,6 +874,7 @@
             updateMark('kcet-total');
             updateMark('puc-percentage');
             loadSavedResults();
+            // console.log('App initialized'); // Debug
         }
 
         function handleClick(callback, e) {
@@ -872,6 +885,7 @@
             }
             try {
                 callback();
+                // console.log('Button clicked:', callback.name); // Debug
             } catch (err) {
                 resetOnError();
                 alert('An error occurred. Please try again or contact support.');
@@ -919,9 +933,9 @@
             const percentage = (value / parseInt(input.max)) * 100;
             const circle = input.closest('.mark-selector').querySelector('.mark-circle');
             circle.style.background = percentage >= 80 ? 'conic-gradient(var(--success) 0%, #34d399 100%)' :
-                                percentage >= 60 ? 'conic-gradient(var(--info) 0%, #93c5fd 100%)' :
-                                percentage >= 40 ? 'conic-gradient(var(--warning) 0%, #fbbf24 100%)' :
-                                'conic-gradient(var(--danger) 0%, #f87171 100%)';
+                                    percentage >= 60 ? 'conic-gradient(var(--info) 0%, #93c5fd 100%)' :
+                                    percentage >= 40 ? 'conic-gradient(var(--warning) 0%, #fbbf24 100%)' :
+                                    'conic-gradient(var(--danger) 0%, #f87171 100%)';
         }
 
         function focusInput(subjectId) {
@@ -933,6 +947,10 @@
             button.classList.add('active');
             document.getElementById('category').value = button.dataset.category;
             updateRankLive('quick');
+            updateRankLive('detailed');
+        }
+
+        function calculateRank() {
             updateRankLive('detailed');
         }
 
@@ -1071,7 +1089,8 @@
             const collegeCard = document.createElement('div');
             collegeCard.className = 'glass-card p-4 animate__animated animate__fadeIn animate__delay-2s';
             const suggestions = getCollegeSuggestions(rank, category, customCutoff);
-            collegeCard.innerHTML = `                <h3 class="text-lg font-bold mb-3 flex items-center"><i class="fas fa-graduation-cap mr-2 gradient-text"></i> College Suggestions</h3>
+            collegeCard.innerHTML = `
+                <h3 class="text-lg font-bold mb-3 flex items-center"><i class="fas fa-graduation-cap mr-2 gradient-text"></i> College Suggestions</h3>
                 <div class="space-y-2 text-sm">
                     ${suggestions.length ? suggestions.map(c => `<div class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-400"></i>${c}</div>`).join('') : '<div class="text-gray-500">No colleges meet the cutoff.</div>'}
                 </div>
@@ -1233,7 +1252,7 @@
         }
 
         function loadSavedResults() {
-            const container = document.getElementById('history-content');
+            const container = document.getElementById('            history-content');
             const savedResults = JSON.parse(localStorage.getItem('savedResults') || '[]');
             container.innerHTML = savedResults.length ? '' : '<p class="text-center text-gray-600 text-sm">No saved results yet. Calculate and save to view.</p>';
             savedResults.forEach((result, index) => {
