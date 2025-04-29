@@ -753,9 +753,12 @@
                 const progress = (scrolled / scrollHeight) * 100;
                 scrollProgress.style.width = `${Math.min(progress, 100)}%`;
 
-                if (scrolled >= scrollHeight - 10) {
-                    unlockBtn.disabled = false;
-                    unlockBtn.classList.add('animate__infinite');
+               if (scrolled >= scrollHeight - 10) {
+    unlockBtn.disabled = false;
+    unlockBtn.classList.remove('disabled:opacity-50');
+    unlockBtn.classList.add('animate__pulse', 'animate__infinite');
+}
+
                 }
             });
 
