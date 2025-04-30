@@ -6,8 +6,8 @@
     <title>KCET 2025 Rank Predictor | Elite Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/konfetti@1.2.0/dist/konfetti.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.0/dist/vanilla-tilt.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -78,7 +78,6 @@
         .glass-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-            opacity: 1;
         }
 
         .gradient-text {
@@ -160,7 +159,6 @@
             overflow-x: auto;
             scroll-behavior: smooth;
             scrollbar-width: none;
-            position: relative;
         }
 
         .tab-nav::-webkit-scrollbar {
@@ -176,7 +174,6 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 1.05rem;
-            position: relative;
             min-width: 120px;
             border-radius: 12px;
             margin-right: 0.5rem;
@@ -225,7 +222,6 @@
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
-            animation: fadeIn 0.7s ease;
         }
 
         #disclaimer-content {
@@ -256,7 +252,6 @@
         }
 
         .info-btn {
-            position: relative;
             font-size: 0.8rem;
             color: var(--info);
             cursor: help;
@@ -383,7 +378,6 @@
             display: flex;
             justify-content: center;
             margin: 2rem 0;
-            position: relative;
         }
 
         .meter-circle {
@@ -395,7 +389,6 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 8px 25px rgba(109, 40, 217, 0.5);
-            transition: transform 0.4s ease;
             animation: pulse-circle 3s infinite;
             border: 2px solid var(--interactive-border);
             position: relative;
@@ -433,12 +426,7 @@
             border-radius: 16px;
             padding: 1.5rem;
             box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
             border: 2px solid var(--interactive-border);
-        }
-
-        .trend-canvas:hover, .range-canvas:hover, .radar-canvas:hover, .progress-canvas:hover {
-            transform: translateY(-8px);
         }
 
         .breakdown-buttons {
@@ -471,7 +459,6 @@
             background: linear-gradient(90deg, var(--primary), var(--accent));
             outline: none;
             opacity: 0.9;
-            transition: opacity 0.2s;
             border: 2px solid var(--interactive-border);
         }
 
@@ -506,11 +493,6 @@
             border-radius: 24px;
             padding: 2rem;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .gradient-result:hover {
-            transform: translateY(-8px);
         }
 
         .gradient-result h3,
@@ -526,7 +508,7 @@
             border-radius: 12px;
             overflow: hidden;
             height: 20px;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
         }
 
         .progress-fill {
@@ -726,18 +708,10 @@
                         <p class="text-base text-gray-500">Detailed insights await</p>
                     </div>
                 </div>
-                <div class="mt-8 animate__animated animate__fadeIn">
-                    <canvas id="trend-chart" class="trend-canvas"></canvas>
-                </div>
-                <div class="mt-8 animate__animated animate__fadeIn">
-                    <canvas id="range-chart" class="range-canvas"></canvas>
-                </div>
-                <div class="mt-8 animate__animated animate__fadeIn">
-                    <canvas id="radar-chart" class="radar-canvas"></canvas>
-                </div>
                 <div class="breakdown-buttons animate__animated animate__fadeIn">
                     <button id="recalculate-btn" class="gradient-bg text-white py-2.5 px-5 rounded-xl text-base font-semibold premium-btn"><i class="fas fa-calculator mr-2"></i> Recalculate</button>
                     <button id="download-png-btn" class="gradient-bg text-white py-2.5 px-5 rounded-xl text-base font-semibold premium-btn"><i class="fas fa-image mr-2"></i> Download PNG</button>
+                    <button id="download-pdf-btn" class="gradient-bg text-white py-2.5 px-5 rounded-xl text-base font-semibold premium-btn"><i class="fas fa-file-pdf mr-2"></i> Download PDF</button>
                 </div>
             </div>
 
@@ -827,16 +801,7 @@
         }
 
         function playSound(type) {
-            try {
-                const sound = new Audio({
-                    click: 'https://assets.mixkit.co/sfx/preview/mixkit-click-button-1110.mp3',
-                    unlock: 'https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3',
-                    success: 'https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3'
-                }[type] || 'https://assets.mixkit.co/sfx/preview/mixkit-click-button-1110.mp3');
-                sound.play().catch(err => console.warn('Audio play failed:', err));
-            } catch (err) {
-                console.error('Sound error:', err);
-            }
+            //disabled
         }
 
         function switchTab(tabId) {
@@ -847,7 +812,13 @@
                 document.getElementById(tabId).classList.add('active');
                 playSound('click');
                 if (tabId === 'progress') loadSavedResults();
-                if (tabId === 'breakdown') updateBreakdown(0, { low: 0, medium: 0, high: 0 }, 0, 0, 'init');
+                if (tabId === 'breakdown') {
+                    const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
+                    const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
+                    const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
+                    const rankData = predictKCETRank(cet, puc);
+                    updateBreakdown(rankData.composite, rankData, cet, puc, category);
+                }
             } catch (err) {
                 console.error('Tab switch error:', err);
             }
@@ -1070,9 +1041,9 @@
                 const rankData = predictKCETRank(cet, puc);
                 updateMainRank(rankData);
                 saveResult(cet, puc, rankData, category);
-                generateRankCard(cet, puc, rankData, category);
                 playSound('success');
                 triggerConfetti();
+                switchTab('breakdown');
             } catch (err) {
                 console.error('Calculate rank error:', err);
                 alert('An error occurred while calculating your rank.');
@@ -1101,6 +1072,7 @@
         function updateBreakdown(composite, rankData, cet, puc, category) {
             try {
                 const breakdownContent = document.getElementById('breakdown-content');
+                if (!breakdownContent) throw new Error('Breakdown content element not found');
                 const percentile = calculatePercentile(rankData.medium);
                 const college = getCollegeSuggestions(rankData.medium, category);
                 breakdownContent.innerHTML = `
@@ -1144,9 +1116,20 @@
                             <p class="text-base mt-2">Among ~3,12,000 candidates</p>
                         </div>
                     </div>
+                    <div class="mt-8 animate__animated animate__fadeIn">
+                        <canvas id="trend-chart" class="trend-canvas"></canvas>
+                    </div>
+                    <div class="mt-8 animate__animated animate__fadeIn">
+                        <canvas id="range-chart" class="range-canvas"></canvas>
+                    </div>
+                    <div class="mt-8 animate__animated animate__fadeIn">
+                        <canvas id="radar-chart" class="radar-canvas"></canvas>
+                    </div>
                 `;
-                initializeCharts(cet, puc, rankData);
-                initializeTilt();
+                setTimeout(() => {
+                    initializeCharts(cet, puc, rankData);
+                    initializeTilt();
+                }, 300); // Increased delay for DOM rendering
             } catch (err) {
                 console.error('Update breakdown error:', err);
                 document.getElementById('breakdown-content').innerHTML = `
@@ -1160,6 +1143,12 @@
 
         function initializeCharts(cet, puc, rankData) {
             try {
+                const trendCanvas = document.getElementById('trend-chart');
+                const rangeCanvas = document.getElementById('range-chart');
+                const radarCanvas = document.getElementById('radar-chart');
+                if (!trendCanvas || !rangeCanvas || !radarCanvas) {
+                    throw new Error('One or more chart canvases not found');
+                }
                 updateTrendChart(cet, puc, rankData);
                 updateRangeChart(rankData);
                 updateRadarChart(cet, puc);
@@ -1172,24 +1161,14 @@
             try {
                 const ctx = document.getElementById('trend-chart');
                 if (!ctx) throw new Error('Trend chart canvas not found');
-                const context = ctx.getContext('2d');
                 if (trendChartInstance) trendChartInstance.destroy();
-
-                let index = 0;
-                for (let i = 0; i < rankTable.length; i++) {
-                    if (Math.abs(rankData.composite - rankTable[i].score) <= 10) {
-                        index = i;
-                        break;
-                    }
-                }
-
+                const index = rankTable.findIndex(entry => entry.rank === rankTable.find(e => Math.abs(rankData.composite - e.score) <= 10)?.rank) || 0;
                 const ranks = [
                     { year: '2022', rank: trendData[2022][index] || rankTable[index].rank },
                     { year: '2023', rank: trendData[2023][index] || rankTable[index].rank },
                     { year: '2024', rank: rankTable[index].rank }
                 ];
-
-                trendChartInstance = new Chart(context, {
+                trendChartInstance = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: ['2022', '2023', '2024'],
@@ -1221,9 +1200,8 @@
             try {
                 const ctx = document.getElementById('range-chart');
                 if (!ctx) throw new Error('Range chart canvas not found');
-                const context = ctx.getContext('2d');
                 if (rangeChartInstance) rangeChartInstance.destroy();
-                rangeChartInstance = new Chart(context, {
+                rangeChartInstance = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: ['Low', 'Predicted', 'High'],
@@ -1260,12 +1238,11 @@
             try {
                 const ctx = document.getElementById('radar-chart');
                 if (!ctx) throw new Error('Radar chart canvas not found');
-                const context = ctx.getContext('2d');
                 if (radarChartInstance) radarChartInstance.destroy();
                 const assumedPhysics = cet / 3;
                 const assumedChemistry = cet / 3;
                 const assumedMaths = cet / 3;
-                radarChartInstance = new Chart(context, {
+                radarChartInstance = new Chart(ctx, {
                     type: 'radar',
                     data: {
                         labels: ['Physics', 'Chemistry', 'Maths', 'PUC'],
@@ -1308,10 +1285,7 @@
                 canvas.width = 500;
                 canvas.height = 350;
 
-                const gradient = ctx.createLinearGradient(0, 0, 500, 350);
-                gradient.addColorStop(0, '#6d28d9');
-                gradient.addColorStop(1, '#ec4899');
-                ctx.fillStyle = gradient;
+                ctx.fillStyle = '#6d28d9';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
@@ -1354,18 +1328,90 @@
             }
         }
 
+        function generateRankCard(cet, puc, rankData, category) {
+            try {
+                console.log('Initializing jsPDF...');
+                const { jsPDF } = window.jspdf;
+                if (!jsPDF) throw new Error('jsPDF library not loaded');
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                console.log('Creating PDF content...');
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 20;
+
+                // Solid purple background
+                doc.setFillColor(109, 40, 217); // RGB for #6d28d9
+                doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+                // White card with rounded corners
+                doc.setFillColor(255, 255, 255, 0.95);
+                doc.roundedRect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin, 10, 10, 'F');
+                doc.setLineWidth(0.5);
+                doc.setDrawColor(109, 40, 217);
+                doc.roundedRect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin, 10, 10, 'S');
+
+                // Title
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(24);
+                doc.setTextColor(109, 40, 217);
+                doc.text('KCET 2025 Rank Card', pageWidth / 2, 40, { align: 'center' });
+
+                // Rank
+                doc.setFontSize(36);
+                doc.setTextColor(236, 72, 153); // #ec4899
+                doc.text(`${rankData.medium.toLocaleString()}`, pageWidth / 2, 70, { align: 'center' });
+
+                // Details
+                const college = getCollegeSuggestions(rankData.medium, category);
+                const percentile = calculatePercentile(rankData.medium);
+                doc.setFontSize(12);
+                doc.setTextColor(30, 27, 75); // #1e1b4b
+                const details = [
+                    `Rank Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`,
+                    `KCET Score: ${cet}/180 (${((cet / 180) * 100).toFixed(1)}%)`,
+                    `PUC PCM: ${puc}%`,
+                    `Percentile: ${percentile}%`,
+                    `Category: ${category.toUpperCase()}`,
+                    `Likely Colleges: ${college.name} (${college.branch})`
+                ];
+                let y = 100;
+                details.forEach(line => {
+                    doc.text(line, margin + 20, y);
+                    y += 10;
+                });
+
+                // Footer
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'italic');
+                doc.setTextColor(100, 100, 100);
+                doc.text('Generated by KCET Elite Predictor', pageWidth / 2, pageHeight - 15, { align: 'center' });
+
+                console.log('Saving PDF...');
+                doc.save(`KCET_2025_Rank_${rankData.medium}.pdf`);
+                console.log('PDF generated successfully');
+            } catch (err) {
+                console.error('Generate PDF error:', err);
+                alert('Failed to generate PDF. Please try again.');
+            }
+        }
+
         function saveResult(cet, puc, rankData, category) {
             try {
-                const results = JSON.parse(safeLocalStorage('get', 'results') || '[]');
+                const results = JSON.parse(safeLocalStorage('get', 'kcet_results') || '[]');
                 results.push({
                     cet,
                     puc,
                     rank: rankData.medium,
-                    range: `${rankData.low}–${rankData.high}`,
+                    range: `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`,
                     category,
                     timestamp: new Date().toISOString()
                 });
-                safeLocalStorage('set', 'results', JSON.stringify(results));
+                safeLocalStorage('set', 'kcet_results', JSON.stringify(results.slice(-10))); // Keep last 10 results
             } catch (err) {
                 console.error('Save result error:', err);
             }
@@ -1373,22 +1419,9 @@
 
         function loadSavedResults() {
             try {
-                const results = JSON.parse(safeLocalStorage('get', 'results') || '[]');
                 const container = document.getElementById('progress-content');
-                if (results.length > 0) {
-                    container.innerHTML = results.map((r, i) => `
-                        <div class="glass-card p-5 animate__animated animate__fadeIn animate__delay-${i}s" data-tilt data-tilt-max="8">
-                            <h3 class="text-base font-semibold gradient-text">Attempt ${i + 1}</h3>
-                            <p class="text-sm">${new Date(r.timestamp).toLocaleString()}</p>
-                                                        <p class="text-sm mt-2">KCET: ${r.cet}/180</p>
-                            <p class="text-sm">PUC: ${r.puc}%</p>
-                            <p class="text-sm">Rank: ${r.rank.toLocaleString()}</p>
-                            <p class="text-sm">Range: ${r.range}</p>
-                            <p class="text-sm">Category: ${r.category.toUpperCase()}</p>
-                        </div>
-                    `).join('');
-                    updateProgressChart(results);
-                } else {
+                const results = JSON.parse(safeLocalStorage('get', 'kcet_results') || '[]');
+                if (results.length === 0) {
                     container.innerHTML = `
                         <div class="text-center py-10">
                             <div class="inline-block p-5 bg-white rounded-full mb-3 animate__animated animate__pulse">
@@ -1398,16 +1431,46 @@
                             <p class="text-base text-gray-500">Calculate your rank to track progress!</p>
                         </div>
                     `;
+                    return;
                 }
-                initializeTilt();
+                container.innerHTML = `
+                    <div class="glass-card p-6 animate__animated animate__fadeIn">
+                        <h3 class="text-xl font-semibold mb-5 gradient-text">Recent Predictions</h3>
+                        <div class="space-y-4">
+                            ${results.reverse().map((result, index) => `
+                                <div class="flex justify-between items-center p-4 bg-white rounded-xl shadow-sm border border-gray-200">
+                                    <div>
+                                        <p class="text-base font-medium">Rank: ${result.rank.toLocaleString()}</p>
+                                        <p class="text-sm text-gray-500">KCET: ${result.cet} | PUC: ${result.puc}% | ${result.category.toUpperCase()}</p>
+                                        <p class="text-sm text-gray-400">${new Date(result.timestamp).toLocaleString()}</p>
+                                    </div>
+                                    <button class="text-red-500 hover:text-red-700 text-sm" onclick="deleteResult(${index})"><i class="fas fa-trash"></i></button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                updateProgressChart(results);
             } catch (err) {
                 console.error('Load saved results error:', err);
-                document.getElementById('progress-content').innerHTML = `
+                container.innerHTML = `
                     <div class="text-center py-10">
-                        <h3 class="text-xl font-medium text-red-600">Error Loading Progress</h3>
+                        <h3 class="text-xl font-medium text-red-600">Error Loading Results</h3>
                         <p class="text-base text-gray-500">Please try again.</p>
                     </div>
                 `;
+            }
+        }
+
+        function deleteResult(index) {
+            try {
+                const results = JSON.parse(safeLocalStorage('get', 'kcet_results') || '[]');
+                results.splice(results.length - 1 - index, 1); // Reverse index for display order
+                safeLocalStorage('set', 'kcet_results', JSON.stringify(results));
+                loadSavedResults();
+                playSound('click');
+            } catch (err) {
+                console.error('Delete result error:', err);
             }
         }
 
@@ -1415,15 +1478,16 @@
             try {
                 const ctx = document.getElementById('progress-chart');
                 if (!ctx) throw new Error('Progress chart canvas not found');
-                const context = ctx.getContext('2d');
                 if (progressChartInstance) progressChartInstance.destroy();
-                progressChartInstance = new Chart(context, {
+                const labels = results.map((_, i) => `Attempt ${i + 1}`);
+                const ranks = results.map(r => r.rank);
+                progressChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: results.map((_, i) => `Attempt ${i + 1}`),
+                        labels,
                         datasets: [{
-                            label: 'Rank',
-                            data: results.map(r => r.rank),
+                            label: 'Rank Progress',
+                            data: ranks,
                             borderColor: '#6d28d9',
                             backgroundColor: 'rgba(109, 40, 217, 0.2)',
                             fill: true,
@@ -1434,11 +1498,7 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
-                            y: {
-                                beginAtZero: true,
-                                reverse: true,
-                                title: { display: true, text: 'Rank' }
-                            }
+                            y: { beginAtZero: true, title: { display: true, text: 'Rank' } }
                         },
                         plugins: {
                             legend: { display: false },
@@ -1447,98 +1507,24 @@
                     }
                 });
             } catch (err) {
-                console.error('Progress chart error:', err);
-            }
-        }
-
-        function generateRankCard(cet, puc, rankData, category) {
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const pageHeight = doc.internal.pageSize.getHeight();
-                const margin = 20;
-                const contentWidth = pageWidth - 2 * margin;
-
-                const gradient = doc.canvas.createLinearGradient(0, 0, pageWidth, pageHeight);
-                gradient.addColorStop(0, '#6d28d9');
-                gradient.addColorStop(1, '#ec4899');
-                doc.setFillColor(gradient);
-                doc.rect(0, 0, pageWidth, pageHeight, 'F');
-
-                doc.setFillColor(255, 255, 255, 0.95);
-                doc.roundedRect(margin, margin, contentWidth, pageHeight - 2 * margin, 10, 10, 'F');
-                doc.setDrawColor(109, 40, 217);
-                doc.setLineWidth(0.5);
-                doc.roundedRect(margin, margin, contentWidth, pageHeight - 2 * margin, 10, 10, 'S');
-
-                doc.setFont('Poppins', 'bold');
-                doc.setFontSize(24);
-                doc.setTextColor(109, 40, 217);
-                doc.text('KCET 2025 Elite Rank Card', pageWidth / 2, margin + 20, { align: 'center' });
-
-                doc.setFontSize(36);
-                doc.setTextColor(236, 72, 153);
-                doc.text(`${rankData.medium.toLocaleString()}`, pageWidth / 2, margin + 50, { align: 'center' });
-
-                doc.setFont('Poppins', 'normal');
-                doc.setFontSize(14);
-                doc.setTextColor(30, 27, 75);
-                const college = getCollegeSuggestions(rankData.medium, category);
-                const percentile = calculatePercentile(rankData.medium);
-                const lines = [
-                    `Rank Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`,
-                    `KCET Score: ${cet}/180 (${((cet / 180) * 100).toFixed(1)}%)`,
-                    `PUC PCM: ${puc}%`,
-                    `Composite Score: ${rankData.composite.toFixed(1)}%`,
-                    `Percentile: ${percentile}%`,
-                    `Category: ${category.toUpperCase()}`,
-                    `Likely Colleges: ${college.name} (${college.branch})`
-                ];
-                lines.forEach((line, i) => {
-                    doc.text(line, margin + 10, margin + 80 + i * 10);
-                });
-
-                doc.setFont('Poppins', 'italic');
-                doc.setFontSize(10);
-                doc.setTextColor(100, 100, 100);
-                doc.text('Generated by KCET Elite Predictor', pageWidth / 2, pageHeight - margin - 5, { align: 'center' });
-
-                doc.save(`KCET_2025_Rank_${rankData.medium}.pdf`);
-            } catch (err) {
-                console.error('Generate PDF error:', err);
-                alert('Failed to generate PDF. Please try again.');
+                console.error('Update progress chart error:', err);
             }
         }
 
         function triggerConfetti() {
             try {
-                const duration = 3 * 1000;
-                const animationEnd = Date.now() + duration;
-                const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
-                function randomInRange(min, max) {
-                    return Math.random() * (max - min) + min;
-                }
-                const interval = setInterval(() => {
-                    const timeLeft = animationEnd - Date.now();
-                    if (timeLeft <= 0) return clearInterval(interval);
-                    const particleCount = 50 * (timeLeft / duration);
-                    confetti({
-                        ...defaults,
-                        particleCount,
-                        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-                    });
-                    confetti({
-                        ...defaults,
-                        particleCount,
-                        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-                    });
-                }, 250);
+                setTimeout(() => {
+                    if (typeof confetti === 'function') {
+                        confetti({
+                            particleCount: 100,
+                            spread: 70,
+                            origin: { y: 0.6 }
+                        });
+                    } else {
+                        console.warn('Confetti library not loaded');
+                        alert('Celebration effect unavailable. Your rank is still awesome!');
+                    }
+                }, 500);
             } catch (err) {
                 console.error('Confetti error:', err);
             }
@@ -1562,17 +1548,17 @@
                 particlesJS('particles-js', {
                     particles: {
                         number: { value: 80, density: { enable: true, value_area: 800 } },
-                        color: { value: ['#6d28d9', '#ec4899', '#a78bfa'] },
+                        color: { value: '#6d28d9' },
                         shape: { type: 'circle' },
                         opacity: { value: 0.5, random: true },
                         size: { value: 3, random: true },
                         line_linked: { enable: true, distance: 150, color: '#a78bfa', opacity: 0.4, width: 1 },
-                        move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+                        move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out' }
                     },
                     interactivity: {
                         detect_on: 'canvas',
-                        events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
-                        modes: { grab: { distance: 140, line_linked: { opacity: 1 } }, push: { particles_nb: 4 } }
+                        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                        modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
                     },
                     retina_detect: true
                 });
@@ -1586,14 +1572,15 @@
                 let timeLeft = 10;
                 const timerDisplay = document.getElementById('disclaimer-timer');
                 const unlockBtn = document.getElementById('unlock-btn');
+                if (currentTimer) clearInterval(currentTimer);
                 currentTimer = setInterval(() => {
                     timeLeft--;
                     timerDisplay.textContent = `Unlock in ${timeLeft}s...`;
                     if (timeLeft <= 0) {
                         clearInterval(currentTimer);
-                        timerDisplay.textContent = 'Ready to Unlock!';
+                        timerDisplay.textContent = 'Ready to unlock!';
                         unlockBtn.disabled = false;
-                        unlockBtn.focus();
+                        unlockBtn.classList.add('animate__pulse');
                     }
                 }, 1000);
             } catch (err) {
@@ -1610,8 +1597,45 @@
                 const savedTheme = safeLocalStorage('get', 'theme') || 'light';
                 setTheme(savedTheme);
 
+                document.getElementById('unlock-btn').addEventListener('click', () => {
+                    disclaimerAccepted = true;
+                    document.getElementById('disclaimer-overlay').classList.add('animate__fadeOut');
+                    setTimeout(() => {
+                        document.getElementById('disclaimer-overlay').style.display = 'none';
+                        document.getElementById('main-content').style.pointerEvents = 'auto';
+                        document.getElementById('main-content').style.opacity = '1';
+                    }, 500);
+                    playSound('unlock');
+                });
+
+                document.getElementById('close-disclaimer').addEventListener('click', () => {
+                    if (disclaimerAccepted) {
+                        document.getElementById('disclaimer-overlay').classList.add('animate__fadeOut');
+                        setTimeout(() => {
+                            document.getElementById('disclaimer-overlay').style.display = 'none';
+                            document.getElementById('main-content').style.pointerEvents = 'auto';
+                            document.getElementById('main-content').style.opacity = '1';
+                        }, 500);
+                        playSound('click');
+                    }
+                });
+
+                document.getElementById('reread-disclaimer').addEventListener('click', () => {
+                    document.getElementById('disclaimer-overlay').style.display = 'flex';
+                    document.getElementById('disclaimer-overlay').classList.remove('animate__fadeOut');
+                    document.getElementById('disclaimer-overlay').classList.add('animate__fadeIn');
+                    document.getElementById('main-content').style.pointerEvents = 'none';
+                    document.getElementById('main-content').style.opacity = '0.5';
+                    if (!disclaimerAccepted) startDisclaimerTimer();
+                    playSound('click');
+                });
+
                 document.querySelectorAll('.tab-btn').forEach(btn => {
                     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+                });
+
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.addEventListener('click', () => setTheme(opt.dataset.theme));
                 });
 
                 document.querySelectorAll('.category-btn').forEach(btn => {
@@ -1622,81 +1646,36 @@
                     });
                 });
 
-                document.querySelectorAll('.theme-option').forEach(opt => {
-                    opt.addEventListener('click', () => setTheme(opt.dataset.theme));
+                document.getElementById('kcet-total').addEventListener('input', e => {
+                    const value = parseFloat(e.target.value) || 0;
+                    if (value >= 0 && value <= 180) updateMark('kcet', value);
                 });
 
-                document.getElementById('kcet-total').addEventListener('input', e => updateMark('kcet', e.target.value));
-                document.getElementById('puc-percentage').addEventListener('input', e => updateMark('puc', e.target.value));
+                document.getElementById('puc-percentage').addEventListener('input', e => {
+                    const value = parseFloat(e.target.value) || 0;
+                    if (value >= 0 && value <= 100) updateMark('puc', value);
+                });
+
                 document.getElementById('quick-cet').addEventListener('input', () => updateRankLive('quick'));
                 document.getElementById('quick-puc').addEventListener('input', () => updateRankLive('quick'));
 
-                document.getElementById('unlock-btn').addEventListener('click', () => {
-                    try {
-                        disclaimerAccepted = true;
-                        document.getElementById('disclaimer-overlay').classList.add('animate__fadeOut');
-                        setTimeout(() => {
-                            document.getElementById('disclaimer-overlay').style.display = 'none';
-                            document.getElementById('main-content').style.pointerEvents = 'auto';
-                            document.getElementById('main-content').style.opacity = '1';
-                        }, 700);
-                        playSound('unlock');
-                    } catch (err) {
-                        console.error('Unlock button error:', err);
-                    }
+                document.getElementById('recalculate-btn').addEventListener('click', calculateRank);
+                document.getElementById('download-png-btn').addEventListener('click', downloadBreakdownPNG);
+                document.getElementById('download-pdf-btn').addEventListener('click', () => {
+                    const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
+                    const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
+                    const rankData = predictKCETRank(cet, puc);
+                    const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
+                    generateRankCard(cet, puc, rankData, category);
                 });
 
-                document.getElementById('close-disclaimer').addEventListener('click', () => {
-                    if (disclaimerAccepted) {
-                        document.getElementById('disclaimer-overlay').classList.add('animate__fadeOut');
-                        setTimeout(() => {
-                            document.getElementById('disclaimer-overlay').style.display = 'none';
-                            document.getElementById('main-content').style.pointerEvents = 'auto';
-                            document.getElementById('main-content').style.opacity = '1';
-                        }, 700);
-                        playSound('click');
-                    }
-                });
-
-                document.getElementById('reread-disclaimer').addEventListener('click', () => {
-                    try {
-                        document.getElementById('disclaimer-overlay').style.display = 'flex';
-                        document.getElementById('disclaimer-overlay').classList.remove('animate__fadeOut');
-                        document.getElementById('disclaimer-overlay').classList.add('animate__fadeIn');
-                        document.getElementById('main-content').style.pointerEvents = 'none';
-                        document.getElementById('main-content').style.opacity = '0.5';
-                        if (disclaimerAccepted) {
-                            document.getElementById('unlock-btn').disabled = false;
-                            document.getElementById('disclaimer-timer').textContent = 'Ready to Unlock!';
-                        } else {
-                            startDisclaimerTimer();
-                        }
-                        playSound('click');
-                    } catch (err) {
-                        console.error('Reread disclaimer error:', err);
-                    }
-                });
-
-                document.getElementById('recalculate-btn').addEventListener('click', () => {
-                    try {
-                        calculateRank();
-                        switchTab('breakdown');
-                        playSound('click');
-                    } catch (err) {
-                        console.error('Recalculate button error:', err);
-                    }
-                });
-
-                document.getElementById('download-png-btn').addEventListener('click', () => {
-                    try {
-                        downloadBreakdownPNG();
-                        playSound('click');
-                    } catch (err) {
-                        console.error('Download PNG button error:', err);
-                    }
-                });
+                // Initialize with default values for KCET 141, PUC 94
+                document.getElementById('kcet-total').value = 141;
+                document.getElementById('puc-percentage').value = 94;
+                updateMark('kcet', 141);
+                updateMark('puc', 94);
             } catch (err) {
-                console.error('Initialization error:', err);
+                console.error('DOM load error:', err);
             }
         });
     </script>
