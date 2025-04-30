@@ -3,36 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KCET 2025 Rank Predictor | Premium Tool</title>
+    <title>KCET 2025 Rank Predictor | Elite Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/konfetti@1.2.0/dist/konfetti.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.0/dist/vanilla-tilt.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --accent: #f72585;
-            --light: #f1f5f9;
-            --dark: #1f2937;
+            --primary: #6d28d9;
+            --secondary: #a78bfa;
+            --accent: #ec4899;
+            --light: #f5f3ff;
+            --dark: #1e1b4b;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #3b82f6;
-            --bg: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
-            --text: #1f2937;
+            --bg: linear-gradient(135deg, #f5f3ff 0%, #e9d5ff 100%);
+            --text: #1e1b4b;
             --card-bg: rgba(255, 255, 255, 0.95);
-            --shadow: 0 4px 15px rgba(0, 0, 0, 0.05), 0 0 10px rgba(67, 97, 238, 0.1);
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 0 0 16px rgba(109, 40, 217, 0.2);
+            --interactive-border: rgba(255, 255, 255, 0.8);
         }
 
         [data-theme="dark"] {
-            --bg: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-            --text: #f1f5f9;
-            --card-bg: rgba(31, 41, 55, 0.95);
-            --light: #4b5563;
-            --shadow: 0 4px 15px rgba(0, 0, 0, 0.25), 0 0 10px rgba(58, 12, 163, 0.1);
+            --bg: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+            --text: #f5f3ff;
+            --card-bg: rgba(67, 56, 202, 0.95);
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --interactive-border: rgba(167, 139, 250, 0.6);
         }
 
         body {
@@ -40,313 +44,222 @@
             background: var(--bg);
             min-height: 100vh;
             color: var(--text);
-            transition: background 0.3s ease, color 0.3s ease;
+            transition: background 0.5s ease, color 0.5s ease;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
         }
 
         .container {
-            max-width: 1280px;
+            max-width: 1440px;
             margin: 0 auto;
-            padding: 1rem 0.75rem;
+            padding: 2rem 1.5rem;
         }
 
         .glass-card {
             background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
             box-shadow: var(--shadow);
-            padding: 1.5rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 2rem;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
 
         .glass-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), 0 0 15px rgba(67, 97, 238, 0.15);
+            transform: translateY(-10px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
         }
 
         .gradient-text {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(90deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            font-weight: 700;
+            font-weight: 900;
         }
 
         .gradient-bg {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: background 0.3s ease;
         }
 
-        .mark-selector {
+        .gradient-bg:hover {
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+        }
+
+        .premium-btn {
             position: relative;
-            width: 80px;
-            height: 80px;
-            margin: 0 auto;
-            transition: transform 0.3s ease;
-        }
-
-        .mark-selector:hover {
-            transform: scale(1.05);
-        }
-
-        .mark-circle {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(var(--primary) 0%, var(--secondary) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.2);
-            cursor: pointer;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4); }
-            70% { box-shadow: 0 0 0 8px rgba(67, 97, 238, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0); }
-        }
-
-        .mark-value {
-            width: 70%;
-            height: 70%;
-            border-radius: 50%;
-            background: var(--bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1.25rem;
-            color: var(--primary);
+            overflow: hidden;
+            border: 2px solid var(--interactive-border);
             transition: all 0.3s ease;
+            animation: pulse-border 2s infinite;
         }
 
-        .mark-controls {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
+        .premium-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(109, 40, 217, 0.5);
+            border-color: var(--accent);
         }
 
-        .mark-btn {
-            position: absolute;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--bg);
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
+        @keyframes pulse-border {
+            0%, 100% { border-color: var(--interactive-border); }
+            50% { border-color: var(--accent); }
         }
-
-        .mark-btn:hover {
-            background: var(--primary);
-            color: #fff;
-            transform: scale(1.15);
-        }
-
-        .mark-btn:active {
-            transform: scale(0.9);
-        }
-
-        .mark-btn.increment { top: -14px; left: 50%; transform: translateX(-50%); }
-        .mark-btn.decrement { bottom: -14px; left: 50%; transform: translateX(-50%); }
-        .mark-btn.large-inc { right: -14px; top: 50%; transform: translateY(-50%); }
-        .mark-btn.large-dec { left: -14px; top: 50%; transform: translateY(-50%); }
 
         .fab {
             position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            width: 50px;
-            height: 50px;
+            bottom: 2.5rem;
+            right: 2.5rem;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), var(--primary));
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
-            box-shadow: 0 5px 20px rgba(247, 37, 133, 0.3);
+            font-size: 1.75rem;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5);
             cursor: pointer;
-            animation: bounce 2s infinite;
+            animation: bounce 2.5s infinite;
+            z-index: 1000;
+            border: 2px solid var(--interactive-border);
         }
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-12px); }
         }
 
         .tab-content {
             display: none;
             opacity: 0;
-            transform: translateY(15px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
 
         .tab-content.active {
             display: block;
             opacity: 1;
             transform: translateY(0);
-            animation: fadeInUp 0.5s ease;
+        }
+
+        .tab-nav {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            position: relative;
+        }
+
+        .tab-nav::-webkit-scrollbar {
+            display: none;
         }
 
         .tab-btn {
-            padding: 0.5rem 1rem;
-            border: none;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--interactive-border);
             background: transparent;
             color: var(--text);
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 1.05rem;
+            position: relative;
+            min-width: 120px;
+            border-radius: 12px;
+            margin-right: 0.5rem;
         }
 
         .tab-btn.active {
-            color: var(--primary);
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: #fff;
+            border-color: transparent;
         }
 
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 3px;
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
         }
 
         .category-btn {
-            padding: 0.5rem 0.75rem;
-            border-radius: 10px;
-            font-size: 0.9rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
             font-weight: 600;
-            background: var(--bg);
+            background: var(--card-bg);
             color: var(--text);
-            border: 1px solid var(--light);
+            border: 2px solid var(--interactive-border);
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .category-btn.active {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(90deg, var(--primary), var(--accent));
             color: #fff;
             border-color: transparent;
-            box-shadow: 0 3px 12px rgba(67, 97, 238, 0.25);
+            box-shadow: 0 4px 15px rgba(109, 40, 217, 0.4);
         }
 
-        .category-btn:hover:not(.active) {
-            background: var(--light);
-            transform: translateY(-2px);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        #disclaimer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.96), rgba(76, 29, 149, 0.96));
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            animation: fadeIn 0.7s ease;
         }
 
-        .rank-meter {
-            width: 120px;
-            height: 120px;
-            margin: 15px auto;
-            position: relative;
-        }
-
-        .meter-circle {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(var(--primary) 0% var(--progress, 0%), var(--light) var(--progress, 0%) 100%);
-            box-shadow: 0 0 15px rgba(67, 97, 238, 0.2);
-            animation: rotate 6s linear infinite; /* Slowed down from 3s to 6s */
-            position: relative;
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .meter-circle::before {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            right: 8px;
-            bottom: 8px;
+        #disclaimer-content {
+            max-width: 95%;
+            width: 640px;
             background: var(--card-bg);
-            border-radius: 50%;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .meter-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-weight: 700;
-            color: var(--primary);
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
             text-align: center;
-            width: 80%;
-            font-size: 1.25rem;
-            animation: bounceIn 0.5s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+            font-size: 0.95rem;
+            border: 2px solid var(--interactive-border);
         }
 
-        .progress-container {
-            height: 8px;
-            background: var(--light);
-            border-radius: 4px;
-            overflow: hidden;
+        .premium-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            animation: pulse 2s infinite;
         }
 
-        .progress-bar {
-            height: 100%;
-            transition: width 0.3s ease;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
         }
-
-        .accent-bg { background: var(--accent); }
-        .bg-success { background: var(--success); }
 
         .info-btn {
             position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--info);
-            color: #fff;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--info);
             cursor: help;
             margin-left: 0.5rem;
-            transition: transform 0.3s ease;
-        }
-
-        .info-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .info-btn .tooltip-text {
-            visibility: hidden;
-            width: 200px;
-            background: var(--dark);
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            padding: 0.5rem;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.75rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
 
         .info-btn:hover .tooltip-text {
@@ -354,971 +267,1116 @@
             opacity: 1;
         }
 
+        .tooltip-text {
+            visibility: hidden;
+            width: 180px;
+            background: var(--dark);
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 0.75rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .theme-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--interactive-border);
+            transition: all 0.3s ease;
+        }
+
+        .theme-option:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 12px var(--accent);
+        }
+
+        .theme-option.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.6);
+        }
+
+        .mark-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .mark-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(109, 40, 217, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: pulse-circle 3s infinite;
+            border: 2px solid var(--interactive-border);
+        }
+
+        .mark-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(109, 40, 217, 0.6);
+        }
+
+        @keyframes pulse-circle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .mark-value {
+            color: #fff;
+            font-size: 1.75rem;
+            font-weight: 800;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .mark-controls {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .mark-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px solid var(--interactive-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .mark-btn:hover {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(109, 40, 217, 0.4);
+        }
+
+        .rank-meter {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .meter-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(109, 40, 217, 0.5);
+            transition: transform 0.4s ease;
+            animation: pulse-circle 3s infinite;
+            border: 2px solid var(--interactive-border);
+        }
+
+        .meter-circle.animate__pulse {
+            animation: pulse 1.5s ease-in-out;
+        }
+
+        .meter-text {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 900;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .trend-canvas, .range-canvas, .compare-canvas, .progress-canvas {
+            max-width: 600px;
+            max-height: 300px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+            border: 2px solid var(--interactive-border);
+        }
+
+        .trend-canvas:hover, .range-canvas:hover, .compare-canvas:hover, .progress-canvas:hover {
+            transform: translateY(-8px);
+        }
+
+        .breakdown-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 2.5rem;
+        }
+
+        .input-field {
+            background: var(--card-bg);
+            border: 2px solid var(--interactive-border);
+            border-radius: 12px;
+            padding: 0.75rem;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(109, 40, 217, 0.4);
+        }
+
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            outline: none;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+            border: 2px solid var(--interactive-border);
+        }
+
+        .range-slider:hover {
+            opacity: 1;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--interactive-border);
+        }
+
+        .range-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--interactive-border);
+        }
+
         @media (max-width: 768px) {
-            .container { padding: 1rem 0.5rem; }
-            .glass-card { padding: 1rem; }
-            .rank-meter { width: 100px; height: 100px; }
-            .meter-text { font-size: 1rem; }
-            .mark-selector { width: 70px; height: 70px; }
-            .mark-value { font-size: 1rem; }
-            .mark-btn { width: 24px; height: 24px; }
-            .fab { width: 45px; height: 45px; font-size: 1rem; bottom: 1rem; right: 1rem; }
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.5rem; }
-            h3 { font-size: 1.25rem; }
-            .tab-btn { font-size: 0.85rem; padding: 0.4rem 0.75rem; }
-            .category-btn { font-size: 0.85rem; padding: 0.4rem 0.6rem; }
-            #disclaimer-scroll { padding: 1rem; }
-            .grid-cols-3 { grid-template-columns: 1fr 1fr; }
-            .grid-cols-2 { grid-template-columns: 1fr; }
-            .info-btn .tooltip-text { width: 150px; font-size: 0.7rem; }
+            .container { padding: 1.5rem 1rem; }
+            .glass-card { padding: 1.5rem; }
+            .mark-circle { width: 100px; height: 100px; }
+            .mark-value { font-size: 1.5rem; }
+            .mark-btn { width: 40px; height: 40px; font-size: 1rem; }
+            .meter-circle { width: 120px; height: 120px; }
+            .meter-text { font-size: 1.75rem; }
+            .trend-canvas, .range-canvas, .compare-canvas, .progress-canvas { max-width: 100%; }
+            .fab { width: 60px; height: 60px; font-size: 1.5rem; bottom: 2rem; right: 2rem; }
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.85rem; }
+            #disclaimer-content { padding: 1.75rem; width: 90%; font-size: 0.9rem; }
+            #disclaimer-content h2 { font-size: 1.75rem; }
+            .premium-btn, .tab-btn, .category-btn, .input-field, .range-slider { border-width: 1px; }
+            .theme-option { width: 28px; height: 28px; }
+            .tab-btn { font-size: 0.95rem; padding: 0.5rem 1rem; min-width: 100px; }
         }
 
         @media (max-width: 480px) {
-            .meter-text { font-size: 0.9rem; }
-            .mark-selector { width: 60px; height: 60px; }
-            .mark-value { font-size: 0.9rem; }
-            .mark-btn { width: 20px; height: 20px; }
-            .fab { width: 40px; height: 40px; font-size: 0.9rem; }
-            h1 { font-size: 1.75rem; }
-            h2 { font-size: 1.25rem; }
-            h3 { font-size: 1.1rem; }
-            .tab-btn { font-size: 0.8rem; padding: 0.3rem 0.5rem; }
-            .category-btn { font-size: 0.8rem; padding: 0.3rem 0.5rem; }
-            .grid-cols-2 { grid-template-columns: 1fr; }
-            #disclaimer-scroll { max-height: 50vh; padding: 0.75rem; }
-            .info-btn .tooltip-text { width: 120px; font-size: 0.65rem; }
-        }
-
-        #unlock-btn:not(:disabled) {
-            animation: pulse 1s infinite;
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            .mark-circle { width: 80px; height: 80px; }
+            .mark-value { font-size: 1.25rem; }
+            .mark-btn { width: 36px; height: 36px; font-size: 0.9rem; }
+            .meter-circle { width: 100px; height: 100px; }
+            .meter-text { font-size: 1.5rem; }
+            .tab-btn { font-size: 0.85rem; padding: 0.5rem 0.75rem; min-width: 80px; }
+            #disclaimer-content { padding: 1.25rem; font-size: 0.85rem; }
+            #disclaimer-content h2 { font-size: 1.5rem; }
+            .fab { width: 50px; height: 50px; font-size: 1.25rem; }
+            .theme-option { width: 24px; height: 24px; }
         }
     </style>
 </head>
 <body>
-    <div id="disclaimer-scroll" class="fixed bottom-0 left-0 w-full bg-gradient-to-t from-gray-900/90 to-gray-800/90 text-white p-4 z-50 shadow-lg rounded-t-2xl animate__animated animate__slideInUp" style="max-height: 50vh; overflow-y: auto; backdrop-filter: blur(10px);">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold flex items-center"><i class="fas fa-shield-alt mr-2 text-yellow-400"></i> Legal Disclaimer</h2>
-            <button id="close-disclaimer" class="text-white hover:text-gray-300 transition"><i class="fas fa-times"></i></button>
+    <div id="particles-js"></div>
+
+    <div id="disclaimer-overlay" class="animate__animated animate__fadeIn">
+        <div id="disclaimer-content" class="animate__animated animate__zoomIn">
+            <i class="fas fa-shield-alt premium-icon"></i>
+            <h2 class="text-2xl font-bold mb-6 gradient-text">Important Disclaimer</h2>
+            <div class="space-y-4 text-gray-700 leading-relaxed">
+                <p class="flex items-start"><i class="fas fa-info-circle mr-2 mt-1 text-blue-500"></i><span><strong>Estimate Only:</strong> This tool provides rank predictions based on historical KCET data (2023–2025, ~3.12 lakh candidates). It is not an official KEA result.</span></p>
+                <p class="flex items-start"><i class="fas fa-exclamation-triangle mr-2 mt-1 text-yellow-500"></i><span><strong>Accuracy Limitations:</strong> Predictions may vary due to score normalization, exam difficulty, or KEA policy changes.</span></p>
+                <p class="flex items-start"><i class="fas fa-ban mr-2 mt-1 text-red-500"></i><span><strong>Eligibility Restrictions:</strong> Per KEA 2024 rules, IIT/NIT students via JEE are barred from CET counseling.</span></p>
+                <p class="flex items-start"><i class="fas fa-link mr-2 mt-1 text-blue-500"></i><span><strong>Official Source:</strong> Verify results at <a href="https://kea.kar.nic.in" target="_blank" class="underline hover:text-blue-600">kea.kar.nic.in</a>.</span></p>
+                <p class="flex items-start"><i class="fas fa-lock mr-2 mt-1 text-green-500"></i><span><strong>Data Privacy:</strong> All inputs are processed locally. No data is stored or shared.</span></p>
+                <p class="flex items-start"><i class="fas fa-hand-paper mr-2 mt-1 text-red-500"></i><span><strong>No Liability:</strong> Not affiliated with KEA or NTA. No responsibility for errors.</span></p>
+                <p class="flex items-start"><i class="fas fa-users mr-2 mt-1 text-purple-500"></i><span><strong>Category Usage:</strong> Category selection impacts college cutoffs, not ranks.</span></p>
+                <p class="text-xs italic text-gray-500 mt-4">Wait for the timer to unlock...</p>
+            </div>
+            <div class="mt-6 text-center">
+                <p class="text-sm font-semibold text-gray-700" id="disclaimer-timer">Unlock in 10s...</p>
+                <button id="unlock-btn" class="mt-4 w-full gradient-bg text-white py-2.5 px-5 rounded-xl text-base font-semibold premium-btn disabled:opacity-50" disabled>
+                    <i class="fas fa-unlock-alt mr-2"></i> Unlock Predictor
+                </button>
+                <button id="close-disclaimer" class="mt-2 text-gray-500 hover:text-gray-700 text-sm"><i class="fas fa-times mr-1"></i> Close (After Unlock)</button>
+            </div>
         </div>
-        <div class="space-y-3 text-sm leading-relaxed">
-            <p class="flex items-start"><i class="fas fa-info-circle mr-2 mt-1 text-blue-300"></i><span><strong>Estimate Only:</strong> This tool provides a rank prediction based on historical KCET data (2023–2025) with approximately 3.12 lakh candidates. It is not an official result.</span></p>
-            <p class="flex items-start"><i class="fas fa-exclamation-triangle mr-2 mt-1 text-yellow-400"></i><span><strong>Accuracy Limitations:</strong> Predicted ranks may differ from actual ranks due to factors like score normalization, changes in exam difficulty, or updates to KEA policies (e.g., reservation rules, seat matrix).</span></p>
-            <p class="flex items-start"><i class="fas fa-ban mr-2 mt-1 text-red-400"></i><span><strong>Eligibility Restrictions:</strong> Per KEA’s 2024 rules, students admitted to IITs/NITs via JEE are barred from CET counseling. This tool does not account for such eligibility criteria.</span></p>
-            <p class="flex items-start"><i class="fas fa-link mr-2 mt-1 text-blue-300"></i><span><strong>Official Source:</strong> This tool is not for sole decision-making. Always verify results and counseling details with the official KEA website at <a href="https://kea.kar.nic.in" target="_blank" class="underline hover:text-blue-200">kea.kar.nic.in</a>.</span></p>
-            <p class="flex items-start"><i class="fas fa-lock mr-2 mt-1 text-green-400"></i><span><strong>Data Privacy:</strong> All inputs (marks, category, etc.) are processed locally on your device. We do not store, collect, or transmit any personal data.</span></p>
-            <p class="flex items-start"><i class="fas fa-hand-paper mr-2 mt-1 text-red-400"></i><span><strong>No Liability:</strong> We are not affiliated with KEA or NTA. We bear no responsibility for errors in prediction, decisions made based on this tool, or changes in KEA policies.</span></p>
-            <p class="flex items-start"><i class="fas fa-users mr-2 mt-1 text-purple-400"></i><span><strong>Category Usage:</strong> Category selection affects cutoff eligibility for college suggestions but does not alter the rank prediction, which is based solely on marks.</span></p>
-            <p class="flex items-start"><i class="fas fa-file-alt mr-2 mt-1 text-gray-300"></i><span><strong>Historical Data:</strong> Predictions use a rank table derived from past trends. Future trends may vary, especially with changes in candidate numbers or exam patterns.</span></p>
-            <p class="text-xs italic text-gray-300 mt-2">Scroll to accept and unlock...</p>
-        </div>
-        <div class="mt-4 w-full bg-gray-700/50 rounded-full h-1.5 overflow-hidden">
-            <div id="scroll-progress" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
-        </div>
-        <button id="unlock-btn" class="mt-3 w-full gradient-bg text-white py-2 px-4 rounded-xl text-sm font-semibold hover:opacity-90 disabled:opacity-50 animate__animated" disabled>
-            <i class="fas fa-unlock-alt mr-2"></i> Unlock Predictor
-        </button>
     </div>
 
-    <div class="container" id="main-content" style="pointer-events: none; opacity: 0.5; transition: opacity 0.3s ease">
-        <header class="text-center mb-8 animate__animated animate__fadeInDown">
-            <div class="inline-block p-4 bg-white rounded-2xl shadow-md mb-4 animate__animated animate__zoomIn">
-                <i class="fas fa-calculator text-3xl gradient-text"></i>
+    <div class="container" id="main-content" style="pointer-events: none; opacity: 0.5; transition: opacity 0.5s ease">
+        <header class="text-center mb-12 animate__animated animate__fadeInDown">
+            <div class="inline-block p-6 bg-white rounded-full shadow-2xl mb-5 animate__animated animate__zoomIn">
+                <i class="fas fa-crown text-5xl gradient-text"></i>
             </div>
-            <h1 class="text-3xl font-extrabold mb-2 animate__animated animate__fadeIn"><span class="gradient-text">KCET 2025</span> Rank Predictor</h1>
-            <p class="text-sm text-gray-600 max-w-xl mx-auto animate__animated animate__fadeIn animate__delay-1s">Your sleek, premium tool for accurate rank predictions</p>
-            <button id="theme-toggle" class="absolute top-0 right-0 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition animate__animated animate__pulse" title="Toggle Dark Mode">
-                <i class="fas fa-moon text-gray-600 text-sm"></i>
-            </button>
+            <h1 class="text-5xl font-extrabold mb-4"><span class="gradient-text">KCET 2025</span> Elite Predictor</h1>
+            <p class="text-lg text-gray-600 max-w-md mx-auto animate__animated animate__fadeIn animate__delay-1s">Unleash your potential with cutting-edge rank predictions!</p>
+            <div class="theme-selector animate__animated animate__fadeIn animate__delay-2s">
+                <div class="theme-option active" data-theme="light" style="background: #f5f3ff;" title="Light"></div>
+                <div class="theme-option" data-theme="dark" style="background: #4c1d95;" title="Dark"></div>
+            </div>
         </header>
 
-        <section class="glass-card mb-8 p-4 animate__animated animate__fadeIn">
+        <section class="glass-card mb-12 p-6 animate__animated animate__fadeIn banner" data-tilt data-tilt-max="10">
             <div class="flex items-start">
                 <div class="flex-shrink-0 pt-1">
-                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
                 </div>
-                <div class="ml-3">
-                    <h3 class="text-lg font-semibold text-red-800">Important Disclaimer</h3>
-                    <p class="text-sm text-red-700">
-                        This is an estimate. 
-                        <a href="#" class="font-medium underline hover:text-red-900" onclick="switchTab('disclaimer')">View full details</a>
+                <div class="ml-4">
+                    <h3 class="text-xl font-semibold text-red-800">Read the Disclaimer</h3>
+                    <p class="text-base text-red-700">
+                        Predictions are estimates only.
+                        <a href="#" class="font-medium underline hover:text-red-900" onclick="switchTab('disclaimer')">Learn more</a>
                     </p>
                 </div>
             </div>
         </section>
 
-        <section class="glass-card p-4 mb-8 animate__animated animate__fadeInUp">
-            <nav class="flex border-b border-gray-200 mb-4 overflow-x-auto">
-                <button class="tab-btn active" data-tab="predictor"><i class="fas fa-calculator mr-2 text-sm"></i> Predictor</button>
-                <button class="tab-btn" data-tab="breakdown"><i class="fas fa-chart-pie mr-2 text-sm"></i> Breakdown</button>
-                <button class="tab-btn" data-tab="how-it-works"><i class="fas fa-cogs mr-2 text-sm"></i> How It Works</button>
-                <button class="tab-btn" data-tab="disclaimer"><i class="fas fa-exclamation-triangle mr-2 text-sm"></i> Disclaimer</button>
-                <button class="tab-btn" data-tab="history"><i class="fas fa-history mr-2 text-sm"></i> History</button>
+        <section class="glass-card p-6 animate__animated animate__fadeInUp" data-tilt data-tilt-max="10">
+            <nav class="flex mb-8 tab-nav">
+                <button class="tab-btn active" data-tab="predictor"><i class="fas fa-calculator mr-2"></i> Predictor</button>
+                <button class="tab-btn" data-tab="breakdown"><i class="fas fa-chart-pie mr-2"></i> Breakdown</button>
+                <button class="tab-btn" data-tab="progress"><i class="fas fa-chart-line mr-2"></i> Progress</button>
+                <button class="tab-btn" data-tab="disclaimer"><i class="fas fa-exclamation-triangle mr-2"></i> Disclaimer</button>
             </nav>
 
             <div class="tab-content active" id="predictor">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <div class="lg:col-span-2">
-                        <div class="mb-6">
-                            <h3 class="text-xl font-semibold mb-4 text-gray-700 animate__animated animate__fadeIn">
-                                <span class="gradient-text">Quick Estimate</span>
-                                <span class="info-btn"><i class="fas fa-info"></i>
-                                    <span class="tooltip-text">Get a fast rank prediction by entering your total KCET marks (out of 180) and PUC PCM percentage (0-100). Results are based on historical trends.</span>
-                                </span>
-                            </h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <h2 class="text-3xl font-bold mb-8 flex items-center animate__animated animate__fadeIn"><i class="fas fa-calculator mr-3 gradient-text"></i> Rank Predictor</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-8">
+                        <div class="glass-card p-6 animate__animated animate__fadeIn" data-tilt data-tilt-max="8">
+                            <h3 class="text-2xl font-semibold mb-5 gradient-text">Quick Estimate</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-5">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">CET Score (0-180)</label>
-                                    <input type="number" id="quick-cet" class="w-full border border-gray-300 bg-gray-50 rounded-xl p-3 focus:shadow-md shadow-primary/30 transition animate__animated animate__fadeIn" min="0" max="180" placeholder="CET Score">
+                                    <label class="block text-base font-medium text-gray-700 mb-2">KCET PCM (0-180)</label>
+                                    <input type="number" id="quick-cet" class="w-full input-field" placeholder="e.g., 90" min="0" max="180">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">PUC % (0-100)</label>
-                                    <input type="number" id="quick-puc" class="w-full border border-gray-300 bg-gray-50 rounded-xl p-3 focus:shadow-md shadow-primary/30 transition animate__animated animate__fadeIn" min="0" max="100" placeholder="PUC %">
+                                    <label class="block text-base font-medium text-gray-700 mb-2">PUC PCM % (0-100)</label>
+                                    <input type="number" id="quick-puc" class="w-full input-field" placeholder="e.g., 85" min="0" max="100">
                                 </div>
                             </div>
-                            <div id="quick-result" class="mt-4 hidden">
-                                <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 animate__animated animate__bounceIn">
-                                    <p class="text-blue-800 font-semibold">Rank: <span id="quick-rank" class="font-bold text-lg">-</span></p>
-                                    <p class="text-xs text-blue-700 mt-1" id="quick-analysis"></p>
-                                </div>
+                            <div id="quick-result" class="mt-5 hidden">
+                                <p class="text-base text-gray-600">Estimated Rank: <span id="quick-rank" class="font-semibold gradient-text">---</span></p>
+                                <p class="text-base text-gray-600">Range: <span id="quick-range" class="font-semibold">---</span></p>
+                                <p class="text-base text-gray-600 mt-3" id="quick-analysis"></p>
                             </div>
                         </div>
 
-                        <div class="mb-6">
-                            <h3 class="text-xl font-semibold mb-4 text-gray-700 animate__animated animate__fadeIn">
-                                <span class="gradient-text">Detailed</span> Calculator
-                                <span class="info-btn"><i class="fas fa-info"></i>
-                                    <span class="tooltip-text">Fine-tune your KCET PCM total (0-180) and PUC PCM percentage (0-100) using sliders or buttons for a more precise rank prediction.</span>
-                                </span>
-                            </h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="text-center">
-                                    <h4 class="font-medium mb-2 text-base">KCET PCM (0-180)</h4>
-                                    <div class="mark-selector">
-                                        <div class="mark-circle" onclick="focusInput('kcet-total')">
-                                            <div class="mark-value" id="kcet-total-value">90</div>
-                                        </div>
-                                        <div class="mark-controls">
-                                            <button class="mark-btn increment" data-action="kcet-total" data-change="1"><i class="fas fa-plus text-xs"></i></button>
-                                            <button class="mark-btn decrement" data-action="kcet-total" data-change="-1"><i class="fas fa-minus text-xs"></i></button>
-                                            <button class="mark-btn large-inc" data-action="kcet-total" data-change="5"><i class="fas fa-angle-double-up text-xs"></i></button>
-                                            <button class="mark-btn large-dec" data-action="kcet-total" data-change="-5"><i class="fas fa-angle-double-down text-xs"></i></button>
-                                        </div>
+                        <div class="glass-card p-6 animate__animated animate__fadeIn animate__delay-1s" data-tilt data-tilt-max="8">
+                            <h3 class="text-2xl font-semibold mb-5 gradient-text">Detailed Calculator</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-5">
+                                <div class="mark-selector">
+                                    <label class="block text-base font-medium text-gray-700 mb-3">KCET PCM (0-180)</label>
+                                    <div class="mark-circle" onclick="focusInput('kcet-total')">
+                                        <span class="mark-value" id="kcet-value">90</span>
                                     </div>
-                                    <input type="range" id="kcet-total" class="w-full mt-2 accent-primary" min="0" max="180" value="90">
+                                    <input type="range" id="kcet-total" class="range-slider mt-3" min="0" max="180" value="90">
+                                    <div class="mark-controls">
+                                        <button class="mark-btn large-dec" onclick="adjustMark('kcet', -10)">−−</button>
+                                        <button class="mark-btn decrement" onclick="adjustMark('kcet', -1)">−</button>
+                                        <button class="mark-btn increment" onclick="adjustMark('kcet', 1)">+</button>
+                                        <button class="mark-btn large-inc" onclick="adjustMark('kcet', 10)">++</button>
+                                    </div>
                                 </div>
-                                <div class="text-center">
-                                    <h4 class="font-medium mb-2 text-base">PUC PCM % (0-100)</h4>
-                                    <div class="mark-selector">
-                                        <div class="mark-circle" onclick="focusInput('puc-percentage')">
-                                            <div class="mark-value" id="puc-percentage-value">60</div>
-                                        </div>
-                                        <div class="mark-controls">
-                                            <button class="mark-btn increment" data-action="puc-percentage" data-change="1"><i class="fas fa-plus text-xs"></i></button>
-                                            <button class="mark-btn decrement" data-action="puc-percentage" data-change="-1"><i class="fas fa-minus text-xs"></i></button>
-                                            <button class="mark-btn large-inc" data-action="puc-percentage" data-change="5"><i class="fas fa-angle-double-up text-xs"></i></button>
-                                            <button class="mark-btn large-dec" data-action="puc-percentage" data-change="-5"><i class="fas fa-angle-double-down text-xs"></i></button>
-                                        </div>
+                                <div class="mark-selector">
+                                    <label class="block text-base font-medium text-gray-700 mb-3">PUC PCM % (0-100)</label>
+                                    <div class="mark-circle" onclick="focusInput('puc-percentage')">
+                                        <span class="mark-value" id="puc-value">60</span>
                                     </div>
-                                    <input type="range" id="puc-percentage" class="w-full mt-2 accent-primary" min="0" max="100" value="60">
+                                    <input type="range" id="puc-percentage" class="range-slider mt-3" min="0" max="100" value="60">
+                                    <div class="mark-controls">
+                                        <button class="mark-btn large-dec" onclick="adjustMark('puc', -10)">−−</button>
+                                        <button class="mark-btn decrement" onclick="adjustMark('puc', -1)">−</button>
+                                        <button class="mark-btn increment" onclick="adjustMark('puc', 1)">+</button>
+                                        <button class="mark-btn large-inc" onclick="adjustMark('puc', 10)">++</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mt-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Custom Cutoff
-                                    <span class="info-btn"><i class="fas fa-info"></i>
-                                        <span class="tooltip-text">Set a specific rank cutoff (e.g., 5000) to filter college suggestions. Leave blank to use default category-based cutoffs.</span>
-                                    </span>
-                                </label>
-                                <input type="number" id="custom-cutoff" class="w-full border border-gray-300 bg-gray-50 rounded-xl p-3 focus:shadow-md shadow-primary/30 transition animate__animated animate__fadeIn" min="0" placeholder="e.g., 5000">
+                            <div class="mt-5">
+                                <label class="block text-base font-medium text-gray-700 mb-3">Category <i class="fas fa-info-circle info-btn"><span class="tooltip-text">Category affects college cutoffs, not ranks.</span></i></label>
+                                <div class="flex flex-wrap gap-3">
+                                    <button class="category-btn active" data-category="general">General</button>
+                                    <button class="category-btn" data-category="obc">OBC</button>
+                                    <button class="category-btn" data-category="sc">SC</button>
+                                    <button class="category-btn" data-category="st">ST</button>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-user-tag mr-2 gradient-text"></i> Category
-                                <span class="info-btn"><i class="fas fa-info"></i>
-                                    <span class="tooltip-text">Select your category (General, SC/ST, OBC) to adjust college suggestion cutoffs. This does not affect your rank prediction.</span>
-                                </span>
-                            </label>
-                            <div class="grid grid-cols-3 gap-2">
-                                <button class="category-btn active" data-category="general">General</button>
-                                <button class="category-btn" data-category="scst">SC/ST</button>
-                                <button class="category-btn" data-category="obc">OBC</button>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-2">Category affects cutoff eligibility, not rank.</p>
-                            <input type="hidden" id="category" value="general">
                         </div>
                     </div>
 
-                    <div class="glass-card p-4 gradient-bg text-white rounded-2xl animate__animated animate__zoomIn">
-                        <div class="text-center mb-4">
-                            <div class="inline-block p-3 bg-white bg-opacity-30 rounded-full mb-2 animate__animated animate__pulse">
-                                <i class="fas fa-trophy text-xl text-yellow-400"></i>
-                            </div>
-                            <h2 class="text-xl font-bold mb-1">
-                                Your Rank
-                                <span class="info-btn"><i class="fas fa-info"></i>
-                                    <span class="tooltip-text">Your predicted rank based on KCET 2025 trends, calculated from your CET and PUC scores (50% each). The meter reflects your composite score.</span>
-                                </span>
-                            </h2>
-                            <p class="text-xs opacity-90">2025 trends</p>
-                        </div>
+                    <div class="glass-card p-6 animate__animated animate__fadeIn animate__delay-2s" data-tilt data-tilt-max="8">
+                        <h3 class="text-2xl font-semibold mb-5 gradient-text">Your Elite Rank</h3>
                         <div class="rank-meter">
-                            <div class="meter-circle" id="meterCircle"><div class="meter-text" id="predicted-rank">---</div></div>
+                            <div id="meterCircle" class="meter-circle">
+                                <span id="predicted-rank" class="meter-text">---</span>
+                            </div>
                         </div>
-                        <div class="text-xs opacity-90 space-y-2 mt-4">
-                            <div class="flex items-start"><i class="fas fa-info-circle mr-2 text-sm"></i><span id="competition-note">Highly competitive (~3.12 lakh)</span></div>
-                            <div class="flex items-start"><i class="fas fa-chart-pie mr-2 text-sm"></i><span>50% PUC + 50% CET</span></div>
-                            <div class="flex items-start"><i class="fas fa-robot mr-2 text-sm"></i><span>AI precision</span></div>
+                        <p class="text-base text-gray-600 text-center">Range: <span id="predicted-range">---</span></p>
+                        <p class="text-base text-gray-600 mt-3 text-center" id="competition-note"></p>
+                        <div class="mt-5 text-center">
+                            <p class="text-sm text-gray-500" id="social-proof">50,000 students predicted!</p>
                         </div>
-                        <button id="see-breakdown-btn" class="w-full mt-3 bg-white text-blue-600 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-opacity-90 transition animate__animated animate__fadeIn hidden"><i class="fas fa-chart-bar mr-1 text-xs"></i> Breakdown</button>
-                        <button id="download-pdf-btn" class="w-full mt-2 bg-white text-blue-600 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-opacity-90 transition animate__animated animate__fadeIn hidden"><i class="fas fa-download mr-1 text-xs"></i> PDF</button>
-                        <button id="share-result-btn" class="w-full mt-2 bg-white text-blue-600 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-opacity-90 transition animate__animated animate__fadeIn hidden"><i class="fas fa-share-alt mr-1 text-xs"></i> Share</button>
-                        <button id="save-result-btn" class="w-full mt-2 bg-white text-blue-600 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-opacity-90 transition animate__animated animate__fadeIn hidden"><i class="fas fa-save mr-1 text-xs"></i> Save</button>
-                        <button id="email-result-btn" class="w-full mt-2 bg-white text-blue-600 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-opacity-90 transition animate__animated animate__fadeIn hidden"><i class="fas fa-envelope mr-1 text-xs"></i> Email</button>
                     </div>
                 </div>
             </div>
 
             <div class="tab-content" id="breakdown">
-                <h2 class="text-2xl font-bold mb-6 flex items-center animate__animated animate__fadeIn"><i class="fas fa-chart-pie mr-2 gradient-text"></i> Result Breakdown</h2>
-                <div id="breakdown-content" class="space-y-6">
-                    <div class="text-center py-8">
-                        <div class="inline-block p-4 bg-blue-50 rounded-full mb-2 animate__animated animate__pulse"><i class="fas fa-search text-2xl text-blue-600"></i></div>
-                        <h3 class="text-lg font-medium text-gray-600 mb-1">Calculate to see stats</h3>
-                        <p class="text-sm text-gray-500">Detailed insights await</p>
+                <h2 class="text-3xl font-bold mb-8 flex items-center animate__animated animate__fadeIn"><i class="fas fa-chart-pie mr-3 gradient-text"></i> Result Breakdown</h2>
+                <div id="breakdown-content" class="space-y-8">
+                    <div class="text-center py-10 animate__animated animate__fadeIn">
+                        <div class="inline-block p-5 bg-white rounded-full mb-3 animate__animated animate__pulse"><i class="fas fa-search text-3xl text-blue-600"></i></div>
+                        <h3 class="text-xl font-medium text-gray-600 mb-2">Calculate to see stats</h3>
+                        <p class="text-base text-gray-500">Detailed insights await</p>
                     </div>
                 </div>
-                <div class="mt-6">
-                    <canvas id="trend-chart" class="trend-canvas w-full"></canvas>
+                <div class="mt-8 animate__animated animate__fadeIn">
+                    <canvas id="trend-chart" class="trend-canvas"></canvas>
+                </div>
+                <div class="mt-8 animate__animated animate__fadeIn">
+                    <canvas id="range-chart" class="range-canvas"></canvas>
+                </div>
+                <div class="breakdown-buttons animate__animated animate__fadeIn">
+                    <button id="recalculate-btn" class="gradient-bg text-white py-2.5 px-5 rounded-xl text-base font-semibold premium-btn"><i class="fas fa-calculator mr-2"></i> Recalculate</button>
+                    <button id="download-png-btn" class="gradient-bg text-white py-2.5 px-5 rounded-xl text-base font-semibold premium-btn"><i class="fas fa-image mr-2"></i> Download PNG</button>
                 </div>
             </div>
 
-            <div class="tab-content" id="how-it-works">
-                <h2 class="text-2xl font-bold mb-6 flex items-center animate__animated animate__fadeIn"><i class="fas fa-cogs mr-2 gradient-text"></i> How It Works</h2>
-                <div class="space-y-6">
-                    <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 animate__animated animate__fadeIn">
-                        <h3 class="text-lg font-semibold text-yellow-800 mb-2 flex items-center"><i class="fas fa-exclamation-triangle mr-2 text-yellow-600"></i> KEA Update</h3>
-                        <p class="text-sm text-yellow-700">IIT/NIT students barred from CET counseling (2024, 53 cases).</p>
+            <div class="tab-content" id="progress">
+                <h2 class="text-3xl font-bold mb-8 flex items-center animate__animated animate__fadeIn"><i class="fas fa-chart-line mr-3 gradient-text"></i> Progress Tracker</h2>
+                <div id="progress-content" class="space-y-6 animate__animated animate__fadeIn">
+                    <div class="text-center py-10">
+                        <div class="inline-block p-5 bg-white rounded-full mb-3 animate__animated animate__pulse">
+                            <i class="fas fa-history text-3xl text-blue-600"></i>
+                        </div>
+                        <h3 class="text-xl font-medium text-gray-600 mb-2">No Predictions Yet</h3>
+                        <p class="text-base text-gray-500">Calculate your rank to track progress!</p>
                     </div>
-                    <div class="flex items-start animate__animated animate__fadeIn animate__delay-1s">
-                        <div class="flex-shrink-0 h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white mr-3"><i class="fas fa-database text-sm"></i></div>
-                        <div><h3 class="font-bold text-lg mb-1">Data-Driven</h3><p class="text-sm text-gray-600">Based on 2023–2025 trends.</p></div>
-                    </div>
-                    <div class="flex items-start animate__animated animate__fadeIn animate__delay-2s">
-                        <div class="flex-shrink-0 h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white mr-3"><i class="fas fa-brain text-sm"></i></div>
-                        <div><h3 class="font-bold text-lg mb-1">AI Precision</h3><p class="text-sm text-gray-600">Uses exponential curves.</p></div>
-                    </div>
-                    <div class="flex items-start animate__animated animate__fadeIn animate__delay-3s">
-                        <div class="flex-shrink-0 h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white mr-3"><i class="fas fa-percentage text-sm"></i></div>
-                        <div><h3 class="font-bold text-lg mb-1">Weightage</h3><p class="text-sm text-gray-600">50% PUC + 50% CET.</p></div>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 mt-4 animate__animated animate__fadeIn animate__delay-4s">
-                        <h3 class="font-bold text-blue-800 mb-2 flex items-center"><i class="fas fa-lightbulb mr-2 text-yellow-600"></i> Tip</h3>
-                        <p class="text-sm text-blue-700">Use custom cutoffs for tailored insights.</p>
-                    </div>
+                </div>
+                <div class="mt-8 animate__animated animate__fadeIn">
+                    <canvas id="progress-chart" class="progress-canvas"></canvas>
                 </div>
             </div>
 
             <div class="tab-content" id="disclaimer">
-                <h2 class="text-2xl font-bold mb-6 flex items-center animate__animated animate__fadeIn"><i class="fas fa-exclamation-triangle mr-2 text-yellow-600"></i> Disclaimer</h2>
-                <div class="space-y-4 text-gray-600 text-sm">
-                    <div class="flex items-start bg-red-50 p-4 rounded-xl animate__animated animate__fadeIn">
-                        <i class="fas fa-exclamation-circle text-red-600 mr-2 text-base"></i>
-                        <div>
-                            <h3 class="font-bold text-red-800 mb-1">This Is an Estimate</h3>
-                            <p>The rank prediction is an approximation based on historical KCET data from 2023 to 2025, with a candidate pool of approximately 3.12 lakh. It does not guarantee your actual rank.</p>
-                        </div>
+                <h2 class="text-3xl font-bold mb-8 flex items-center animate__animated animate__fadeIn"><i class="fas fa-exclamation-triangle mr-3 gradient-text"></i> Disclaimer</h2>
+                <div class="glass-card p-6 animate__animated animate__fadeIn" data-tilt data-tilt-max="8">
+                    <h3 class="text-2xl font-semibold mb-5 gradient-text">Important Information</h3>
+                    <div class="space-y-4 text-base text-gray-600">
+                        <p class="flex items-start"><i class="fas fa-info-circle mr-2 mt-1 text-blue-500"></i><span><strong>Estimate Only:</strong> This tool provides rank predictions based on historical KCET data (2023–2025, ~3.12 lakh candidates). It is not an official KEA result.</span></p>
+                        <p class="flex items-start"><i class="fas fa-exclamation-triangle mr-2 mt-1 text-yellow-500"></i><span><strong>Accuracy Limitations:</strong> Predictions may vary due to score normalization, exam difficulty, or KEA policy changes.</span></p>
+                        <p class="flex items-start"><i class="fas fa-ban mr-2 mt-1 text-red-500"></i><span><strong>Eligibility Restrictions:</strong> Per KEA 2024 rules, IIT/NIT students via JEE are barred from CET counseling.</span></p>
+                        <p class="flex items-start"><i class="fas fa-link mr-2 mt-1 text-blue-500"></i><span><strong>Official Source:</strong> Verify results at <a href="https://kea.kar.nic.in" target="_blank" class="underline hover:text-blue-600">kea.kar.nic.in</a>.</span></p>
+                        <p class="flex items-start"><i class="fas fa-lock mr-2 mt-1 text-green-500"></i><span><strong>Data Privacy:</strong> All inputs are processed locally. No data is stored or shared.</span></p>
+                        <p class="flex items-start"><i class="fas fa-hand-paper mr-2 mt-1 text-red-500"></i><span><strong>No Liability:</strong> Not affiliated with KEA or NTA. No responsibility for errors.</span></p>
+                        <p class="flex items-start"><i class="fas fa-users mr-2 mt-1 text-purple-500"></i><span><strong>Category Usage:</strong> Category selection impacts college cutoffs, not ranks.</span></p>
                     </div>
-                    <div class="flex items-start animate__animated animate__fadeIn animate__delay-1s">
-                        <i class="fas fa-circle text-xs mr-2 text-red-600"></i>
-                        <p><strong>Accuracy Limitations:</strong> Your actual rank may vary due to factors such as score normalization, changes in exam difficulty, or updates to KEA policies (e.g., reservation rules, seat matrix changes).</p>
-                    </div>
-                    <div class="flex items-start animate__animated animate__fadeIn animate__delay-2s">
-                        <i class="fas fa-circle text-xs mr-2 text-red-600"></i>
-                        <p><strong>Eligibility Restrictions:</strong> Per KEA’s 2024 rules, students admitted to IITs or NITs via JEE are not eligible for CET counseling. This tool does not verify your eligibility for counseling.</p>
-                    </div>
-                    <div class="flex items-start animate__animated animate__fadeIn animate__delay-3s">
-                        <i class="fas fa-circle text-xs mr-2 text-red-600"></i>
-                        <p><strong>Official Verification:</strong> This tool is not for sole decision-making. Always check official results, counseling schedules, and eligibility criteria on the KEA website at <a href="https://kea.kar.nic.in" target="_blank" class="text-blue-600 underline">kea.kar.nic.in</a>.</p>
-                    </div>
-                    <div class="flex items-start animate__animated animate__fadeIn animate__delay-4s">
-                        <i class="fas fa-circle text-xs mr-2 text-red-600"></i>
-                        <p><strong>Data Privacy:</strong> All inputs (marks, category, etc.) are processed locally on your device. We do not store, collect, or transmit any personal data to servers.</p>
-                    </div>
-                    <div class="flex items-start animate__animated animate__fadeIn animate__delay-5s">
-                        <i class="fas fa-circle text-xs mr-2 text-red-600"></i>
-                        <p><strong>No Liability:</strong> This tool is not affiliated with KEA or NTA. We are not responsible for errors in predictions, decisions made based on this tool, or changes in KEA policies.</p>
-                    </div>
-                    <div class="flex items-start animate__animated animate__fadeIn animate__delay-6s">
-                        <i class="fas fa-circle text-xs mr-2 text-red-600"></i>
-                        <p><strong>Category Usage:</strong> Selecting a category (e.g., General, SC/ST) only affects the cutoff for college suggestions. It does not influence the rank prediction, which depends solely on your marks.</p>
-                    </div>
-                    <div class="flex items-start animate__animated animate__fadeIn animate__delay-7s">
-                        <i class="fas fa-circle text-xs mr-2 text-red-600"></i>
-                        <p><strong>Historical Data Basis:</strong> Predictions are based on a rank table derived from past KCET trends (2023–2025). Future trends may differ due to changes in candidate numbers, exam patterns, or other factors.</p>
-                    </div>
-                    <div class="bg-red-50 p-4 rounded-xl border border-red-100 mt-4 animate__animated animate__fadeIn animate__delay-8s">
-                        <h3 class="font-bold text-red-800 mb-1"><i class="fas fa-hand-paper mr-2"></i> Legal Notice</h3>
-                        <p class="text-red-700 text-sm">Use this tool at your own risk. We provide no warranties for the accuracy of predictions or the availability of counseling seats.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-content" id="history">
-                <h2 class="text-2xl font-bold mb-6 flex items-center animate__animated animate__fadeIn"><i class="fas fa-history mr-2 gradient-text"></i> Rank History</h2>
-                <div id="history-content" class="glass-card p-4 history-card animate__animated animate__fadeIn">
-                    <p class="text-center text-gray-600 text-sm">No saved results yet. Calculate and save to view.</p>
+                    <button id="reread-disclaimer" class="mt-6 w-full gradient-bg text-white py-2.5 px-5 rounded-xl text-base font-semibold premium-btn"><i class="fas fa-sync-alt mr-2"></i> Re-read Disclaimer</button>
                 </div>
             </div>
         </section>
-
-        <footer class="text-center mb-8 animate__animated animate__fadeIn">
-            <a href="https://discord.gg/EMwKjsEEc6" target="_blank" class="inline-flex items-center gap-2 text-blue-600 underline text-sm font-semibold hover:text-blue-700 transition animate__animated animate__fadeIn">
-                <img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" alt="Discord" style="width: 20px; height: 20px;">
-                Report issues on Discord
-            </a>
-            <p class="text-gray-500 text-xs opacity-90 mt-2">Thanks to Flaky-Review6661 for feedback.</p>
-        </footer>
     </div>
 
-    <div class="fab animate__animated animate__bounceIn" id="calculate-btn"><i class="fas fa-bolt text-base"></i></div>
-    <canvas id="rankCard" width="300" height="150" style="display: none;"></canvas>
+    <button class="fab animate__animated animate__bounce" onclick="calculateRank()"><i class="fas fa-bolt"></i></button>
 
     <script>
-        const rankTable = [
-            { score: 100, rank: 1 },
-            { score: 95, rank: 300 },
-            { score: 85, rank: 1200 },
-            { score: 80, rank: 3000 },
-            { score: 75, rank: 6000 },
-            { score: 70, rank: 10000 },
-            { score: 65, rank: 15000 },
-            { score: 60, rank: 30000 },
-            { score: 55, rank: 60000 },
-            { score: 50, rank: 120000 },
-            { score: 45, rank: 180000 },
-            { score: 40, rank: 240000 },
-            { score: 35, rank: 270000 },
-            { score: 30, rank: 290000 },
-            { score: 25, rank: 305000 },
-            { score: 1, rank: 312000 }
-        ];
+        let disclaimerAccepted = false;
+        let currentTimer = null;
+        let trendChartInstance = null;
+        let rangeChartInstance = null;
+        let progressChartInstance = null;
 
-        function predictKCETRank(kcetMarks, pcmPercentage, category) {
-            const kcetPercentage = (kcetMarks / 180) * 100;
-            const combinedScore = 0.5 * pcmPercentage + 0.5 * kcetPercentage;
-
-            if (isNaN(combinedScore) || combinedScore < 0 || combinedScore > 100) throw new Error("Invalid input");
-
-            let result = null;
-            if (combinedScore >= rankTable[0].score) {
-                result = { low: 1, medium: 1, high: 100 };
-            } else if (combinedScore <= 1) {
-                result = { low: 310000, medium: 312000, high: 312000 };
-            } else {
-                for (let i = 0; i < rankTable.length - 1; i++) {
-                    const current = rankTable[i];
-                    const next = rankTable[i + 1];
-                    if (combinedScore <= current.score && combinedScore >= next.score) {
-                        const scoreDiff = current.score - next.score;
-                        const rankDiff = next.rank - current.rank;
-                        const scoreOffset = current.score - combinedScore;
-                        let interpolatedRank = current.rank + (scoreOffset / scoreDiff) * rankDiff;
-                        const medium = Math.round(interpolatedRank);
-                        result = { low: Math.max(1, Math.round(medium * 0.95)), medium, high: Math.min(312000, Math.round(medium * 1.05)) };
-                        break;
-                    }
-                }
-            }
-
-            if (!result) {
-                const closest = rankTable.reduce((prev, curr) => Math.abs(curr.score - combinedScore) < Math.abs(prev.score - combinedScore) ? curr : prev);
-                let medium = closest.rank;
-                result = { low: Math.max(1, Math.round(medium * 0.95)), medium, high: Math.min(312000, Math.round(medium * 1.05)) };
-            }
-
-            return result;
-        }
-
-        let rankChart = null, trendChart = null, disclaimerAccepted = false;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const disclaimerScroll = document.getElementById('disclaimer-scroll');
-            const unlockBtn = document.getElementById('unlock-btn');
-            const scrollProgress = document.getElementById('scroll-progress');
-            const closeBtn = document.getElementById('close-disclaimer');
-            const mainContent = document.getElementById('main-content');
-
-            // Function to check if user has scrolled to the bottom
-            function updateScrollProgress() {
-                const scrollHeight = disclaimerScroll.scrollHeight - disclaimerScroll.clientHeight;
-                const scrolled = disclaimerScroll.scrollTop;
-                const progress = scrollHeight > 0 ? (scrolled / scrollHeight) * 100 : 100;
-                scrollProgress.style.width = `${Math.min(progress, 100)}%`;
-
-                // Enable button if scrolled to within 10px of the bottom
-                if (scrollHeight <= 0 || scrolled >= scrollHeight - 10) {
-                    unlockBtn.disabled = false;
-                    unlockBtn.classList.add('animate__pulse', 'animate__infinite');
-                } else {
-                    unlockBtn.disabled = true;
-                    unlockBtn.classList.remove('animate__pulse', 'animate__infinite');
-                }
-                // console.log(`Scroll Progress: ${progress}%`); // Debug
-            }
-
-            // Add scroll event listener with passive option for better performance
-            disclaimerScroll.addEventListener('scroll', updateScrollProgress, { passive: true });
-
-            // Initial check in case content is short
-            updateScrollProgress();
-
-            // Unlock button click handler
-            unlockBtn.addEventListener('click', () => {
-                if (unlockBtn.disabled) return;
-                disclaimerAccepted = true;
-                localStorage.setItem('disclaimerAccepted', 'true');
-                disclaimerScroll.classList.add('animate__slideOutDown');
-                setTimeout(() => {
-                    disclaimerScroll.style.display = 'none';
-                    mainContent.style.pointerEvents = 'auto';
-                    mainContent.style.opacity = '1';
-                    initializeApp();
-                }, 500); // Match animation duration
-                // console.log('Disclaimer accepted'); // Debug
-            });
-
-            // Close button handler
-            closeBtn.addEventListener('click', () => {
-                disclaimerScroll.classList.add('animate__slideOutDown');
-                setTimeout(() => {
-                    disclaimerScroll.style.display = 'none';
-                    // Only initialize app if disclaimer was accepted
-                    if (disclaimerAccepted) {
-                        mainContent.style.pointerEvents = 'auto';
-                        mainContent.style.opacity = '1';
-                        initializeApp();
-                    }
-                }, 500);
-            });
-
-            // Check if disclaimer was previously accepted
-            if (localStorage.getItem('disclaimerAccepted') === 'true') {
-                disclaimerAccepted = true;
-                disclaimerScroll.style.display = 'none';
-                mainContent.style.pointerEvents = 'auto';
-                mainContent.style.opacity = '1';
-                initializeApp();
-            }
-        });
-
-        function initializeApp() {
-            const themeToggle = document.getElementById('theme-toggle');
-            document.body.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
-            themeToggle.innerHTML = document.body.getAttribute('data-theme') === 'dark' ? '<i class="fas fa-sun text-yellow-400 text-sm"></i>' : '<i class="fas fa-moon text-gray-600 text-sm"></i>';
-            themeToggle.addEventListener('click', () => {
-                const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-                document.body.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                themeToggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun text-yellow-400 text-sm"></i>' : '<i class="fas fa-moon text-gray-600 text-sm"></i>';
-            });
-
-            // Reinitialize button event listeners to ensure they work
-            const buttons = [
-                { selector: '.mark-btn', handler: (btn) => adjustMark(btn.dataset.action, parseInt(btn.dataset.change)) },
-                { selector: '.category-btn', handler: selectCategory },
-                { selector: '#calculate-btn', handler: calculateRank },
-                { selector: '#see-breakdown-btn', handler: () => switchTab('breakdown') },
-                { selector: '#download-pdf-btn', handler: generatePDF },
-                { selector: '#share-result-btn', handler: shareResult },
-                { selector: '#save-result-btn', handler: saveResult },
-                { selector: '#email-result-btn', handler: emailResult },
-                { selector: '.tab-btn', handler: (btn) => switchTab(btn.dataset.tab) },
-            ];
-
-            // Remove existing listeners to prevent duplicates
-            buttons.forEach(({ selector }) => {
-                document.querySelectorAll(selector).forEach(btn => {
-                    const clone = btn.cloneNode(true);
-                    btn.parentNode.replaceChild(clone, btn);
-                });
-            });
-
-            // Add new listeners
-            buttons.forEach(({ selector, handler }) => {
-                document.querySelectorAll(selector).forEach(btn => {
-                    btn.addEventListener('click', (e) => handleClick(handler.bind(null, btn), e));
-                    btn.addEventListener('touchstart', (e) => {
-                        e.preventDefault();
-                        handleClick(handler.bind(null, btn), e);
-                    });
-                });
-            });
-
-            const inputs = [
-                { id: 'quick-cet', handler: () => updateRankLive('quick') },
-                { id: 'quick-puc', handler: () => updateRankLive('quick') },
-                { id: 'kcet-total', handler: () => { updateMark('kcet-total'); updateRankLive('detailed'); } },
-                { id: 'puc-percentage', handler: () => { updateMark('puc-percentage'); updateRankLive('detailed'); } },
-                { id: 'custom-cutoff', handler: () => updateRankLive('detailed') }
-            ];
-
-            inputs.forEach(({ id, handler }) => {
-                const input = document.getElementById(id);
-                input.addEventListener('input', handler);
-                input.addEventListener('touchend', handler);
-            });
-
-            updateMark('kcet-total');
-            updateMark('puc-percentage');
-            loadSavedResults();
-            // console.log('App initialized'); // Debug
-        }
-
-        function handleClick(callback, e) {
-            e.preventDefault();
-            if (!disclaimerAccepted) {
-                alert('Please unlock the tool by scrolling through and accepting the disclaimer.');
-                return;
-            }
+        function safeLocalStorage(action, key, value) {
             try {
-                callback();
-                // console.log('Button clicked:', callback.name); // Debug
+                if (action === 'set') {
+                    localStorage.setItem(key, value);
+                    return true;
+                } else if (action === 'get') {
+                    return localStorage.getItem(key);
+                }
             } catch (err) {
-                resetOnError();
-                alert('An error occurred. Please try again or contact support.');
+                console.error('localStorage error:', err);
+                return action === 'get' ? null : false;
             }
         }
 
-        function resetOnError() {
-            disclaimerAccepted = false;
-            localStorage.removeItem('disclaimerAccepted');
-            const disclaimerScroll = document.getElementById('disclaimer-scroll');
-            disclaimerScroll.style.display = 'block';
-            disclaimerScroll.classList.remove('animate__slideOutDown');
-            disclaimerScroll.classList.add('animate__slideInUp');
-            document.getElementById('main-content').style.pointerEvents = 'none';
-            document.getElementById('main-content').style.opacity = '0.5';
-            resetCalculator();
-            document.getElementById('unlock-btn').disabled = true;
-            document.getElementById('scroll-progress').style.width = '0%';
+        function playSound(type) {
+            try {
+                const sound = new Audio({
+                    click: 'https://assets.mixkit.co/sfx/preview/mixkit-click-button-1110.mp3',
+                    unlock: 'https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3',
+                    success: 'https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3'
+                }[type] || 'https://assets.mixkit.co/sfx/preview/mixkit-click-button-1110.mp3');
+                sound.play().catch(err => console.warn('Audio play failed:', err));
+            } catch (err) {
+                console.error('Sound error:', err);
+            }
         }
 
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.getElementById(tabId).scrollIntoView({ behavior: 'smooth' });
+            try {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+                playSound('click');
+                if (tabId === 'progress') loadSavedResults();
+                if (tabId === 'breakdown') updateBreakdown(0, { low: 0, medium: 0, high: 0 }, 0, 0, 'init');
+            } catch (err) {
+                console.error('Tab switch error:', err);
+            }
         }
 
-        function adjustMark(subjectId, change) {
-            const input = document.getElementById(subjectId);
-            let value = parseInt(input.value) + change;
-            value = Math.max(parseInt(input.min), Math.min(parseInt(input.max), value));
-            input.value = value;
-            updateMark(subjectId);
-            updateRankLive(subjectId.includes('quick') ? 'quick' : 'detailed');
+        function setTheme(theme) {
+            try {
+                document.documentElement.setAttribute('data-theme', theme);
+                document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+                document.querySelector(`.theme-option[data-theme="${theme}"]`).classList.add('active');
+                safeLocalStorage('set', 'theme', theme);
+                playSound('click');
+            } catch (err) {
+                console.error('Theme error:', err);
+            }
         }
 
-        function updateMark(subjectId) {
-            const input = document.getElementById(subjectId);
-            const valueDisplay = document.getElementById(subjectId + '-value');
-            let value = parseInt(input.value);
-            value = Math.max(parseInt(input.min), Math.min(parseInt(input.max), value));
-            input.value = value;
-            valueDisplay.textContent = value;
-            const percentage = (value / parseInt(input.max)) * 100;
-            const circle = input.closest('.mark-selector').querySelector('.mark-circle');
-            circle.style.background = percentage >= 80 ? 'conic-gradient(var(--success) 0%, #34d399 100%)' :
-                                    percentage >= 60 ? 'conic-gradient(var(--info) 0%, #93c5fd 100%)' :
-                                    percentage >= 40 ? 'conic-gradient(var(--warning) 0%, #fbbf24 100%)' :
-                                    'conic-gradient(var(--danger) 0%, #f87171 100%)';
+        function adjustMark(type, delta) {
+            try {
+                const input = document.getElementById(type === 'kcet' ? 'kcet-total' : 'puc-percentage');
+                let value = parseFloat(input.value) + delta;
+                value = Math.max(parseFloat(input.min), Math.min(parseFloat(input.max), value));
+                input.value = value;
+                updateMark(type, value);
+                playSound('click');
+            } catch (err) {
+                console.error('Adjust mark error:', err);
+            }
         }
 
-        function focusInput(subjectId) {
-            document.getElementById(subjectId).focus();
+        function updateMark(type, value) {
+            try {
+                const valueDisplay = document.getElementById(type === 'kcet' ? 'kcet-value' : 'puc-value');
+                valueDisplay.textContent = value;
+                updateRankLive('detailed');
+            } catch (err) {
+                console.error('Update mark error:', err);
+            }
         }
 
-        function selectCategory(button) {
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            document.getElementById('category').value = button.dataset.category;
-            updateRankLive('quick');
-            updateRankLive('detailed');
+        function focusInput(id) {
+            try {
+                document.getElementById(id).focus();
+                playSound('click');
+            } catch (err) {
+                console.error('Focus input error:', err);
+            }
         }
 
-        function calculateRank() {
-            updateRankLive('detailed');
+        function predictKCETRank(cet, puc) {
+            try {
+                const composite = (cet / 180 * 50) + (puc / 100 * 50);
+                let rank;
+                if (composite >= 90) rank = 1000 + (100 - composite) * 100;
+                else if (composite >= 80) rank = 5000 + (90 - composite) * 400;
+                else if (composite >= 70) rank = 15000 + (80 - composite) * 1000;
+                else if (composite >= 60) rank = 30000 + (70 - composite) * 2000;
+                else rank = 50000 + (60 - composite) * 3000;
+                rank = Math.max(1, Math.round(rank));
+                const rangeFactor = composite >= 90 ? 0.1 : composite >= 80 ? 0.15 : 0.2;
+                return {
+                    medium: rank,
+                    low: Math.max(1, Math.round(rank * (1 - rangeFactor))),
+                    high: Math.round(rank * (1 + rangeFactor))
+                };
+            } catch (err) {
+                console.error('Rank prediction error:', err);
+                throw err;
+            }
+        }
+
+        function getRankAnalysis(rank) {
+            try {
+                if (rank <= 1000) return 'Elite rank! Likely to secure top colleges like RVCE or BMSCE.';
+                if (rank <= 5000) return 'Great rank! Strong chances for top branches.';
+                if (rank <= 15000) return 'Solid rank! Good college options available.';
+                if (rank <= 30000) return 'Moderate rank. Explore various colleges.';
+                return 'Lower rank. Consider all possible options.';
+            } catch (err) {
+                console.error('Rank analysis error:', err);
+                return 'Error in analysis.';
+            }
         }
 
         function updateRankLive(type) {
-            if (!disclaimerAccepted) return;
-            let cet, puc, category = document.getElementById('category').value;
-            const customCutoff = parseInt(document.getElementById('custom-cutoff').value) || null;
-            if (type === 'quick') {
-                cet = parseFloat(document.getElementById('quick-cet').value) || 0;
-                puc = parseFloat(document.getElementById('quick-puc').value) || 0;
-                if (cet < 0 || cet > 180 || puc < 0 || puc > 100) {
-                    document.getElementById('quick-result').classList.add('hidden');
-                    return;
-                }
-                const rankData = predictKCETRank(cet, puc, category);
-                const analysis = getAnalysis(rankData.medium);
-                document.getElementById('quick-rank').textContent = rankData.medium.toLocaleString();
-                document.getElementById('quick-analysis').textContent = analysis;
-                document.getElementById('quick-result').classList.remove('hidden');
-                updateMainRank((puc * 0.5) + ((cet / 180) * 50), rankData, cet, puc, type, analysis, customCutoff);
-            } else {
-                cet = parseInt(document.getElementById('kcet-total').value) || 0;
-                puc = parseInt(document.getElementById('puc-percentage').value) || 0;
-                if (cet < 0 || cet > 180 || puc < 0 || puc > 100) return;
-                const rankData = predictKCETRank(cet, puc, category);
-                const analysis = getAnalysis(rankData.medium);
-                updateMainRank((puc * 0.5) + ((cet / 180) * 50), rankData, cet, puc, type, analysis, customCutoff);
-            }
-        }
-
-        function getAnalysis(rank) {
-            return rank <= 1000 ? 'Elite performance!' :
-                   rank <= 5000 ? 'Excellent rank!' :
-                   rank <= 15000 ? 'Strong contender!' :
-                   rank <= 35000 ? 'Solid effort!' : 'Room for improvement.';
-        }
-
-        function updateMainRank(composite, rankData, cet, puc, type, analysis, customCutoff) {
-            const rank = rankData.medium;
-            const rankElement = document.getElementById('predicted-rank');
-            rankElement.textContent = rank.toLocaleString();
-            rankElement.classList.add('animate__bounceIn');
-            const progress = Math.min(composite, 100);
-            document.getElementById('meterCircle').style.setProperty('--progress', `${progress}%`);
-            document.getElementById('competition-note').textContent = progress >= 95 ? "Top 1%!" :
-                progress >= 90 ? "Top 5%!" :
-                progress >= 80 ? "Top 15%!" : "Highly competitive (~3.12 lakh)";
-            document.getElementById('see-breakdown-btn').classList.remove('hidden');
-            document.getElementById('download-pdf-btn').classList.remove('hidden');
-            document.getElementById('share-result-btn').classList.remove('hidden');
-            document.getElementById('save-result-btn').classList.remove('hidden');
-            document.getElementById('email-result-btn').classList.remove('hidden');
-
-            const pucTotal = puc * 3;
-            const cetTotal = cet;
-            const pucPercent = puc;
-            const cetPercent = (cet / 180) * 100;
-            generateResultBreakdown(pucTotal, cetTotal, pucPercent, cetPercent, composite, rank, document.getElementById('category').value, analysis, customCutoff);
-            drawRankChart(composite);
-            generateRankCard(rank, analysis);
-            drawTrendChart(rank);
-
-            setTimeout(() => rankElement.classList.remove('animate__bounceIn'), 500);
-        }
-
-        function getCollegeSuggestions(rank, category, customCutoff) {
-            const colleges = [
-                { name: "RV College of Engineering", cutoff: { general: 1000, obc: 1500, scst: 3000 }, course: "CSE" },
-                { name: "BMS College of Engineering", cutoff: { general: 2000, obc: 3000, scst: 5000 }, course: "ECE" },
-                { name: "MS Ramaiah Institute", cutoff: { general: 3000, obc: 4500, scst: 7000 }, course: "ISE" },
-                { name: "PES University", cutoff: { general: 5000, obc: 7000, scst: 10000 }, course: "ME" },
-                { name: "Dayananda Sagar College", cutoff: { general: 8000, obc: 10000, scst: 15000 }, course: "CE" }
-            ];
-            const cutoff = customCutoff || colleges.reduce((min, college) => Math.min(min, college.cutoff[category]), Infinity);
-            return colleges.filter(college => rank <= (customCutoff ? cutoff : college.cutoff[category])).map(college => `${college.name} (${college.course})`);
-        }
-
-        function generateResultBreakdown(pucTotal, cetTotal, pucPercent, cetPercent, finalPercentage, rank, category, analysis, customCutoff) {
-            const container = document.getElementById('breakdown-content');
-            container.innerHTML = '';
-
-            const performanceCard = document.createElement('div');
-            performanceCard.className = 'glass-card p-4 animate__animated animate__fadeIn';
-            performanceCard.innerHTML = `
-                <h3 class="text-lg font-bold mb-3 flex items-center"><i class="fas fa-chart-line mr-2 gradient-text"></i> Performance</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div class="bg-blue-50 p-3 rounded-xl text-center">
-                        <div class="text-xl font-bold gradient-text">${finalPercentage.toFixed(1)}%</div>
-                        <div class="text-xs text-gray-600">Composite</div>
-                    </div>
-                    <div class="bg-green-50 p-3 rounded-xl text-center">
-                        <div class="text-xl font-bold text-success">${rank.toLocaleString()}</div>
-                        <div class="text-xs text-gray-600">Rank</div>
-                    </div>
-                    <div class="bg-purple-50 p-3 rounded-xl text-center">
-                        <div class="text-xl font-bold text-secondary">${getPercentile(finalPercentage)}</div>
-                        <div class="text-xs text-gray-600">Percentile</div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(performanceCard);
-
-            const breakdownCard = document.createElement('div');
-            breakdownCard.className = 'glass-card p-4 animate__animated animate__fadeIn animate__delay-1s';
-            breakdownCard.innerHTML = `
-                <h3 class="text-lg font-bold mb-3 flex items-center"><i class="fas fa-chart-pie mr-2 gradient-text"></i> Breakdown</h3>
-                <div class="space-y-3">
-                    <div>
-                        <h4 class="font-medium text-gray-700 mb-1 text-sm">PUC PCM (300)</h4>
-                        <div class="flex justify-between mb-1 text-sm">
-                            <span>Total: ${pucTotal.toFixed(1)}</span>
-                            <span>${pucPercent.toFixed(1)}%</span>
-                        </div>
-                        <div class="progress-container"><div class="progress-bar gradient-bg" style="width: ${pucPercent}%"></div></div>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-700 mb-1 text-sm">CET PCM (180)</h4>
-                        <div class="flex justify-between mb-1 text-sm">
-                            <span>Total: ${cetTotal}</span>
-                            <span>${cetPercent.toFixed(1)}%</span>
-                        </div>
-                        <div class="progress-container"><div class="progress-bar accent-bg" style="width: ${cetPercent}%"></div></div>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-700 mb-1 text-sm">Composite</h4>
-                        <div class="flex justify-between mb-1 text-sm">
-                            <span>Weighted</span>
-                            <span>${finalPercentage.toFixed(1)}%</span>
-                        </div>
-                        <div class="progress-container"><div class="progress-bar bg-success" style="width: ${finalPercentage}%"></div></div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(breakdownCard);
-
-            const collegeCard = document.createElement('div');
-            collegeCard.className = 'glass-card p-4 animate__animated animate__fadeIn animate__delay-2s';
-            const suggestions = getCollegeSuggestions(rank, category, customCutoff);
-            collegeCard.innerHTML = `
-                <h3 class="text-lg font-bold mb-3 flex items-center"><i class="fas fa-graduation-cap mr-2 gradient-text"></i> College Suggestions</h3>
-                <div class="space-y-2 text-sm">
-                    ${suggestions.length ? suggestions.map(c => `<div class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-400"></i>${c}</div>`).join('') : '<div class="text-gray-500">No colleges meet the cutoff.</div>'}
-                </div>
-                <p class="text-xs text-gray-500 mt-2">Based on ${customCutoff ? 'custom cutoff' : category} cutoffs.</p>
-            `;
-            container.appendChild(collegeCard);
-
-            const analysisCard = document.createElement('div');
-            analysisCard.className = 'glass-card p-4 animate__animated animate__fadeIn animate__delay-3s';
-            analysisCard.innerHTML = `
-                <h3 class="text-lg font-bold mb-3 flex items-center"><i class="fas fa-comment-dots mr-2 gradient-text"></i> Analysis</h3>
-                <p class="text-sm">${analysis}</p>
-            `;
-            container.appendChild(analysisCard);
-        }
-
-        function getPercentile(score) {
-            return score >= 95 ? '99.9' : score >= 90 ? '99' : score >= 80 ? '95' : score >= 70 ? '85' : score >= 60 ? '70' : '50';
-        }
-
-        function drawRankChart(composite) {
-            const ctx = document.getElementById('rankCard').getContext('2d');
-            if (rankChart) rankChart.destroy();
-            rankChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Composite Score', 'Remaining'],
-                    datasets: [{
-                        data: [composite, 100 - composite],
-                        backgroundColor: ['#4361ee', '#e5e7eb'],
-                        borderColor: ['#ffffff', '#ffffff'],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    cutout: '70%',
-                    plugins: { legend: { display: false } },
-                    animation: { animateScale: true, animateRotate: true }
-                }
-            });
-        }
-
-        function drawTrendChart(rank) {
-            const ctx = document.getElementById('trend-chart').getContext('2d');
-            if (trendChart) trendChart.destroy();
-            const labels = rankTable.map(item => item.score);
-            const data = rankTable.map(item => item.rank);
-            trendChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Rank vs Score',
-                        data: data,
-                        borderColor: '#4361ee',
-                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: { title: { display: true, text: 'Composite Score (%)' } },
-                        y: { title: { display: true, text: 'Rank' }, reverse: true }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        annotation: {
-                            annotations: {
-                                rankLine: {
-                                    type: 'line',
-                                    yMin: rank,
-                                    yMax: rank,
-                                    borderColor: '#f72585',
-                                    borderWidth: 2,
-                                    borderDash: [5, 5],
-                                    label: {
-                                        content: `Your Rank: ${rank.toLocaleString()}`,
-                                        enabled: true,
-                                        position: 'end',
-                                        backgroundColor: '#f72585',
-                                        color: '#fff'
-                                    }
-                                }
-                            }
-                        }
+            try {
+                if (type === 'quick') {
+                    const cet = parseFloat(document.getElementById('quick-cet').value) || 0;
+                    const puc = parseFloat(document.getElementById('quick-puc').value) || 0;
+                    if (cet >= 0 && cet <= 180 && puc >= 0 && puc <= 100) {
+                        const rankData = predictKCETRank(cet, puc);
+                        document.getElementById('quick-rank').textContent = rankData.medium.toLocaleString();
+                        document.getElementById('quick-range').textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
+                        document.getElementById('quick-analysis').textContent = getRankAnalysis(rankData.medium);
+                        document.getElementById('quick-result').classList.remove('hidden');
+                    } else {
+                        document.getElementById('quick-result').classList.add('hidden');
+                    }
+                } else if (type === 'detailed') {
+                    const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
+                    const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
+                    if (cet >= 0 && cet <= 180 && puc >= 0 && puc <= 100) {
+                        const rankData = predictKCETRank(cet, puc);
+                        document.getElementById('predicted-rank').textContent = rankData.medium.toLocaleString();
+                        document.getElementById('predicted-range').textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
+                        document.getElementById('competition-note').textContent = getRankAnalysis(rankData.medium);
                     }
                 }
-            });
-        }
-
-        function generateRankCard(rank, analysis) {
-            const canvas = document.getElementById('rankCard');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.font = 'bold 20px Poppins';
-            ctx.fillStyle = '#1f2937';
-            ctx.textAlign = 'center';
-            ctx.fillText('KCET 2025 Rank', canvas.width / 2, 30);
-            ctx.font = 'bold 30px Poppins';
-            ctx.fillStyle = '#4361ee';
-            ctx.fillText(rank.toLocaleString(), canvas.width / 2, 80);
-            ctx.font = '14px Poppins';
-            ctx.fillStyle = '#6b7280';
-            ctx.fillText(analysis, canvas.width / 2, 110);
-            ctx.font = '12px Poppins';
-            ctx.fillText('Generated by KCET Predictor', canvas.width / 2, 140);
-        }
-
-        function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const rank = document.getElementById('predicted-rank').textContent;
-            const cet = document.getElementById('kcet-total').value;
-            const puc = document.getElementById('puc-percentage').value;
-            const category = document.getElementById('category').value;
-            const suggestions = getCollegeSuggestions(parseInt(rank.replace(/,/g, '')), category, parseInt(document.getElementById('custom-cutoff').value) || null);
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(18);
-            doc.text('KCET 2025 Rank Prediction', 20, 20);
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Predicted Rank: ${rank}`, 20, 40);
-            doc.text(`KCET PCM: ${cet}/180`, 20, 50);
-            doc.text(`PUC PCM: ${puc}%`, 20, 60);
-            doc.text(`Category: ${category.toUpperCase()}`, 20, 70);
-            doc.text('College Suggestions:', 20, 90);
-            suggestions.forEach((college, i) => doc.text(`- ${college}`, 25, 100 + i * 10));
-            const canvas = document.getElementById('rankCard');
-            const imgData = canvas.toDataURL('image/png');
-            doc.addImage(imgData, 'PNG', 20, 120 + suggestions.length * 10, 90, 45);
-            doc.save('KCET_2025_Rank_Prediction.pdf');
-        }
-
-        function shareResult() {
-            const rank = document.getElementById('predicted-rank').textContent;
-            const text = `I got a predicted rank of ${rank} in KCET 2025! Check yours at KCET Predictor!`;
-            if (navigator.share) {
-                navigator.share({ title: 'KCET Rank Prediction', text, url: window.location.href })
-                    .catch(() => alert('Sharing failed. Copy the link manually.'));
-            } else {
-                navigator.clipboard.writeText(text).then(() => alert('Result copied to clipboard!'));
+            } catch (err) {
+                console.error('Update rank live error:', err);
             }
         }
 
-        function saveResult() {
-            const rank = document.getElementById('predicted-rank').textContent;
-            const cet = document.getElementById('kcet-total').value;
-            const puc = document.getElementById('puc-percentage').value;
-            const category = document.getElementById('category').value;
-            const timestamp = new Date().toLocaleString();
-            const result = { rank, cet, puc, category, timestamp };
-            let savedResults = JSON.parse(localStorage.getItem('savedResults') || '[]');
-            savedResults.push(result);
-            localStorage.setItem('savedResults', JSON.stringify(savedResults));
-            loadSavedResults();
+        function calculateRank() {
+            try {
+                const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
+                const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
+                const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
+                if (cet < 0 || cet > 180 || puc < 0 || puc > 100) {
+                    alert('Please enter valid scores: KCET (0-180), PUC (0-100).');
+                    return;
+                }
+                const composite = (cet / 180 * 50) + (puc / 100 * 50);
+                const rankData = predictKCETRank(cet, puc);
+                updateMainRank(rankData);
+                updateBreakdown(composite, rankData, cet, puc, 'calculate');
+                saveResult(cet, puc, rankData, category);
+                generateRankCard(cet, puc, rankData, category);
+                playSound('success');
+                triggerConfetti();
+                switchTab('breakdown');
+            } catch (err) {
+                console.error('Calculate rank error:', err);
+                alert('An error occurred while calculating your rank.');
+            }
+        }
+
+        function updateMainRank(rankData) {
+            try {
+                const rankDisplay = document.getElementById('predicted-rank');
+                const rangeDisplay = document.getElementById('predicted-range');
+                const noteDisplay = document.getElementById('competition-note');
+                const meterCircle = document.getElementById('meterCircle');
+                rankDisplay.textContent = rankData.medium.toLocaleString();
+                rangeDisplay.textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
+                noteDisplay.textContent = getRankAnalysis(rankData.medium);
+                meterCircle.classList.add('animate__pulse');
+                setTimeout(() => meterCircle.classList.remove('animate__pulse'), 1500);
+            } catch (err) {
+                console.error('Update main rank error:', err);
+            }
+        }
+
+        function updateBreakdown(composite, rankData, cet, puc, source) {
+            try {
+                const breakdownContent = document.getElementById('breakdown-content');
+                breakdownContent.innerHTML = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 animate__animated animate__fadeIn">
+                        <div class="glass-card p-5" data-tilt data-tilt-max="8">
+                            <h3 class="text-xl font-semibold mb-3 gradient-text">Score Breakdown</h3>
+                            <p class="text-base">KCET: ${cet.toFixed(1)}/180 (${((cet / 180) * 100).toFixed(1)}%)</p>
+                            <p class="text-base">PUC: ${puc.toFixed(1)}% (${puc.toFixed(1)}%)</p>
+                            <p class="text-base">Composite: ${composite.toFixed(1)}%</p>
+                        </div>
+                        <div class="glass-card p-5" data-tilt data-tilt-max="8">
+                            <h3 class="text-xl font-semibold mb-3 gradient-text">Rank Insights</h3>
+                            <p class="text-base">Predicted Rank: ${rankData.medium.toLocaleString()}</p>
+                            <p class="text-base">Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}</p>
+                            <p class="text-base">${getRankAnalysis(rankData.medium)}</p>
+                        </div>
+                    </div>
+                `;
+                updateTrendChart(cet, puc, rankData);
+                updateRangeChart(rankData);
+                initializeTilt();
+            } catch (err) {
+                console.error('Update breakdown error:', err);
+            }
+        }
+
+        function updateTrendChart(cet, puc, rankData) {
+            try {
+                const ctx = document.getElementById('trend-chart').getContext('2d');
+                if (trendChartInstance) trendChartInstance.destroy();
+                trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['KCET', 'PUC', 'Rank'],
+                        datasets: [{
+                            label: 'Score Trend',
+                            data: [cet, puc, rankData.medium / 1000],
+                            borderColor: '#6d28d9',
+                            backgroundColor: 'rgba(109, 40, 217, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Value' } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'Score vs Rank Trend', font: { size: 16 } }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error('Trend chart error:', err);
+            }
+        }
+
+        function updateRangeChart(rankData) {
+            try {
+                const ctx = document.getElementById('range-chart').getContext('2d');
+                if (rangeChartInstance) rangeChartInstance.destroy();
+                rangeChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Low', 'Medium', 'High'],
+                        datasets: [{
+                            label: 'Rank Range',
+                            data: [rankData.low, rankData.medium, rankData.high],
+                            backgroundColor: ['#10b981', '#6d28d9', '#ec4899']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Rank' } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'Rank Range', font: { size: 16 } }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error('Range chart error:', err);
+            }
+        }
+
+        function saveResult(cet, puc, rankData, category) {
+            try {
+                const results = JSON.parse(safeLocalStorage('get', 'results') || '[]');
+                results.push({
+                    cet,
+                    puc,
+                    rank: rankData.medium,
+                    range: `${rankData.low}–${rankData.high}`,
+                    category,
+                    timestamp: new Date().toISOString()
+                });
+                safeLocalStorage('set', 'results', JSON.stringify(results));
+            } catch (err) {
+                console.error('Save result error:', err);
+            }
         }
 
         function loadSavedResults() {
-            const container = document.getElementById('            history-content');
-            const savedResults = JSON.parse(localStorage.getItem('savedResults') || '[]');
-            container.innerHTML = savedResults.length ? '' : '<p class="text-center text-gray-600 text-sm">No saved results yet. Calculate and save to view.</p>';
-            savedResults.forEach((result, index) => {
-                const card = document.createElement('div');
-                card.className = 'glass-card p-4 mb-4 animate__animated animate__fadeIn';
-                card.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="font-bold text-base">Result #${index + 1}</h3>
-                        <span class="text-xs text-gray-500">${result.timestamp}</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 text-sm">
-                        <div><span class="font-medium">Rank:</span> ${result.rank}</div>
-                        <div><span class="font-medium">KCET:</span> ${result.cet}/180</div>
-                        <div><span class="font-medium">PUC:</span> ${result.puc}%</div>
-                        <div><span class="font-medium">Category:</span> ${result.category.toUpperCase()}</div>
-                    </div>
-                    <button class="delete-result-btn w-full mt-2 bg-red-500 text-white py-1 px-2 rounded-xl text-xs font-semibold hover:bg-red-600 transition" data-index="${index}"><i class="fas fa-trash mr-1"></i> Delete</button>
-                `;
-                container.appendChild(card);
-            });
-            document.querySelectorAll('.delete-result-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const index = parseInt(btn.dataset.index);
-                    let savedResults = JSON.parse(localStorage.getItem('savedResults') || '[]');
-                    savedResults.splice(index, 1);
-                    localStorage.setItem('savedResults', JSON.stringify(savedResults));
-                    loadSavedResults();
+            try {
+                const results = JSON.parse(safeLocalStorage('get', 'results') || '[]');
+                const container = document.getElementById('progress-content');
+                if (results.length > 0) {
+                    container.innerHTML = results.map((r, i) => `
+                        <div class="glass-card p-5 animate__animated animate__fadeIn animate__delay-${i}s" data-tilt data-tilt-max="8">
+                            <h3 class="text-base font-semibold gradient-text">Attempt ${i + 1}</h3>
+                            <p class="text-sm">${new Date(r.timestamp).toLocaleString()}</p>
+                            <p class="text-sm">CET: ${r.cet}, PUC: ${r.puc}%</p>
+                            <p class="text-sm">Rank: ${r.rank.toLocaleString()} (${r.range})</p>
+                            <p class="text-sm">Category: ${r.category}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center py-10 animate__animated animate__fadeIn">
+                            <div class="inline-block p-5 bg-white rounded-full mb-3 animate__animated animate__pulse">
+                                <i class="fas fa-history text-3xl text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-medium text-gray-600 mb-2">No Predictions Yet</h3>
+                            <p class="text-base text-gray-500">Calculate your rank to track progress!</p>
+                        </div>
+                    `;
+                }
+                updateProgressChart();
+                initializeTilt();
+            } catch (err) {
+                console.error('Load saved results error:', err);
+            }
+        }
+
+        function updateProgressChart() {
+            try {
+                const results = JSON.parse(safeLocalStorage('get', 'results') || '[]');
+                const ctx = document.getElementById('progress-chart').getContext('2d');
+                if (progressChartInstance) progressChartInstance.destroy();
+                progressChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: results.length > 0 ? results.map((r, i) => `Attempt ${i + 1}`) : ['No Data'],
+                        datasets: [{
+                            label: 'Rank Progress',
+                            data: results.length > 0 ? results.map(r => r.rank) : [0],
+                            borderColor: '#6d28d9',
+                            backgroundColor: 'rgba(109, 40, 217, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Rank' } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'Rank Progress Over Time', font: { size: 16 } }
+                        }
+                    }
                 });
-            });
+            } catch (err) {
+                console.error('Progress chart error:', err);
+            }
         }
 
-        function emailResult() {
-            const rank = document.getElementById('predicted-rank').textContent;
-            const cet = document.getElementById('kcet-total').value;
-            const puc = document.getElementById('puc-percentage').value;
-            const category = document.getElementById('category').value;
-            const subject = 'My KCET 2025 Rank Prediction';
-            const body = `I predicted my KCET 2025 rank using the KCET Rank Predictor!\n\nRank: ${rank}\nKCET PCM: ${cet}/180\nPUC PCM: ${puc}%\nCategory: ${category.toUpperCase()}\n\nTry it yourself at ${window.location.href}`;
-            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        function generateRankCard(cet, puc, rankData, category) {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFont('Poppins', 'bold');
+                doc.setFontSize(24);
+                doc.setTextColor(109, 40, 217);
+                doc.text('KCET 2025 Rank Card', 105, 20, { align: 'center' });
+                doc.setFontSize(14);
+                doc.setTextColor(0);
+                doc.text(`KCET Score: ${cet}/180`, 20, 50);
+                doc.text(`PUC Percentage: ${puc}%`, 20, 60);
+                doc.text(`Predicted Rank: ${rankData.medium.toLocaleString()}`, 20, 70);
+                doc.text(`Rank Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`, 20, 80);
+                doc.text(`Category: ${category}`, 20, 90);
+                doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 100);
+                doc.setFontSize(12);
+                doc.setTextColor(100);
+                doc.text('KCET Elite Rank Predictor', 105, 120, { align: 'center' });
+                doc.save('KCET_2025_Rank_Card.pdf');
+            } catch (err) {
+                console.error('Generate rank card error:', err);
+            }
         }
 
-        function resetCalculator() {
-            document.getElementById('quick-cet').value = '';
-            document.getElementById('quick-puc').value = '';
-            document.getElementById('kcet-total').value = 90;
-            document.getElementById('puc-percentage').value = 60;
-            document.getElementById('custom-cutoff').value = '';
-            document.getElementById('quick-result').classList.add('hidden');
-            document.getElementById('predicted-rank').textContent = '---';
-            document.getElementById('meterCircle').style.setProperty('--progress', '0%');
-            document.getElementById('competition-note').textContent = 'Highly competitive (~3.12 lakh)';
-            document.getElementById('see-breakdown-btn').classList.add('hidden');
-            document.getElementById('download-pdf-btn').classList.add('hidden');
-            document.getElementById('share-result-btn').classList.add('hidden');
-            document.getElementById('save-result-btn').classList.add('hidden');
-            document.getElementById('email-result-btn').classList.add('hidden');
-            document.getElementById('breakdown-content').innerHTML = `
-                <div class="text-center py-8">
-                    <div class="inline-block p-4 bg-blue-50 rounded-full mb-2 animate__animated animate__pulse"><i class="fas fa-search text-2xl text-blue-600"></i></div>
-                    <h3 class="text-lg font-medium text-gray-600 mb-1">Calculate to see stats</h3>
-                    <p class="text-sm text-gray-500">Detailed insights await</p>
-                </div>
-            `;
-            updateMark('kcet-total');
-            updateMark('puc-percentage');
+        function downloadBreakdownPNG() {
+            try {
+                const trendCanvas = document.getElementById('trend-chart');
+                const rangeCanvas = document.getElementById('range-chart');
+                const tempCanvas = document.createElement('canvas');
+                const ctx = tempCanvas.getContext('2d');
+                tempCanvas.width = 600;
+                tempCanvas.height = 600;
+
+                ctx.fillStyle = '#f5f3ff';
+                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+                ctx.drawImage(trendCanvas, 0, 0, 600, 300);
+                ctx.drawImage(rangeCanvas, 0, 300, 600, 300);
+
+                ctx.fillStyle = '#6d28d9';
+                ctx.font = 'bold 20px Poppins';
+                ctx.textAlign = 'center';
+                ctx.fillText('KCET 2025 Breakdown', 300, 30);
+
+                const link = document.createElement('a');
+                link.href = tempCanvas.toDataURL('image/png');
+                link.download = 'KCET_2025_Breakdown.png';
+                link.click();
+            } catch (err) {
+                console.error('Download PNG error:', err);
+                alert('Failed to download PNG. Please try again.');
+            }
         }
+
+        function recalculateRank() {
+            try {
+                playSound('click');
+                switchTab('predictor');
+                document.getElementById('kcet-total').focus();
+            } catch (err) {
+                console.error('Recalculate rank error:', err);
+            }
+        }
+
+        function triggerConfetti() {
+            try {
+                if (typeof konfetti === 'undefined') {
+                    console.warn('Konfetti library not loaded');
+                    return;
+                }
+                konfetti.create({
+                    angle: 90,
+                    spread: 90,
+                    startVelocity: 40,
+                    elementCount: 60,
+                    colors: ['#6d28d9', '#a78bfa', '#ec4899'],
+                    duration: 3500
+                });
+            } catch (err) {
+                console.error('Confetti error:', err);
+            }
+        }
+
+        function initializeTilt() {
+            try {
+                if (typeof VanillaTilt !== 'undefined') {
+                    VanillaTilt.init(document.querySelectorAll('[data-tilt]'), {
+                        max: 10,
+                        speed: 400,
+                        glare: true,
+                        'max-glare': 0.3
+                    });
+                } else {
+                    console.warn('VanillaTilt not loaded');
+                }
+            } catch (err) {
+                console.error('Tilt initialization error:', err);
+            }
+        }
+
+        function initializeApp() {
+            try {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+                    btn.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        switchTab(btn.dataset.tab);
+                    });
+                });
+
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        playSound('click');
+                    });
+                });
+
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.addEventListener('click', () => setTheme(opt.dataset.theme));
+                });
+
+                ['kcet-total', 'puc-percentage'].forEach(id => {
+                    const input = document.getElementById(id);
+                    input.addEventListener('input', () => updateMark(id.includes('kcet') ? 'kcet' : 'puc', input.value));
+                    input.addEventListener('change', () => updateRankLive('detailed'));
+                });
+
+                ['quick-cet', 'quick-puc'].forEach(id => {
+                    document.getElementById(id).addEventListener('input', () => updateRankLive('quick'));
+                });
+
+                document.getElementById('download-png-btn').addEventListener('click', downloadBreakdownPNG);
+                document.getElementById('recalculate-btn').addEventListener('click', recalculateRank);
+
+                const savedTheme = safeLocalStorage('get', 'theme') || 'light';
+                setTheme(savedTheme);
+
+                loadSavedResults();
+                updateRankLive('detailed');
+                initializeTilt();
+            } catch (err) {
+                console.error('App initialization error:', err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                if (typeof particlesJS !== 'undefined') {
+                    particlesJS('particles-js', {
+                        particles: {
+                            number: { value: 60, density: { enable: true, value_area: 800 } },
+                            color: { value: ['#6d28d9', '#a78bfa', '#ec4899'] },
+                            shape: { type: 'circle' },
+                            opacity: { value: 0.5, random: true },
+                            size: { value: 4, random: true },
+                            line_linked: { enable: false },
+                            move: { enable: true, speed: 1.5, direction: 'none', random: true }
+                        },
+                        interactivity: {
+                            detect_on: 'canvas',
+                            events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                            modes: { repulse: { distance: 120, duration: 0.4 }, push: { particles_nb: 4 } }
+                        }
+                    });
+                } else {
+                    console.warn('particles.js not loaded');
+                }
+
+                const disclaimerOverlay = document.getElementById('disclaimer-overlay');
+                const unlockBtn = document.getElementById('unlock-btn');
+                const closeBtn = document.getElementById('close-disclaimer');
+                const mainContent = document.getElementById('main-content');
+                const timerDisplay = document.getElementById('disclaimer-timer');
+                const rereadBtn = document.getElementById('reread-disclaimer');
+
+                if (!disclaimerOverlay || !unlockBtn || !closeBtn || !mainContent || !timerDisplay || !rereadBtn) {
+                    console.error('Missing DOM elements');
+                    return;
+                }
+
+                function startTimer() {
+                    if (currentTimer) clearInterval(currentTimer);
+                    let timeLeft = 10;
+                    timerDisplay.textContent = `Unlock in ${timeLeft}s...`;
+                    unlockBtn.disabled = true;
+                    unlockBtn.classList.remove('animate__pulse', 'animate__infinite');
+
+                    currentTimer = setInterval(() => {
+                        timeLeft--;
+                        timerDisplay.textContent = `Unlock in ${timeLeft}s...`;
+                        if (timeLeft <= 0) {
+                            clearInterval(currentTimer);
+                            currentTimer = null;
+                            timerDisplay.textContent = 'Ready to unlock!';
+                            unlockBtn.disabled = false;
+                            unlockBtn.classList.add('animate__pulse', 'animate__infinite');
+                        }
+                    }, 1000);
+
+                    setTimeout(() => {
+                        if (timeLeft > 0) {
+                            clearInterval(currentTimer);
+                            currentTimer = null;
+                            timerDisplay.textContent = 'Ready to unlock!';
+                            unlockBtn.disabled = false;
+                            unlockBtn.classList.add('animate__pulse', 'animate__infinite');
+                        }
+                    }, 11000);
+                }
+
+                startTimer();
+
+                unlockBtn.addEventListener('click', () => {
+                    if (unlockBtn.disabled) return;
+                    try {
+                        playSound('unlock');
+                        disclaimerAccepted = true;
+                        safeLocalStorage('set', 'disclaimerAccepted', 'true');
+                        disclaimerOverlay.classList.add('animate__fadeOut');
+                        setTimeout(() => {
+                            disclaimerOverlay.style.display = 'none';
+                            mainContent.style.pointerEvents = 'auto';
+                            mainContent.style.opacity = '1';
+                            initializeApp();
+                        }, 700);
+                    } catch (err) {
+                        console.error('Unlock error:', err);
+                    }
+                });
+
+                closeBtn.addEventListener('click', () => {
+                    if (!disclaimerAccepted) return;
+                    try {
+                        playSound('click');
+                        disclaimerOverlay.classList.add('animate__fadeOut');
+                        setTimeout(() => {
+                            disclaimerOverlay.style.display = 'none';
+                            mainContent.style.pointerEvents = 'auto';
+                            mainContent.style.opacity = '1';
+                            initializeApp();
+                        }, 700);
+                    } catch (err) {
+                        console.error('Close error:', err);
+                    }
+                });
+
+                rereadBtn.addEventListener('click', () => {
+                    try {
+                        playSound('click');
+                        disclaimerOverlay.style.display = 'flex';
+                        disclaimerOverlay.classList.remove('animate__fadeOut');
+                        disclaimerOverlay.classList.add('animate__fadeIn');
+                        mainContent.style.pointerEvents = 'none';
+                        mainContent.style.opacity = '0.5';
+                        startTimer();
+                    } catch (err) {
+                        console.error('Reread error:', err);
+                    }
+                });
+
+                if (safeLocalStorage('get', 'disclaimerAccepted') === 'true') {
+                    disclaimerAccepted = true;
+                    disclaimerOverlay.style.display = 'none';
+                    mainContent.style.pointerEvents = 'auto';
+                    mainContent.style.opacity = '1';
+                    initializeApp();
+                }
+
+                const socialProof = document.getElementById('social-proof');
+                if (socialProof) {
+                    let userCount = 50000;
+                    setInterval(() => {
+                        userCount += Math.floor(Math.random() * 10) + 1;
+                        socialProof.textContent = `${userCount.toLocaleString()} students predicted!`;
+                        socialProof.classList.add('animate__pulse');
+                        setTimeout(() => socialProof.classList.remove('animate__pulse'), 700);
+                    }, 6000);
+                }
+            } catch (err) {
+                console.error('DOMContentLoaded error:', err);
+            }
+        });
     </script>
 </body>
 </html>
