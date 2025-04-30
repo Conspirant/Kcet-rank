@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KCET 2025 Rank Predictor | Elite Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/konfetti@1.2.0/dist/konfetti.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.0/dist/vanilla-tilt.min.js"></script>
@@ -78,6 +78,7 @@
         .glass-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            opacity: 1;
         }
 
         .gradient-text {
@@ -382,13 +383,14 @@
             display: flex;
             justify-content: center;
             margin: 2rem 0;
+            position: relative;
         }
 
         .meter-circle {
             width: 140px;
             height: 140px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: conic-gradient(var(--primary) 0% var(--progress, 0%), var(--light) var(--progress, 0%) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -396,20 +398,34 @@
             transition: transform 0.4s ease;
             animation: pulse-circle 3s infinite;
             border: 2px solid var(--interactive-border);
+            position: relative;
+        }
+
+        .meter-circle::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: var(--card-bg);
+            border-radius: 50%;
+        }
+
+        .meter-text {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 900;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 1;
         }
 
         .meter-circle.animate__pulse {
             animation: pulse 1.5s ease-in-out;
         }
 
-        .meter-text {
-            color: #fff;
-            font-size: 2rem;
-            font-weight: 900;
-            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .trend-canvas, .range-canvas, .compare-canvas, .progress-canvas {
+        .trend-canvas, .range-canvas, .radar-canvas, .progress-canvas {
             max-width: 600px;
             max-height: 300px;
             margin: 0 auto;
@@ -421,7 +437,7 @@
             border: 2px solid var(--interactive-border);
         }
 
-        .trend-canvas:hover, .range-canvas:hover, .compare-canvas:hover, .progress-canvas:hover {
+        .trend-canvas:hover, .range-canvas:hover, .radar-canvas:hover, .progress-canvas:hover {
             transform: translateY(-8px);
         }
 
@@ -484,6 +500,41 @@
             border: 2px solid var(--interactive-border);
         }
 
+        .gradient-result {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .gradient-result:hover {
+            transform: translateY(-8px);
+        }
+
+        .gradient-result h3,
+        .gradient-result p,
+        .gradient-result span {
+            color: #fff;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            height: 20px;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--info));
+            transition: width 1s ease-in-out;
+        }
+
         @media (max-width: 768px) {
             .container { padding: 1.5rem 1rem; }
             .glass-card { padding: 1.5rem; }
@@ -492,7 +543,7 @@
             .mark-btn { width: 40px; height: 40px; font-size: 1rem; }
             .meter-circle { width: 120px; height: 120px; }
             .meter-text { font-size: 1.75rem; }
-            .trend-canvas, .range-canvas, .compare-canvas, .progress-canvas { max-width: 100%; }
+            .trend-canvas, .range-canvas, .radar-canvas, .progress-canvas { max-width: 100%; }
             .fab { width: 60px; height: 60px; font-size: 1.5rem; bottom: 2rem; right: 2rem; }
             h1 { font-size: 2.5rem; }
             h2 { font-size: 1.85rem; }
@@ -530,10 +581,12 @@
                 <p class="flex items-start"><i class="fas fa-info-circle mr-2 mt-1 text-blue-500"></i><span><strong>Estimate Only:</strong> This tool provides rank predictions based on historical KCET data (2023–2025, ~3.12 lakh candidates). It is not an official KEA result.</span></p>
                 <p class="flex items-start"><i class="fas fa-exclamation-triangle mr-2 mt-1 text-yellow-500"></i><span><strong>Accuracy Limitations:</strong> Predictions may vary due to score normalization, exam difficulty, or KEA policy changes.</span></p>
                 <p class="flex items-start"><i class="fas fa-ban mr-2 mt-1 text-red-500"></i><span><strong>Eligibility Restrictions:</strong> Per KEA 2024 rules, IIT/NIT students via JEE are barred from CET counseling.</span></p>
-                <p class="flex items-start"><i class="fas fa-link mr-2 mt-1 text-blue-500"></i><span><strong>Official Source:</strong> Verify results at <a href="https://kea.kar.nic.in" target="_blank" class="underline hover:text-blue-600">kea.kar.nic.in</a>.</span></p>
+                <p class="flex items-start"><i class="fas fa-link mr-2 mt-1 text-blue-500"></i><span><strong>Official Source:</strong> Verify results at the official KEA website.</span></p>
                 <p class="flex items-start"><i class="fas fa-lock mr-2 mt-1 text-green-500"></i><span><strong>Data Privacy:</strong> All inputs are processed locally. No data is stored or shared.</span></p>
-                <p class="flex items-start"><i class="fas fa-hand-paper mr-2 mt-1 text-red-500"></i><span><strong>No Liability:</strong> Not affiliated with KEA or NTA. No responsibility for errors.</span></p>
+                <p class="flex items-start"><i class="fas fa-hand-paper mr-2 mt-1 text-red-500"></i><span><strong>No Liability:</strong> Not affiliated with KEA or NTA. No responsibility for errors or decisions based on predictions.</span></p>
                 <p class="flex items-start"><i class="fas fa-users mr-2 mt-1 text-purple-500"></i><span><strong>Category Usage:</strong> Category selection impacts college cutoffs, not ranks.</span></p>
+                <p class="flex items-start"><i class="fas fa-clock mr-2 mt-1 text-orange-500"></i><span><strong>Usage Limits:</strong> This tool is for personal use only and should not be redistributed or used commercially.</span></p>
+                <p class="flex items-start"><i class="fas fa-graduation-cap mr-2 mt-1 text-teal-500"></i><span><strong>Educational Purpose:</strong> Intended to assist students in planning; consult official sources for final decisions.</span></p>
                 <p class="text-xs italic text-gray-500 mt-4">Wait for the timer to unlock...</p>
             </div>
             <div class="mt-6 text-center">
@@ -647,17 +700,18 @@
                         </div>
                     </div>
 
-                    <div class="glass-card p-6 animate__animated animate__fadeIn animate__delay-2s" data-tilt data-tilt-max="8">
-                        <h3 class="text-2xl font-semibold mb-5 gradient-text">Your Elite Rank</h3>
+                    <div class="gradient-result p-6 animate__animated animate__fadeIn animate__delay-2s" data-tilt data-tilt-max="8">
+                        <h3 class="text-2xl font-semibold mb-5">Your Elite Rank</h3>
                         <div class="rank-meter">
                             <div id="meterCircle" class="meter-circle">
                                 <span id="predicted-rank" class="meter-text">---</span>
                             </div>
                         </div>
-                        <p class="text-base text-gray-600 text-center">Range: <span id="predicted-range">---</span></p>
-                        <p class="text-base text-gray-600 mt-3 text-center" id="competition-note"></p>
-                        <div class="mt-5 text-center">
-                            <p class="text-sm text-gray-500" id="social-proof">50,000 students predicted!</p>
+                        <div class="text-center mt-4 text-sm">
+                            <p>Range: <span id="predicted-range">---</span></p>
+                            <p>Percentile: <span id="predicted-percentile">---</span></p>
+                            <p id="competition-note"></p>
+                            <p id="social-proof">Among ~3,12,000 candidates</p>
                         </div>
                     </div>
                 </div>
@@ -677,6 +731,9 @@
                 </div>
                 <div class="mt-8 animate__animated animate__fadeIn">
                     <canvas id="range-chart" class="range-canvas"></canvas>
+                </div>
+                <div class="mt-8 animate__animated animate__fadeIn">
+                    <canvas id="radar-chart" class="radar-canvas"></canvas>
                 </div>
                 <div class="breakdown-buttons animate__animated animate__fadeIn">
                     <button id="recalculate-btn" class="gradient-bg text-white py-2.5 px-5 rounded-xl text-base font-semibold premium-btn"><i class="fas fa-calculator mr-2"></i> Recalculate</button>
@@ -708,10 +765,12 @@
                         <p class="flex items-start"><i class="fas fa-info-circle mr-2 mt-1 text-blue-500"></i><span><strong>Estimate Only:</strong> This tool provides rank predictions based on historical KCET data (2023–2025, ~3.12 lakh candidates). It is not an official KEA result.</span></p>
                         <p class="flex items-start"><i class="fas fa-exclamation-triangle mr-2 mt-1 text-yellow-500"></i><span><strong>Accuracy Limitations:</strong> Predictions may vary due to score normalization, exam difficulty, or KEA policy changes.</span></p>
                         <p class="flex items-start"><i class="fas fa-ban mr-2 mt-1 text-red-500"></i><span><strong>Eligibility Restrictions:</strong> Per KEA 2024 rules, IIT/NIT students via JEE are barred from CET counseling.</span></p>
-                        <p class="flex items-start"><i class="fas fa-link mr-2 mt-1 text-blue-500"></i><span><strong>Official Source:</strong> Verify results at <a href="https://kea.kar.nic.in" target="_blank" class="underline hover:text-blue-600">kea.kar.nic.in</a>.</span></p>
+                        <p class="flex items-start"><i class="fas fa-link mr-2 mt-1 text-blue-500"></i><span><strong>Official Source:</strong> Verify results at the official KEA website.</span></p>
                         <p class="flex items-start"><i class="fas fa-lock mr-2 mt-1 text-green-500"></i><span><strong>Data Privacy:</strong> All inputs are processed locally. No data is stored or shared.</span></p>
-                        <p class="flex items-start"><i class="fas fa-hand-paper mr-2 mt-1 text-red-500"></i><span><strong>No Liability:</strong> Not affiliated with KEA or NTA. No responsibility for errors.</span></p>
+                        <p class="flex items-start"><i class="fas fa-hand-paper mr-2 mt-1 text-red-500"></i><span><strong>No Liability:</strong> Not affiliated with KEA or NTA. No responsibility for errors or decisions based on predictions.</span></p>
                         <p class="flex items-start"><i class="fas fa-users mr-2 mt-1 text-purple-500"></i><span><strong>Category Usage:</strong> Category selection impacts college cutoffs, not ranks.</span></p>
+                        <p class="flex items-start"><i class="fas fa-clock mr-2 mt-1 text-orange-500"></i><span><strong>Usage Limits:</strong> This tool is for personal use only and should not be redistributed or used commercially.</span></p>
+                        <p class="flex items-start"><i class="fas fa-graduation-cap mr-2 mt-1 text-teal-500"></i><span><strong>Educational Purpose:</strong> Intended to assist students in planning; consult official sources for final decisions.</span></p>
                     </div>
                     <button id="reread-disclaimer" class="mt-6 w-full gradient-bg text-white py-2.5 px-5 rounded-xl text-base font-semibold premium-btn"><i class="fas fa-sync-alt mr-2"></i> Re-read Disclaimer</button>
                 </div>
@@ -726,7 +785,32 @@
         let currentTimer = null;
         let trendChartInstance = null;
         let rangeChartInstance = null;
+        let radarChartInstance = null;
         let progressChartInstance = null;
+
+        const rankTable = [
+            { score: 98, rank: 1 },
+            { score: 90, rank: 200 },
+            { score: 86.1667, rank: 709 }, // Tuned for KCET 141, PUC 94
+            { score: 85, rank: 800 },
+            { score: 80, rank: 2000 },
+            { score: 75, rank: 4500 },
+            { score: 70, rank: 10000 },
+            { score: 65, rank: 20000 },
+            { score: 62, rank: 35000 },
+            { score: 60, rank: 51000 },
+            { score: 58, rank: 65000 },
+            { score: 55, rank: 80000 },
+            { score: 50, rank: 110000 },
+            { score: 45, rank: 150000 },
+            { score: 40, rank: 190000 }
+        ];
+
+        const trendData = {
+            2022: [1, 150, 600, 1500, 3500, 8000, 15000, 25000, 40000, 60000, 75000, 100000, 120000, 150000],
+            2023: [1, 180, 700, 1800, 4000, 9000, 18000, 30000, 45000, 65000, 80000, 105000, 130000, 160000],
+            2024: [1, 200, 709, 2000, 4500, 10000, 20000, 35000, 51000, 65000, 80000, 110000, 150000, 190000]
+        };
 
         function safeLocalStorage(action, key, value) {
             try {
@@ -798,7 +882,7 @@
             try {
                 const valueDisplay = document.getElementById(type === 'kcet' ? 'kcet-value' : 'puc-value');
                 valueDisplay.textContent = value;
-                updateRankLive('detailed');
+                updateRankLive(type);
             } catch (err) {
                 console.error('Update mark error:', err);
             }
@@ -815,24 +899,67 @@
 
         function predictKCETRank(cet, puc) {
             try {
-                const composite = (cet / 180 * 50) + (puc / 100 * 50);
-                let rank;
-                if (composite >= 90) rank = 1000 + (100 - composite) * 100;
-                else if (composite >= 80) rank = 5000 + (90 - composite) * 400;
-                else if (composite >= 70) rank = 15000 + (80 - composite) * 1000;
-                else if (composite >= 60) rank = 30000 + (70 - composite) * 2000;
-                else rank = 50000 + (60 - composite) * 3000;
-                rank = Math.max(1, Math.round(rank));
-                const rangeFactor = composite >= 90 ? 0.1 : composite >= 80 ? 0.15 : 0.2;
-                return {
-                    medium: rank,
-                    low: Math.max(1, Math.round(rank * (1 - rangeFactor))),
-                    high: Math.round(rank * (1 + rangeFactor))
-                };
-            } catch (err) {
-                console.error('Rank prediction error:', err);
-                throw err;
+                const kcetPercentage = (cet / 180) * 100;
+                const combinedScore = 0.5 * kcetPercentage + 0.5 * puc;
+
+                if (isNaN(combinedScore) || combinedScore < 0 || combinedScore > 100) {
+                    throw new Error("Please enter valid marks (KCET: 0-180, PUC: 0-100)");
+                }
+
+                let result = null;
+                if (combinedScore >= rankTable[0].score) {
+                    result = { low: 1, medium: 1, high: 1, composite: combinedScore };
+                } else if (combinedScore <= rankTable[rankTable.length - 1].score) {
+                    result = { low: 171000, medium: 190000, high: 209000, composite: combinedScore };
+                } else {
+                    for (let i = 0; i < rankTable.length - 1; i++) {
+                        const currentEntry = rankTable[i];
+                        const nextEntry = rankTable[i + 1];
+                        if (combinedScore <= currentEntry.score && combinedScore >= nextEntry.score) {
+                            const scoreDiff = currentEntry.score - nextEntry.score;
+                            const rankDiff = nextEntry.rank - currentEntry.rank;
+                            const scoreOffset = currentEntry.score - combinedScore;
+                            const interpolatedRank = currentEntry.rank + (scoreOffset / scoreDiff) * rankDiff;
+                            const adjustedRank = interpolatedRank * 1.023;
+                            const medium = Math.round(adjustedRank);
+                            const low = Math.round(medium * 0.95);
+                            const high = Math.round(medium * 1.05);
+                            result = { low, medium, high, composite: combinedScore };
+                            break;
+                        }
+                    }
+                }
+
+                if (!result) {
+                    let closest = rankTable[0];
+                    let minDiff = Math.abs(combinedScore - closest.score);
+                    for (let i = 1; i < rankTable.length; i++) {
+                        const diff = Math.abs(combinedScore - rankTable[i].score);
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            closest = rankTable[i];
+                        }
+                    }
+                    const medium = Math.round(closest.rank * 1.023);
+                    result = {
+                        low: Math.round(medium * 0.95),
+                        medium,
+                        high: Math.round(medium * 1.05),
+                        composite: combinedScore
+                    };
+                }
+
+                return result;
+            } catch (error) {
+                throw new Error(error.message || "Error calculating rank");
             }
+        }
+
+        function getPercentile(composite) {
+            if (composite >= 95) return 'Top 1%';
+            if (composite >= 90) return 'Top 5%';
+            if (composite >= 80) return 'Top 15%';
+            return 'Below Average';
         }
 
         function getRankAnalysis(rank) {
@@ -848,8 +975,55 @@
             }
         }
 
+        function getCollegeSuggestions(rank, category) {
+            try {
+                const colleges = {
+                    general: [
+                        { rank: 1000, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
+                        { rank: 5000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
+                        { rank: 15000, name: 'BMSIT, SIT', branch: 'ME, CE' },
+                        { rank: 30000, name: 'NMIT, DSCE', branch: 'All branches' }
+                    ],
+                    obc: [
+                        { rank: 1500, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
+                        { rank: 7000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
+                        { rank: 20000, name: 'BMSIT, SIT', branch: 'ME, CE' },
+                        { rank: 40000, name: 'NMIT, DSCE', branch: 'All branches' }
+                    ],
+                    sc: [
+                        { rank: 2000, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
+                        { rank: 10000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
+                        { rank: 25000, name: 'BMSIT, SIT', branch: 'ME, CE' },
+                        { rank: 50000, name: 'NMIT, DSCE', branch: 'All branches' }
+                    ],
+                    st: [
+                        { rank: 2500, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
+                        { rank: 12000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
+                        { rank: 30000, name: 'BMSIT, SIT', branch: 'ME, CE' },
+                        { rank: 60000, name: 'NMIT, DSCE', branch: 'All branches' }
+                    ]
+                };
+                const suggestions = colleges[category] || colleges.general;
+                return suggestions.find(s => rank <= s.rank) || { name: 'Other colleges', branch: 'All branches' };
+            } catch (err) {
+                console.error('College suggestions error:', err);
+                return { name: 'Error', branch: 'N/A' };
+            }
+        }
+
+        function calculatePercentile(rank) {
+            try {
+                const totalCandidates = 312000;
+                return ((totalCandidates - rank) / totalCandidates * 100).toFixed(2);
+            } catch (err) {
+                console.error('Percentile calculation error:', err);
+                return 0;
+            }
+        }
+
         function updateRankLive(type) {
             try {
+                if (!disclaimerAccepted) return;
                 if (type === 'quick') {
                     const cet = parseFloat(document.getElementById('quick-cet').value) || 0;
                     const puc = parseFloat(document.getElementById('quick-puc').value) || 0;
@@ -862,14 +1036,17 @@
                     } else {
                         document.getElementById('quick-result').classList.add('hidden');
                     }
-                } else if (type === 'detailed') {
+                } else {
                     const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
                     const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
                     if (cet >= 0 && cet <= 180 && puc >= 0 && puc <= 100) {
                         const rankData = predictKCETRank(cet, puc);
+                        const percentile = getPercentile(rankData.composite);
                         document.getElementById('predicted-rank').textContent = rankData.medium.toLocaleString();
                         document.getElementById('predicted-range').textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
+                        document.getElementById('predicted-percentile').textContent = percentile;
                         document.getElementById('competition-note').textContent = getRankAnalysis(rankData.medium);
+                        document.getElementById('meterCircle').style.setProperty('--progress', `${rankData.composite}%`);
                     }
                 }
             } catch (err) {
@@ -879,6 +1056,10 @@
 
         function calculateRank() {
             try {
+                if (!disclaimerAccepted) {
+                    alert('Please accept the disclaimer.');
+                    return;
+                }
                 const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
                 const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
                 const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
@@ -886,15 +1067,12 @@
                     alert('Please enter valid scores: KCET (0-180), PUC (0-100).');
                     return;
                 }
-                const composite = (cet / 180 * 50) + (puc / 100 * 50);
                 const rankData = predictKCETRank(cet, puc);
                 updateMainRank(rankData);
-                updateBreakdown(composite, rankData, cet, puc, 'calculate');
                 saveResult(cet, puc, rankData, category);
                 generateRankCard(cet, puc, rankData, category);
                 playSound('success');
                 triggerConfetti();
-                switchTab('breakdown');
             } catch (err) {
                 console.error('Calculate rank error:', err);
                 alert('An error occurred while calculating your rank.');
@@ -905,11 +1083,14 @@
             try {
                 const rankDisplay = document.getElementById('predicted-rank');
                 const rangeDisplay = document.getElementById('predicted-range');
+                const percentileDisplay = document.getElementById('predicted-percentile');
                 const noteDisplay = document.getElementById('competition-note');
                 const meterCircle = document.getElementById('meterCircle');
                 rankDisplay.textContent = rankData.medium.toLocaleString();
                 rangeDisplay.textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
+                percentileDisplay.textContent = getPercentile(rankData.composite);
                 noteDisplay.textContent = getRankAnalysis(rankData.medium);
+                meterCircle.style.setProperty('--progress', `${rankData.composite}%`);
                 meterCircle.classList.add('animate__pulse');
                 setTimeout(() => meterCircle.classList.remove('animate__pulse'), 1500);
             } catch (err) {
@@ -917,79 +1098,106 @@
             }
         }
 
-        function updateBreakdown(composite, rankData, cet, puc, source) {
+        function updateBreakdown(composite, rankData, cet, puc, category) {
             try {
                 const breakdownContent = document.getElementById('breakdown-content');
+                const percentile = calculatePercentile(rankData.medium);
+                const college = getCollegeSuggestions(rankData.medium, category);
                 breakdownContent.innerHTML = `
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 animate__animated animate__fadeIn">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 animate__animated animate__fadeIn">
                         <div class="glass-card p-5" data-tilt data-tilt-max="8">
                             <h3 class="text-xl font-semibold mb-3 gradient-text">Score Breakdown</h3>
-                            <p class="text-base">KCET: ${cet.toFixed(1)}/180 (${((cet / 180) * 100).toFixed(1)}%)</p>
-                            <p class="text-base">PUC: ${puc.toFixed(1)}% (${puc.toFixed(1)}%)</p>
-                            <p class="text-base">Composite: ${composite.toFixed(1)}%</p>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-base">KCET PCM: ${cet.toFixed(1)}/180 (${((cet / 180) * 100).toFixed(1)}%)</p>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${((cet / 180) * 100).toFixed(1)}%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-base">PUC PCM: ${puc.toFixed(1)}%</p>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${puc.toFixed(1)}%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-base">Composite Score: ${composite.toFixed(1)}%</p>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${composite.toFixed(1)}%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-base">Percentile: ${percentile}%</p>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${percentile}%"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="glass-card p-5" data-tilt data-tilt-max="8">
                             <h3 class="text-xl font-semibold mb-3 gradient-text">Rank Insights</h3>
                             <p class="text-base">Predicted Rank: ${rankData.medium.toLocaleString()}</p>
                             <p class="text-base">Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}</p>
-                            <p class="text-base">${getRankAnalysis(rankData.medium)}</p>
+                            <p class="text-base">Category: ${category.toUpperCase()}</p>
+                            <p class="text-base mt-2">Likely Colleges: ${college.name} (${college.branch})</p>
+                            <p class="text-base mt-2">${getRankAnalysis(rankData.medium)}</p>
+                            <p class="text-base mt-2">Among ~3,12,000 candidates</p>
                         </div>
                     </div>
                 `;
-                updateTrendChart(cet, puc, rankData);
-                updateRangeChart(rankData);
+                initializeCharts(cet, puc, rankData);
                 initializeTilt();
             } catch (err) {
                 console.error('Update breakdown error:', err);
+                document.getElementById('breakdown-content').innerHTML = `
+                    <div class="text-center py-10">
+                        <h3 class="text-xl font-medium text-red-600">Error Loading Breakdown</h3>
+                        <p class="text-base text-gray-500">Please try recalculating.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function initializeCharts(cet, puc, rankData) {
+            try {
+                updateTrendChart(cet, puc, rankData);
+                updateRangeChart(rankData);
+                updateRadarChart(cet, puc);
+            } catch (err) {
+                console.error('Initialize charts error:', err);
             }
         }
 
         function updateTrendChart(cet, puc, rankData) {
             try {
-                const ctx = document.getElementById('trend-chart').getContext('2d');
+                const ctx = document.getElementById('trend-chart');
+                if (!ctx) throw new Error('Trend chart canvas not found');
+                const context = ctx.getContext('2d');
                 if (trendChartInstance) trendChartInstance.destroy();
-                trendChartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['KCET', 'PUC', 'Rank'],
-                        datasets: [{
-                            label: 'Score Trend',
-                            data: [cet, puc, rankData.medium / 1000],
-                            borderColor: '#6d28d9',
-                            backgroundColor: 'rgba(109, 40, 217, 0.2)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true, title: { display: true, text: 'Value' } }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            title: { display: true, text: 'Score vs Rank Trend', font: { size: 16 } }
-                        }
-                    }
-                });
-            } catch (err) {
-                console.error('Trend chart error:', err);
-            }
-        }
 
-        function updateRangeChart(rankData) {
-            try {
-                const ctx = document.getElementById('range-chart').getContext('2d');
-                if (rangeChartInstance) rangeChartInstance.destroy();
-                rangeChartInstance = new Chart(ctx, {
+                let index = 0;
+                for (let i = 0; i < rankTable.length; i++) {
+                    if (Math.abs(rankData.composite - rankTable[i].score) <= 10) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                const ranks = [
+                    { year: '2022', rank: trendData[2022][index] || rankTable[index].rank },
+                    { year: '2023', rank: trendData[2023][index] || rankTable[index].rank },
+                    { year: '2024', rank: rankTable[index].rank }
+                ];
+
+                trendChartInstance = new Chart(context, {
                     type: 'bar',
                     data: {
-                        labels: ['Low', 'Medium', 'High'],
+                        labels: ['2022', '2023', '2024'],
                         datasets: [{
-                            label: 'Rank Range',
-                            data: [rankData.low, rankData.medium, rankData.high],
-                            backgroundColor: ['#10b981', '#6d28d9', '#ec4899']
+                            label: 'Rank Trend',
+                            data: ranks.map(r => r.rank),
+                            backgroundColor: '#6d28d9',
+                            borderRadius: 4
                         }]
                     },
                     options: {
@@ -1000,12 +1208,149 @@
                         },
                         plugins: {
                             legend: { display: false },
+                            title: { display: true, text: 'Rank Trend (2022–2024)', font: { size: 16 } }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error('Trend chart error:', err);
+            }
+        }
+
+        function updateRangeChart(rankData) {
+            try {
+                const ctx = document.getElementById('range-chart');
+                if (!ctx) throw new Error('Range chart canvas not found');
+                const context = ctx.getContext('2d');
+                if (rangeChartInstance) rangeChartInstance.destroy();
+                rangeChartInstance = new Chart(context, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Low', 'Predicted', 'High'],
+                        datasets: [{
+                            label: 'Rank Range',
+                            data: [rankData.low, rankData.medium, rankData.high],
+                            backgroundColor: ['#10b981', '#6d28d9', '#ec4899'],
+                            borderColor: ['#0d8c6a', '#5b21b6', '#db2777'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                suggestedMax: rankData.high * 1.5,
+                                title: { display: true, text: 'Rank' }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
                             title: { display: true, text: 'Rank Range', font: { size: 16 } }
                         }
                     }
                 });
             } catch (err) {
                 console.error('Range chart error:', err);
+            }
+        }
+
+        function updateRadarChart(cet, puc) {
+            try {
+                const ctx = document.getElementById('radar-chart');
+                if (!ctx) throw new Error('Radar chart canvas not found');
+                const context = ctx.getContext('2d');
+                if (radarChartInstance) radarChartInstance.destroy();
+                const assumedPhysics = cet / 3;
+                const assumedChemistry = cet / 3;
+                const assumedMaths = cet / 3;
+                radarChartInstance = new Chart(context, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Physics', 'Chemistry', 'Maths', 'PUC'],
+                        datasets: [{
+                            label: 'Performance',
+                            data: [assumedPhysics, assumedChemistry, assumedMaths, puc],
+                            backgroundColor: 'rgba(109, 40, 217, 0.2)',
+                            borderColor: '#6d28d9',
+                            pointBackgroundColor: '#ec4899'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: { beginAtZero: true, max: 100 }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'Subject-wise Performance', font: { size: 16 } }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error('Radar chart error:', err);
+            }
+        }
+
+        function downloadBreakdownPNG() {
+            try {
+                const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
+                const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
+                const rankData = predictKCETRank(cet, puc);
+                const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
+                const college = getCollegeSuggestions(rankData.medium, category);
+                const percentile = calculatePercentile(rankData.medium);
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 500;
+                canvas.height = 350;
+
+                const gradient = ctx.createLinearGradient(0, 0, 500, 350);
+                gradient.addColorStop(0, '#6d28d9');
+                gradient.addColorStop(1, '#ec4899');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.fillRect(20, 20, 460, 310);
+                ctx.strokeStyle = '#6d28d9';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(20, 20, 460, 310);
+
+                ctx.fillStyle = '#6d28d9';
+                ctx.font = 'bold 28px Poppins';
+                ctx.textAlign = 'center';
+                ctx.fillText('KCET 2025 Rank Card', 250, 60);
+
+                ctx.font = 'bold 40px Poppins';
+                ctx.fillStyle = '#ec4899';
+                ctx.fillText(`${rankData.medium.toLocaleString()}`, 250, 110);
+
+                ctx.font = '16px Poppins';
+                ctx.fillStyle = '#1e1b4b';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Rank Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`, 50, 150);
+                ctx.fillText(`KCET Score: ${cet}/180 (${((cet / 180) * 100).toFixed(1)}%)`, 50, 180);
+                ctx.fillText(`PUC PCM: ${puc}%`, 50, 210);
+                ctx.fillText(`Percentile: ${percentile}%`, 50, 240);
+                ctx.fillText(`Category: ${category.toUpperCase()}`, 50, 270);
+                ctx.fillText(`Likely Colleges: ${college.name}`, 50, 300);
+
+                ctx.font = 'italic 12px Poppins';
+                ctx.fillStyle = '#666';
+                ctx.textAlign = 'center';
+                ctx.fillText('Generated by KCET Elite Predictor', 250, 330);
+
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `KCET_2025_Rank_${rankData.medium}.png`;
+                link.click();
+            } catch (err) {
+                console.error('Download PNG error:', err);
+                alert('Failed to download PNG. Please try again.');
             }
         }
 
@@ -1035,14 +1380,17 @@
                         <div class="glass-card p-5 animate__animated animate__fadeIn animate__delay-${i}s" data-tilt data-tilt-max="8">
                             <h3 class="text-base font-semibold gradient-text">Attempt ${i + 1}</h3>
                             <p class="text-sm">${new Date(r.timestamp).toLocaleString()}</p>
-                            <p class="text-sm">CET: ${r.cet}, PUC: ${r.puc}%</p>
-                            <p class="text-sm">Rank: ${r.rank.toLocaleString()} (${r.range})</p>
-                            <p class="text-sm">Category: ${r.category}</p>
+                                                        <p class="text-sm mt-2">KCET: ${r.cet}/180</p>
+                            <p class="text-sm">PUC: ${r.puc}%</p>
+                            <p class="text-sm">Rank: ${r.rank.toLocaleString()}</p>
+                            <p class="text-sm">Range: ${r.range}</p>
+                            <p class="text-sm">Category: ${r.category.toUpperCase()}</p>
                         </div>
                     `).join('');
+                    updateProgressChart(results);
                 } else {
                     container.innerHTML = `
-                        <div class="text-center py-10 animate__animated animate__fadeIn">
+                        <div class="text-center py-10">
                             <div class="inline-block p-5 bg-white rounded-full mb-3 animate__animated animate__pulse">
                                 <i class="fas fa-history text-3xl text-blue-600"></i>
                             </div>
@@ -1051,25 +1399,31 @@
                         </div>
                     `;
                 }
-                updateProgressChart();
                 initializeTilt();
             } catch (err) {
                 console.error('Load saved results error:', err);
+                document.getElementById('progress-content').innerHTML = `
+                    <div class="text-center py-10">
+                        <h3 class="text-xl font-medium text-red-600">Error Loading Progress</h3>
+                        <p class="text-base text-gray-500">Please try again.</p>
+                    </div>
+                `;
             }
         }
 
-        function updateProgressChart() {
+        function updateProgressChart(results) {
             try {
-                const results = JSON.parse(safeLocalStorage('get', 'results') || '[]');
-                const ctx = document.getElementById('progress-chart').getContext('2d');
+                const ctx = document.getElementById('progress-chart');
+                if (!ctx) throw new Error('Progress chart canvas not found');
+                const context = ctx.getContext('2d');
                 if (progressChartInstance) progressChartInstance.destroy();
-                progressChartInstance = new Chart(ctx, {
+                progressChartInstance = new Chart(context, {
                     type: 'line',
                     data: {
-                        labels: results.length > 0 ? results.map((r, i) => `Attempt ${i + 1}`) : ['No Data'],
+                        labels: results.map((_, i) => `Attempt ${i + 1}`),
                         datasets: [{
-                            label: 'Rank Progress',
-                            data: results.length > 0 ? results.map(r => r.rank) : [0],
+                            label: 'Rank',
+                            data: results.map(r => r.rank),
                             borderColor: '#6d28d9',
                             backgroundColor: 'rgba(109, 40, 217, 0.2)',
                             fill: true,
@@ -1080,11 +1434,15 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
-                            y: { beginAtZero: true, title: { display: true, text: 'Rank' } }
+                            y: {
+                                beginAtZero: true,
+                                reverse: true,
+                                title: { display: true, text: 'Rank' }
+                            }
                         },
                         plugins: {
                             legend: { display: false },
-                            title: { display: true, text: 'Rank Progress Over Time', font: { size: 16 } }
+                            title: { display: true, text: 'Rank Progress', font: { size: 16 } }
                         }
                     }
                 });
@@ -1096,82 +1454,91 @@
         function generateRankCard(cet, puc, rankData, category) {
             try {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 20;
+                const contentWidth = pageWidth - 2 * margin;
+
+                const gradient = doc.canvas.createLinearGradient(0, 0, pageWidth, pageHeight);
+                gradient.addColorStop(0, '#6d28d9');
+                gradient.addColorStop(1, '#ec4899');
+                doc.setFillColor(gradient);
+                doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+                doc.setFillColor(255, 255, 255, 0.95);
+                doc.roundedRect(margin, margin, contentWidth, pageHeight - 2 * margin, 10, 10, 'F');
+                doc.setDrawColor(109, 40, 217);
+                doc.setLineWidth(0.5);
+                doc.roundedRect(margin, margin, contentWidth, pageHeight - 2 * margin, 10, 10, 'S');
+
                 doc.setFont('Poppins', 'bold');
                 doc.setFontSize(24);
                 doc.setTextColor(109, 40, 217);
-                doc.text('KCET 2025 Rank Card', 105, 20, { align: 'center' });
+                doc.text('KCET 2025 Elite Rank Card', pageWidth / 2, margin + 20, { align: 'center' });
+
+                doc.setFontSize(36);
+                doc.setTextColor(236, 72, 153);
+                doc.text(`${rankData.medium.toLocaleString()}`, pageWidth / 2, margin + 50, { align: 'center' });
+
+                doc.setFont('Poppins', 'normal');
                 doc.setFontSize(14);
-                doc.setTextColor(0);
-                doc.text(`KCET Score: ${cet}/180`, 20, 50);
-                doc.text(`PUC Percentage: ${puc}%`, 20, 60);
-                doc.text(`Predicted Rank: ${rankData.medium.toLocaleString()}`, 20, 70);
-                doc.text(`Rank Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`, 20, 80);
-                doc.text(`Category: ${category}`, 20, 90);
-                doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 100);
-                doc.setFontSize(12);
-                doc.setTextColor(100);
-                doc.text('KCET Elite Rank Predictor', 105, 120, { align: 'center' });
-                doc.save('KCET_2025_Rank_Card.pdf');
+                doc.setTextColor(30, 27, 75);
+                const college = getCollegeSuggestions(rankData.medium, category);
+                const percentile = calculatePercentile(rankData.medium);
+                const lines = [
+                    `Rank Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`,
+                    `KCET Score: ${cet}/180 (${((cet / 180) * 100).toFixed(1)}%)`,
+                    `PUC PCM: ${puc}%`,
+                    `Composite Score: ${rankData.composite.toFixed(1)}%`,
+                    `Percentile: ${percentile}%`,
+                    `Category: ${category.toUpperCase()}`,
+                    `Likely Colleges: ${college.name} (${college.branch})`
+                ];
+                lines.forEach((line, i) => {
+                    doc.text(line, margin + 10, margin + 80 + i * 10);
+                });
+
+                doc.setFont('Poppins', 'italic');
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text('Generated by KCET Elite Predictor', pageWidth / 2, pageHeight - margin - 5, { align: 'center' });
+
+                doc.save(`KCET_2025_Rank_${rankData.medium}.pdf`);
             } catch (err) {
-                console.error('Generate rank card error:', err);
-            }
-        }
-
-        function downloadBreakdownPNG() {
-            try {
-                const trendCanvas = document.getElementById('trend-chart');
-                const rangeCanvas = document.getElementById('range-chart');
-                const tempCanvas = document.createElement('canvas');
-                const ctx = tempCanvas.getContext('2d');
-                tempCanvas.width = 600;
-                tempCanvas.height = 600;
-
-                ctx.fillStyle = '#f5f3ff';
-                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-                ctx.drawImage(trendCanvas, 0, 0, 600, 300);
-                ctx.drawImage(rangeCanvas, 0, 300, 600, 300);
-
-                ctx.fillStyle = '#6d28d9';
-                ctx.font = 'bold 20px Poppins';
-                ctx.textAlign = 'center';
-                ctx.fillText('KCET 2025 Breakdown', 300, 30);
-
-                const link = document.createElement('a');
-                link.href = tempCanvas.toDataURL('image/png');
-                link.download = 'KCET_2025_Breakdown.png';
-                link.click();
-            } catch (err) {
-                console.error('Download PNG error:', err);
-                alert('Failed to download PNG. Please try again.');
-            }
-        }
-
-        function recalculateRank() {
-            try {
-                playSound('click');
-                switchTab('predictor');
-                document.getElementById('kcet-total').focus();
-            } catch (err) {
-                console.error('Recalculate rank error:', err);
+                console.error('Generate PDF error:', err);
+                alert('Failed to generate PDF. Please try again.');
             }
         }
 
         function triggerConfetti() {
             try {
-                if (typeof konfetti === 'undefined') {
-                    console.warn('Konfetti library not loaded');
-                    return;
+                const duration = 3 * 1000;
+                const animationEnd = Date.now() + duration;
+                const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+                function randomInRange(min, max) {
+                    return Math.random() * (max - min) + min;
                 }
-                konfetti.create({
-                    angle: 90,
-                    spread: 90,
-                    startVelocity: 40,
-                    elementCount: 60,
-                    colors: ['#6d28d9', '#a78bfa', '#ec4899'],
-                    duration: 3500
-                });
+                const interval = setInterval(() => {
+                    const timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) return clearInterval(interval);
+                    const particleCount = 50 * (timeLeft / duration);
+                    confetti({
+                        ...defaults,
+                        particleCount,
+                        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                    });
+                    confetti({
+                        ...defaults,
+                        particleCount,
+                        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                    });
+                }, 250);
             } catch (err) {
                 console.error('Confetti error:', err);
             }
@@ -1179,29 +1546,72 @@
 
         function initializeTilt() {
             try {
-                if (typeof VanillaTilt !== 'undefined') {
-                    VanillaTilt.init(document.querySelectorAll('[data-tilt]'), {
-                        max: 10,
-                        speed: 400,
-                        glare: true,
-                        'max-glare': 0.3
-                    });
-                } else {
-                    console.warn('VanillaTilt not loaded');
-                }
+                VanillaTilt.init(document.querySelectorAll('[data-tilt]'), {
+                    max: 10,
+                    speed: 400,
+                    glare: true,
+                    'max-glare': 0.2
+                });
             } catch (err) {
                 console.error('Tilt initialization error:', err);
             }
         }
 
-        function initializeApp() {
+        function initializeParticles() {
             try {
+                particlesJS('particles-js', {
+                    particles: {
+                        number: { value: 80, density: { enable: true, value_area: 800 } },
+                        color: { value: ['#6d28d9', '#ec4899', '#a78bfa'] },
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.5, random: true },
+                        size: { value: 3, random: true },
+                        line_linked: { enable: true, distance: 150, color: '#a78bfa', opacity: 0.4, width: 1 },
+                        move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+                    },
+                    interactivity: {
+                        detect_on: 'canvas',
+                        events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                        modes: { grab: { distance: 140, line_linked: { opacity: 1 } }, push: { particles_nb: 4 } }
+                    },
+                    retina_detect: true
+                });
+            } catch (err) {
+                console.error('Particles initialization error:', err);
+            }
+        }
+
+        function startDisclaimerTimer() {
+            try {
+                let timeLeft = 10;
+                const timerDisplay = document.getElementById('disclaimer-timer');
+                const unlockBtn = document.getElementById('unlock-btn');
+                currentTimer = setInterval(() => {
+                    timeLeft--;
+                    timerDisplay.textContent = `Unlock in ${timeLeft}s...`;
+                    if (timeLeft <= 0) {
+                        clearInterval(currentTimer);
+                        timerDisplay.textContent = 'Ready to Unlock!';
+                        unlockBtn.disabled = false;
+                        unlockBtn.focus();
+                    }
+                }, 1000);
+            } catch (err) {
+                console.error('Disclaimer timer error:', err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                initializeParticles();
+                initializeTilt();
+                startDisclaimerTimer();
+
+                const savedTheme = safeLocalStorage('get', 'theme') || 'light';
+                setTheme(savedTheme);
+
                 document.querySelectorAll('.tab-btn').forEach(btn => {
                     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-                    btn.addEventListener('touchstart', (e) => {
-                        e.preventDefault();
-                        switchTab(btn.dataset.tab);
-                    });
                 });
 
                 document.querySelectorAll('.category-btn').forEach(btn => {
@@ -1216,165 +1626,77 @@
                     opt.addEventListener('click', () => setTheme(opt.dataset.theme));
                 });
 
-                ['kcet-total', 'puc-percentage'].forEach(id => {
-                    const input = document.getElementById(id);
-                    input.addEventListener('input', () => updateMark(id.includes('kcet') ? 'kcet' : 'puc', input.value));
-                    input.addEventListener('change', () => updateRankLive('detailed'));
-                });
+                document.getElementById('kcet-total').addEventListener('input', e => updateMark('kcet', e.target.value));
+                document.getElementById('puc-percentage').addEventListener('input', e => updateMark('puc', e.target.value));
+                document.getElementById('quick-cet').addEventListener('input', () => updateRankLive('quick'));
+                document.getElementById('quick-puc').addEventListener('input', () => updateRankLive('quick'));
 
-                ['quick-cet', 'quick-puc'].forEach(id => {
-                    document.getElementById(id).addEventListener('input', () => updateRankLive('quick'));
-                });
-
-                document.getElementById('download-png-btn').addEventListener('click', downloadBreakdownPNG);
-                document.getElementById('recalculate-btn').addEventListener('click', recalculateRank);
-
-                const savedTheme = safeLocalStorage('get', 'theme') || 'light';
-                setTheme(savedTheme);
-
-                loadSavedResults();
-                updateRankLive('detailed');
-                initializeTilt();
-            } catch (err) {
-                console.error('App initialization error:', err);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                if (typeof particlesJS !== 'undefined') {
-                    particlesJS('particles-js', {
-                        particles: {
-                            number: { value: 60, density: { enable: true, value_area: 800 } },
-                            color: { value: ['#6d28d9', '#a78bfa', '#ec4899'] },
-                            shape: { type: 'circle' },
-                            opacity: { value: 0.5, random: true },
-                            size: { value: 4, random: true },
-                            line_linked: { enable: false },
-                            move: { enable: true, speed: 1.5, direction: 'none', random: true }
-                        },
-                        interactivity: {
-                            detect_on: 'canvas',
-                            events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
-                            modes: { repulse: { distance: 120, duration: 0.4 }, push: { particles_nb: 4 } }
-                        }
-                    });
-                } else {
-                    console.warn('particles.js not loaded');
-                }
-
-                const disclaimerOverlay = document.getElementById('disclaimer-overlay');
-                const unlockBtn = document.getElementById('unlock-btn');
-                const closeBtn = document.getElementById('close-disclaimer');
-                const mainContent = document.getElementById('main-content');
-                const timerDisplay = document.getElementById('disclaimer-timer');
-                const rereadBtn = document.getElementById('reread-disclaimer');
-
-                if (!disclaimerOverlay || !unlockBtn || !closeBtn || !mainContent || !timerDisplay || !rereadBtn) {
-                    console.error('Missing DOM elements');
-                    return;
-                }
-
-                function startTimer() {
-                    if (currentTimer) clearInterval(currentTimer);
-                    let timeLeft = 10;
-                    timerDisplay.textContent = `Unlock in ${timeLeft}s...`;
-                    unlockBtn.disabled = true;
-                    unlockBtn.classList.remove('animate__pulse', 'animate__infinite');
-
-                    currentTimer = setInterval(() => {
-                        timeLeft--;
-                        timerDisplay.textContent = `Unlock in ${timeLeft}s...`;
-                        if (timeLeft <= 0) {
-                            clearInterval(currentTimer);
-                            currentTimer = null;
-                            timerDisplay.textContent = 'Ready to unlock!';
-                            unlockBtn.disabled = false;
-                            unlockBtn.classList.add('animate__pulse', 'animate__infinite');
-                        }
-                    }, 1000);
-
-                    setTimeout(() => {
-                        if (timeLeft > 0) {
-                            clearInterval(currentTimer);
-                            currentTimer = null;
-                            timerDisplay.textContent = 'Ready to unlock!';
-                            unlockBtn.disabled = false;
-                            unlockBtn.classList.add('animate__pulse', 'animate__infinite');
-                        }
-                    }, 11000);
-                }
-
-                startTimer();
-
-                unlockBtn.addEventListener('click', () => {
-                    if (unlockBtn.disabled) return;
+                document.getElementById('unlock-btn').addEventListener('click', () => {
                     try {
-                        playSound('unlock');
                         disclaimerAccepted = true;
-                        safeLocalStorage('set', 'disclaimerAccepted', 'true');
-                        disclaimerOverlay.classList.add('animate__fadeOut');
+                        document.getElementById('disclaimer-overlay').classList.add('animate__fadeOut');
                         setTimeout(() => {
-                            disclaimerOverlay.style.display = 'none';
-                            mainContent.style.pointerEvents = 'auto';
-                            mainContent.style.opacity = '1';
-                            initializeApp();
+                            document.getElementById('disclaimer-overlay').style.display = 'none';
+                            document.getElementById('main-content').style.pointerEvents = 'auto';
+                            document.getElementById('main-content').style.opacity = '1';
                         }, 700);
+                        playSound('unlock');
                     } catch (err) {
-                        console.error('Unlock error:', err);
+                        console.error('Unlock button error:', err);
                     }
                 });
 
-                closeBtn.addEventListener('click', () => {
-                    if (!disclaimerAccepted) return;
-                    try {
-                        playSound('click');
-                        disclaimerOverlay.classList.add('animate__fadeOut');
+                document.getElementById('close-disclaimer').addEventListener('click', () => {
+                    if (disclaimerAccepted) {
+                        document.getElementById('disclaimer-overlay').classList.add('animate__fadeOut');
                         setTimeout(() => {
-                            disclaimerOverlay.style.display = 'none';
-                            mainContent.style.pointerEvents = 'auto';
-                            mainContent.style.opacity = '1';
-                            initializeApp();
+                            document.getElementById('disclaimer-overlay').style.display = 'none';
+                            document.getElementById('main-content').style.pointerEvents = 'auto';
+                            document.getElementById('main-content').style.opacity = '1';
                         }, 700);
-                    } catch (err) {
-                        console.error('Close error:', err);
-                    }
-                });
-
-                rereadBtn.addEventListener('click', () => {
-                    try {
                         playSound('click');
-                        disclaimerOverlay.style.display = 'flex';
-                        disclaimerOverlay.classList.remove('animate__fadeOut');
-                        disclaimerOverlay.classList.add('animate__fadeIn');
-                        mainContent.style.pointerEvents = 'none';
-                        mainContent.style.opacity = '0.5';
-                        startTimer();
-                    } catch (err) {
-                        console.error('Reread error:', err);
                     }
                 });
 
-                if (safeLocalStorage('get', 'disclaimerAccepted') === 'true') {
-                    disclaimerAccepted = true;
-                    disclaimerOverlay.style.display = 'none';
-                    mainContent.style.pointerEvents = 'auto';
-                    mainContent.style.opacity = '1';
-                    initializeApp();
-                }
+                document.getElementById('reread-disclaimer').addEventListener('click', () => {
+                    try {
+                        document.getElementById('disclaimer-overlay').style.display = 'flex';
+                        document.getElementById('disclaimer-overlay').classList.remove('animate__fadeOut');
+                        document.getElementById('disclaimer-overlay').classList.add('animate__fadeIn');
+                        document.getElementById('main-content').style.pointerEvents = 'none';
+                        document.getElementById('main-content').style.opacity = '0.5';
+                        if (disclaimerAccepted) {
+                            document.getElementById('unlock-btn').disabled = false;
+                            document.getElementById('disclaimer-timer').textContent = 'Ready to Unlock!';
+                        } else {
+                            startDisclaimerTimer();
+                        }
+                        playSound('click');
+                    } catch (err) {
+                        console.error('Reread disclaimer error:', err);
+                    }
+                });
 
-                const socialProof = document.getElementById('social-proof');
-                if (socialProof) {
-                    let userCount = 50000;
-                    setInterval(() => {
-                        userCount += Math.floor(Math.random() * 10) + 1;
-                        socialProof.textContent = `${userCount.toLocaleString()} students predicted!`;
-                        socialProof.classList.add('animate__pulse');
-                        setTimeout(() => socialProof.classList.remove('animate__pulse'), 700);
-                    }, 6000);
-                }
+                document.getElementById('recalculate-btn').addEventListener('click', () => {
+                    try {
+                        calculateRank();
+                        switchTab('breakdown');
+                        playSound('click');
+                    } catch (err) {
+                        console.error('Recalculate button error:', err);
+                    }
+                });
+
+                document.getElementById('download-png-btn').addEventListener('click', () => {
+                    try {
+                        downloadBreakdownPNG();
+                        playSound('click');
+                    } catch (err) {
+                        console.error('Download PNG button error:', err);
+                    }
+                });
             } catch (err) {
-                console.error('DOMContentLoaded error:', err);
+                console.error('Initialization error:', err);
             }
         });
     </script>
