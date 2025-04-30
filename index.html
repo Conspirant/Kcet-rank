@@ -767,930 +767,888 @@
 <div class="text-center text-sm text-gray-500 mt-10 mb-4 px-4 animate__animated animate__fadeInUp">
   <p>Built with care by <span class="font-medium text-indigo-600">u/infamblackhoodieguy</span>. Special thanks to <span class="text-pink-500">u/FlakyReview-6662</span> & <span class="text-blue-500">u/ra1dh_10</span>.</p>
 </div>
-    <script>
-        let disclaimerAccepted = false;
-        let currentTimer = null;
-        let trendChartInstance = null;
-        let rangeChartInstance = null;
-        let radarChartInstance = null;
-        let progressChartInstance = null;
+<script>
+    let disclaimerAccepted = false;
+    let currentTimer = null;
+    let trendChartInstance = null;
+    let rangeChartInstance = null;
+    let radarChartInstance = null;
+    let progressChartInstance = null;
 
-        const rankTable = [
-            { score: 98, rank: 1 },
-            { score: 90, rank: 200 },
-            { score: 86.1667, rank: 709 }, // Tuned for KCET 141, PUC 94
-            { score: 85, rank: 800 },
-            { score: 80, rank: 2000 },
-            { score: 75, rank: 4500 },
-            { score: 70, rank: 10000 },
-            { score: 65, rank: 20000 },
-            { score: 62, rank: 35000 },
-            { score: 60, rank: 51000 },
-            { score: 58, rank: 65000 },
-            { score: 55, rank: 80000 },
-            { score: 50, rank: 110000 },
-            { score: 45, rank: 150000 },
-            { score: 40, rank: 190000 }
-        ];
+    const rankTable = [
+        { score: 98, rank: 1 },
+        { score: 90, rank: 200 },
+        { score: 86, rank: 1500 }, // Calibrated for KCET 140, PUC 94 (~85.8889)
+        { score: 85, rank: 2000 },
+        { score: 80, rank: 4000 },
+        { score: 75, rank: 8000 },
+        { score: 70, rank: 15000 },
+        { score: 65, rank: 30000 },
+        { score: 62, rank: 45000 },
+        { score: 60, rank: 60000 },
+        { score: 58, rank: 75000 },
+        { score: 55, rank: 90000 },
+        { score: 50, rank: 120000 },
+        { score: 45, rank: 160000 },
+        { score: 40, rank: 190000 }
+    ];
 
-        const trendData = {
-            2022: [1, 150, 600, 1500, 3500, 8000, 15000, 25000, 40000, 60000, 75000, 100000, 120000, 150000],
-            2023: [1, 180, 700, 1800, 4000, 9000, 18000, 30000, 45000, 65000, 80000, 105000, 130000, 160000],
-            2024: [1, 200, 709, 2000, 4500, 10000, 20000, 35000, 51000, 65000, 80000, 110000, 150000, 190000]
-        };
+    const trendData = {
+        2022: [1, 150, 1200, 1800, 3500, 7000, 13000, 25000, 40000, 55000, 70000, 85000, 110000, 140000, 170000],
+        2023: [1, 180, 1300, 1900, 3800, 7500, 14000, 28000, 43000, 58000, 72000, 88000, 115000, 150000, 180000],
+        2024: [1, 200, 1500, 2000, 4000, 8000, 15000, 30000, 45000, 60000, 75000, 90000, 120000, 160000, 190000]
+    };
 
-        function safeLocalStorage(action, key, value) {
-            try {
-                if (action === 'set') {
-                    localStorage.setItem(key, value);
-                    return true;
-                } else if (action === 'get') {
-                    return localStorage.getItem(key);
-                }
-            } catch (err) {
-                console.error('localStorage error:', err);
-                return action === 'get' ? null : false;
+    function safeLocalStorage(action, key, value) {
+        try {
+            if (action === 'set') {
+                localStorage.setItem(key, value);
+                return true;
+            } else if (action === 'get') {
+                return localStorage.getItem(key);
             }
+        } catch (err) {
+            console.error('localStorage error:', err);
+            return action === 'get' ? null : false;
         }
+    }
 
-        function playSound(type) {
-            //disabled
-        }
-
-        function switchTab(tabId) {
-            try {
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-                document.getElementById(tabId).classList.add('active');
-                playSound('click');
-                if (tabId === 'progress') loadSavedResults();
-                if (tabId === 'breakdown') {
-                    const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
-                    const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
-                    const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
-                    const rankData = predictKCETRank(cet, puc);
-                    updateBreakdown(rankData.composite, rankData, cet, puc, category);
-                }
-            } catch (err) {
-                console.error('Tab switch error:', err);
+    function switchTab(tabId) {
+        try {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            if (tabId === 'progress') loadSavedResults();
+            if (tabId === 'breakdown') {
+                const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
+                const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
+                const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
+                const rankData = predictKCETRank(cet, puc);
+                updateBreakdown(rankData.composite, rankData, cet, puc, category);
             }
+        } catch (err) {
+            console.error('Tab switch error:', err);
+            alert('Error switching tabs. Please try again.');
         }
+    }
 
-        function setTheme(theme) {
-            try {
-                document.documentElement.setAttribute('data-theme', theme);
-                document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
-                document.querySelector(`.theme-option[data-theme="${theme}"]`).classList.add('active');
-                safeLocalStorage('set', 'theme', theme);
-                playSound('click');
-            } catch (err) {
-                console.error('Theme error:', err);
+    function setTheme(theme) {
+        try {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelector(`.theme-option[data-theme="${theme}"]`).classList.add('active');
+            safeLocalStorage('set', 'theme', theme);
+        } catch (err) {
+            console.error('Theme error:', err);
+        }
+    }
+
+    function adjustMark(type, delta) {
+        try {
+            const input = document.getElementById(type === 'kcet' ? 'kcet-total' : 'puc-percentage');
+            let value = parseFloat(input.value) + delta;
+            value = Math.max(parseFloat(input.min), Math.min(parseFloat(input.max), value));
+            input.value = value;
+            updateMark(type, value);
+        } catch (err) {
+            console.error('Adjust mark error:', err);
+        }
+    }
+
+    function updateMark(type, value) {
+        try {
+            const valueDisplay = document.getElementById(type === 'kcet' ? 'kcet-value' : 'puc-value');
+            valueDisplay.textContent = value;
+            updateRankLive(type);
+        } catch (err) {
+            console.error('Update mark error:', err);
+        }
+    }
+
+    function focusInput(id) {
+        try {
+            document.getElementById(id).focus();
+        } catch (err) {
+            console.error('Focus input error:', err);
+        }
+    }
+
+    function predictKCETRank(cet, puc) {
+        try {
+            const kcetPercentage = (cet / 180) * 100;
+            const combinedScore = 0.5 * kcetPercentage + 0.5 * puc;
+
+            if (isNaN(combinedScore) || combinedScore < 0 || combinedScore > 100) {
+                throw new Error('Please enter valid marks (KCET: 0-180, PUC: 0-100)');
             }
-        }
 
-        function adjustMark(type, delta) {
-            try {
-                const input = document.getElementById(type === 'kcet' ? 'kcet-total' : 'puc-percentage');
-                let value = parseFloat(input.value) + delta;
-                value = Math.max(parseFloat(input.min), Math.min(parseFloat(input.max), value));
-                input.value = value;
-                updateMark(type, value);
-                playSound('click');
-            } catch (err) {
-                console.error('Adjust mark error:', err);
-            }
-        }
-
-        function updateMark(type, value) {
-            try {
-                const valueDisplay = document.getElementById(type === 'kcet' ? 'kcet-value' : 'puc-value');
-                valueDisplay.textContent = value;
-                updateRankLive(type);
-            } catch (err) {
-                console.error('Update mark error:', err);
-            }
-        }
-
-        function focusInput(id) {
-            try {
-                document.getElementById(id).focus();
-                playSound('click');
-            } catch (err) {
-                console.error('Focus input error:', err);
-            }
-        }
-
-        function predictKCETRank(cet, puc) {
-            try {
-                const kcetPercentage = (cet / 180) * 100;
-                const combinedScore = 0.5 * kcetPercentage + 0.5 * puc;
-
-                if (isNaN(combinedScore) || combinedScore < 0 || combinedScore > 100) {
-                    throw new Error("Please enter valid marks (KCET: 0-180, PUC: 0-100)");
-                }
-
-                let result = null;
-                if (combinedScore >= rankTable[0].score) {
-                    result = { low: 1, medium: 1, high: 1, composite: combinedScore };
-                } else if (combinedScore <= rankTable[rankTable.length - 1].score) {
-                    result = { low: 171000, medium: 190000, high: 209000, composite: combinedScore };
-                } else {
-                    for (let i = 0; i < rankTable.length - 1; i++) {
-                        const currentEntry = rankTable[i];
-                        const nextEntry = rankTable[i + 1];
-                        if (combinedScore <= currentEntry.score && combinedScore >= nextEntry.score) {
-                            const scoreDiff = currentEntry.score - nextEntry.score;
-                            const rankDiff = nextEntry.rank - currentEntry.rank;
-                            const scoreOffset = currentEntry.score - combinedScore;
-                            const interpolatedRank = currentEntry.rank + (scoreOffset / scoreDiff) * rankDiff;
-                            const adjustedRank = interpolatedRank * 1.023;
-                            const medium = Math.round(adjustedRank);
-                            const low = Math.round(medium * 0.95);
-                            const high = Math.round(medium * 1.05);
-                            result = { low, medium, high, composite: combinedScore };
-                            break;
-                        }
+            let result = null;
+            if (combinedScore >= rankTable[0].score) {
+                result = { low: 1, medium: 1, high: 1, composite: combinedScore };
+            } else if (combinedScore <= rankTable[rankTable.length - 1].score) {
+                result = { low: 171000, medium: 190000, high: 209000, composite: combinedScore };
+            } else {
+                for (let i = 0; i < rankTable.length - 1; i++) {
+                    const currentEntry = rankTable[i];
+                    const nextEntry = rankTable[i + 1];
+                    if (combinedScore <= currentEntry.score && combinedScore >= nextEntry.score) {
+                        const scoreDiff = currentEntry.score - nextEntry.score;
+                        const rankDiff = nextEntry.rank - currentEntry.rank;
+                        const scoreOffset = currentEntry.score - combinedScore;
+                        const interpolatedRank = currentEntry.rank + (scoreOffset / scoreDiff) * rankDiff;
+                        const adjustedRank = interpolatedRank * 1.023;
+                        const medium = Math.round(adjustedRank);
+                        const low = Math.round(medium * 0.95);
+                        const high = Math.round(medium * 1.05);
+                        result = { low, medium, high, composite: combinedScore };
+                        break;
                     }
                 }
-
-                if (!result) {
-                    let closest = rankTable[0];
-                    let minDiff = Math.abs(combinedScore - closest.score);
-                    for (let i = 1; i < rankTable.length; i++) {
-                        const diff = Math.abs(combinedScore - rankTable[i].score);
-                        if (diff < minDiff) {
-                            minDiff = diff;
-                            closest = rankTable[i];
-                        }
-                    }
-                    const medium = Math.round(closest.rank * 1.023);
-                    result = {
-                        low: Math.round(medium * 0.95),
-                        medium,
-                        high: Math.round(medium * 1.05),
-                        composite: combinedScore
-                    };
-                }
-
-                return result;
-            } catch (error) {
-                throw new Error(error.message || "Error calculating rank");
             }
-        }
 
-        function getPercentile(composite) {
+            if (!result) {
+                let closest = rankTable[0];
+                let minDiff = Math.abs(combinedScore - closest.score);
+                for (let i = 1; i < rankTable.length; i++) {
+                    const diff = Math.abs(combinedScore - rankTable[i].score);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closest = rankTable[i];
+                    }
+                }
+                const medium = Math.round(closest.rank * 1.023);
+                result = {
+                    low: Math.round(medium * 0.95),
+                    medium,
+                    high: Math.round(medium * 1.05),
+                    composite: combinedScore
+                };
+            }
+
+            return result;
+        } catch (error) {
+            throw new Error(error.message || 'Error calculating rank');
+        }
+    }
+
+    function getPercentile(composite) {
+        try {
             if (composite >= 95) return 'Top 1%';
             if (composite >= 90) return 'Top 5%';
             if (composite >= 80) return 'Top 15%';
             return 'Below Average';
+        } catch (err) {
+            console.error('Percentile error:', err);
+            return 'N/A';
         }
+    }
 
-        function getRankAnalysis(rank) {
-            try {
-                if (rank <= 1000) return 'Elite rank! Likely to secure top colleges like RVCE or BMSCE.';
-                if (rank <= 5000) return 'Great rank! Strong chances for top branches.';
-                if (rank <= 15000) return 'Solid rank! Good college options available.';
-                if (rank <= 30000) return 'Moderate rank. Explore various colleges.';
-                return 'Lower rank. Consider all possible options.';
-            } catch (err) {
-                console.error('Rank analysis error:', err);
-                return 'Error in analysis.';
-            }
+    function getRankAnalysis(rank) {
+        try {
+            if (rank <= 1000) return 'Elite rank! Likely to secure top colleges like RVCE or BMSCE.';
+            if (rank <= 5000) return 'Great rank! Strong chances for top branches.';
+            if (rank <= 15000) return 'Solid rank! Good college options available.';
+            if (rank <= 30000) return 'Moderate rank. Explore various colleges.';
+            return 'Lower rank. Consider all possible options.';
+        } catch (err) {
+            console.error('Rank analysis error:', err);
+            return 'Error in analysis.';
         }
+    }
 
-        function getCollegeSuggestions(rank, category) {
-            try {
-                const colleges = {
-                    general: [
-                        { rank: 1000, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
-                        { rank: 5000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
-                        { rank: 15000, name: 'BMSIT, SIT', branch: 'ME, CE' },
-                        { rank: 30000, name: 'NMIT, DSCE', branch: 'All branches' }
-                    ],
-                    obc: [
-                        { rank: 1500, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
-                        { rank: 7000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
-                        { rank: 20000, name: 'BMSIT, SIT', branch: 'ME, CE' },
-                        { rank: 40000, name: 'NMIT, DSCE', branch: 'All branches' }
-                    ],
-                    sc: [
-                        { rank: 2000, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
-                        { rank: 10000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
-                        { rank: 25000, name: 'BMSIT, SIT', branch: 'ME, CE' },
-                        { rank: 50000, name: 'NMIT, DSCE', branch: 'All branches' }
-                    ],
-                    st: [
-                        { rank: 2500, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
-                        { rank: 12000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
-                        { rank: 30000, name: 'BMSIT, SIT', branch: 'ME, CE' },
-                        { rank: 60000, name: 'NMIT, DSCE', branch: 'All branches' }
-                    ]
-                };
-                const suggestions = colleges[category] || colleges.general;
-                return suggestions.find(s => rank <= s.rank) || { name: 'Other colleges', branch: 'All branches' };
-            } catch (err) {
-                console.error('College suggestions error:', err);
-                return { name: 'Error', branch: 'N/A' };
-            }
+    function getCollegeSuggestions(rank, category) {
+        try {
+            const colleges = {
+                general: [
+                    { rank: 1000, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
+                    { rank: 5000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
+                    { rank: 15000, name: 'BMSIT, SIT', branch: 'ME, CE' },
+                    { rank: 30000, name: 'NMIT, DSCE', branch: 'All branches' }
+                ],
+                obc: [
+                    { rank: 1500, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
+                    { rank: 7000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
+                    { rank: 20000, name: 'BMSIT, SIT', branch: 'ME, CE' },
+                    { rank: 40000, name: 'NMIT, DSCE', branch: 'All branches' }
+                ],
+                sc: [
+                    { rank: 2000, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
+                    { rank: 10000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
+                    { rank: 25000, name: 'BMSIT, SIT', branch: 'ME, CE' },
+                    { rank: 50000, name: 'NMIT, DSCE', branch: 'All branches' }
+                ],
+                st: [
+                    { rank: 2500, name: 'RVCE, BMSCE', branch: 'CSE, ECE' },
+                    { rank: 12000, name: 'MSRIT, PESIT', branch: 'ISE, EEE' },
+                    { rank: 30000, name: 'BMSIT, SIT', branch: 'ME, CE' },
+                    { rank: 60000, name: 'NMIT, DSCE', branch: 'All branches' }
+                ]
+            };
+            const suggestions = colleges[category] || colleges.general;
+            return suggestions.find(s => rank <= s.rank) || { name: 'Other colleges', branch: 'All branches' };
+        } catch (err) {
+            console.error('College suggestions error:', err);
+            return { name: 'Error', branch: 'N/A' };
         }
+    }
 
-        function calculatePercentile(rank) {
-            try {
-                const totalCandidates = 312000;
-                return ((totalCandidates - rank) / totalCandidates * 100).toFixed(2);
-            } catch (err) {
-                console.error('Percentile calculation error:', err);
-                return 0;
-            }
+    function calculatePercentile(rank) {
+        try {
+            const totalCandidates = 312000;
+            return ((totalCandidates - rank) / totalCandidates * 100).toFixed(2);
+        } catch (err) {
+            console.error('Percentile calculation error:', err);
+            return '0';
         }
+    }
 
-        function updateRankLive(type) {
-            try {
-                if (!disclaimerAccepted) return;
-                if (type === 'quick') {
-                    const cet = parseFloat(document.getElementById('quick-cet').value) || 0;
-                    const puc = parseFloat(document.getElementById('quick-puc').value) || 0;
-                    if (cet >= 0 && cet <= 180 && puc >= 0 && puc <= 100) {
-                        const rankData = predictKCETRank(cet, puc);
-                        document.getElementById('quick-rank').textContent = rankData.medium.toLocaleString();
-                        document.getElementById('quick-range').textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
-                        document.getElementById('quick-analysis').textContent = getRankAnalysis(rankData.medium);
-                        document.getElementById('quick-result').classList.remove('hidden');
-                    } else {
-                        document.getElementById('quick-result').classList.add('hidden');
-                    }
+    function updateRankLive(type) {
+        try {
+            if (!disclaimerAccepted) return;
+            if (type === 'quick') {
+                const cet = parseFloat(document.getElementById('quick-cet').value) || 0;
+                const puc = parseFloat(document.getElementById('quick-puc').value) || 0;
+                if (cet >= 0 && cet <= 180 && puc >= 0 && puc <= 100) {
+                    const rankData = predictKCETRank(cet, puc);
+                    document.getElementById('quick-rank').textContent = rankData.medium.toLocaleString();
+                    document.getElementById('quick-range').textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
+                    document.getElementById('quick-analysis').textContent = getRankAnalysis(rankData.medium);
+                    document.getElementById('quick-result').classList.remove('hidden');
                 } else {
-                    const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
-                    const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
-                    if (cet >= 0 && cet <= 180 && puc >= 0 && puc <= 100) {
-                        const rankData = predictKCETRank(cet, puc);
-                        const percentile = getPercentile(rankData.composite);
-                        document.getElementById('predicted-rank').textContent = rankData.medium.toLocaleString();
-                        document.getElementById('predicted-range').textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
-                        document.getElementById('predicted-percentile').textContent = percentile;
-                        document.getElementById('competition-note').textContent = getRankAnalysis(rankData.medium);
-                        document.getElementById('meterCircle').style.setProperty('--progress', `${rankData.composite}%`);
-                    }
+                    document.getElementById('quick-result').classList.add('hidden');
                 }
-            } catch (err) {
-                console.error('Update rank live error:', err);
-            }
-        }
-
-        function calculateRank() {
-            try {
-                if (!disclaimerAccepted) {
-                    alert('Please accept the disclaimer.');
-                    return;
-                }
+            } else {
                 const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
                 const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
-                const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
-                if (cet < 0 || cet > 180 || puc < 0 || puc > 100) {
-                    alert('Please enter valid scores: KCET (0-180), PUC (0-100).');
-                    return;
+                if (cet >= 0 && cet <= 180 && puc >= 0 && puc <= 100) {
+                    const rankData = predictKCETRank(cet, puc);
+                    const percentile = getPercentile(rankData.composite);
+                    document.getElementById('predicted-rank').textContent = rankData.medium.toLocaleString();
+                    document.getElementById('predicted-range').textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
+                    document.getElementById('predicted-percentile').textContent = percentile;
+                    document.getElementById('competition-note').textContent = getRankAnalysis(rankData.medium);
+                    document.getElementById('meterCircle').style.setProperty('--progress', `${rankData.composite}%`);
                 }
-                const rankData = predictKCETRank(cet, puc);
-                updateMainRank(rankData);
-                saveResult(cet, puc, rankData, category);
-                playSound('success');
-                triggerConfetti();
-                switchTab('breakdown');
-            } catch (err) {
-                console.error('Calculate rank error:', err);
-                alert('An error occurred while calculating your rank.');
             }
+        } catch (err) {
+            console.error('Update rank live error:', err);
         }
+    }
 
-        function updateMainRank(rankData) {
-            try {
-                const rankDisplay = document.getElementById('predicted-rank');
-                const rangeDisplay = document.getElementById('predicted-range');
-                const percentileDisplay = document.getElementById('predicted-percentile');
-                const noteDisplay = document.getElementById('competition-note');
-                const meterCircle = document.getElementById('meterCircle');
-                rankDisplay.textContent = rankData.medium.toLocaleString();
-                rangeDisplay.textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
-                percentileDisplay.textContent = getPercentile(rankData.composite);
-                noteDisplay.textContent = getRankAnalysis(rankData.medium);
-                meterCircle.style.setProperty('--progress', `${rankData.composite}%`);
-                meterCircle.classList.add('animate__pulse');
-                setTimeout(() => meterCircle.classList.remove('animate__pulse'), 1500);
-            } catch (err) {
-                console.error('Update main rank error:', err);
+    function calculateRank() {
+        try {
+            if (!disclaimerAccepted) {
+                alert('Please accept the disclaimer.');
+                return;
             }
+            const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
+            const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
+            const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
+            if (cet < 0 || cet > 180 || puc < 0 || puc > 100) {
+                alert('Please enter valid scores: KCET (0-180), PUC (0-100).');
+                return;
+            }
+            const rankData = predictKCETRank(cet, puc);
+            updateMainRank(rankData);
+            saveResult(cet, puc, rankData, category);
+            triggerConfetti();
+            switchTab('breakdown');
+        } catch (err) {
+            console.error('Calculate rank error:', err);
+            alert('An error occurred while calculating your rank.');
         }
+    }
 
-        function updateBreakdown(composite, rankData, cet, puc, category) {
-            try {
-                const breakdownContent = document.getElementById('breakdown-content');
-                if (!breakdownContent) throw new Error('Breakdown content element not found');
-                const percentile = calculatePercentile(rankData.medium);
-                const college = getCollegeSuggestions(rankData.medium, category);
-                breakdownContent.innerHTML = `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 animate__animated animate__fadeIn">
-                        <div class="glass-card p-5" data-tilt data-tilt-max="8">
-                            <h3 class="text-xl font-semibold mb-3 gradient-text">Score Breakdown</h3>
-                            <div class="space-y-3">
-                                <div>
-                                    <p class="text-base">KCET PCM: ${cet.toFixed(1)}/180 (${((cet / 180) * 100).toFixed(1)}%)</p>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: ${((cet / 180) * 100).toFixed(1)}%"></div>
-                                    </div>
+    function updateMainRank(rankData) {
+        try {
+            const rankDisplay = document.getElementById('predicted-rank');
+            const rangeDisplay = document.getElementById('predicted-range');
+            const percentileDisplay = document.getElementById('predicted-percentile');
+            const noteDisplay = document.getElementById('competition-note');
+            const meterCircle = document.getElementById('meterCircle');
+            rankDisplay.textContent = rankData.medium.toLocaleString();
+            rangeDisplay.textContent = `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`;
+            percentileDisplay.textContent = getPercentile(rankData.composite);
+            noteDisplay.textContent = getRankAnalysis(rankData.medium);
+            meterCircle.style.setProperty('--progress', `${rankData.composite}%`);
+            meterCircle.classList.add('animate__pulse');
+            setTimeout(() => meterCircle.classList.remove('animate__pulse'), 1500);
+        } catch (err) {
+            console.error('Update main rank error:', err);
+        }
+    }
+
+    function updateBreakdown(composite, rankData, cet, puc, category) {
+        try {
+            const breakdownContent = document.getElementById('breakdown-content');
+            if (!breakdownContent) throw new Error('Breakdown content element not found');
+            const percentile = calculatePercentile(rankData.medium);
+            const college = getCollegeSuggestions(rankData.medium, category);
+            breakdownContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 animate__animated animate__fadeIn">
+                    <div class="glass-card p-5" data-tilt data-tilt-max="8">
+                        <h3 class="text-xl font-semibold mb-3 gradient-text">Score Breakdown</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-base">KCET PCM: ${cet.toFixed(1)}/180 (${((cet / 180) * 100).toFixed(1)}%)</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${((cet / 180) * 100).toFixed(1)}%"></div>
                                 </div>
-                                <div>
-                                    <p class="text-base">PUC PCM: ${puc.toFixed(1)}%</p>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: ${puc.toFixed(1)}%"></div>
-                                    </div>
+                            </div>
+                            <div>
+                                <p class="text-base">PUC PCM: ${puc.toFixed(1)}%</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${puc.toFixed(1)}%"></div>
                                 </div>
-                                <div>
-                                    <p class="text-base">Composite Score: ${composite.toFixed(1)}%</p>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: ${composite.toFixed(1)}%"></div>
-                                    </div>
+                            </div>
+                            <div>
+                                <p class="text-base">Composite Score: ${composite.toFixed(1)}%</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${composite.toFixed(1)}%"></div>
                                 </div>
-                                <div>
-                                    <p class="text-base">Percentile: ${percentile}%</p>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: ${percentile}%"></div>
-                                    </div>
+                            </div>
+                            <div>
+                                <p class="text-base">Percentile: ${percentile}%</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${percentile}%"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="glass-card p-5" data-tilt data-tilt-max="8">
-                            <h3 class="text-xl font-semibold mb-3 gradient-text">Rank Insights</h3>
-                            <p class="text-base">Predicted Rank: ${rankData.medium.toLocaleString()}</p>
-                            <p class="text-base">Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}</p>
-                            <p class="text-base">Category: ${category.toUpperCase()}</p>
-                            <p class="text-base mt-2">Likely Colleges: ${college.name} (${college.branch})</p>
-                            <p class="text-base mt-2">${getRankAnalysis(rankData.medium)}</p>
-                            <p class="text-base mt-2">Among ~3,12,000 candidates</p>
-                        </div>
                     </div>
-                    <div class="mt-8 animate__animated animate__fadeIn">
-                        <canvas id="trend-chart" class="trend-canvas"></canvas>
+                    <div class="glass-card p-5" data-tilt data-tilt-max="8">
+                        <h3 class="text-xl font-semibold mb-3 gradient-text">Rank Insights</h3>
+                        <p class="text-base">Predicted Rank: ${rankData.medium.toLocaleString()}</p>
+                        <p class="text-base">Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}</p>
+                        <p class="text-base">Category: ${category.toUpperCase()}</p>
+                        <p class="text-base mt-2">Likely Colleges: ${college.name} (${college.branch})</p>
+                        <p class="text-base mt-2">${getRankAnalysis(rankData.medium)}</p>
+                        <p class="text-base mt-2">Among ~3,12,000 candidates</p>
                     </div>
-                    <div class="mt-8 animate__animated animate__fadeIn">
-                        <canvas id="range-chart" class="range-canvas"></canvas>
-                    </div>
-                    <div class="mt-8 animate__animated animate__fadeIn">
-                        <canvas id="radar-chart" class="radar-canvas"></canvas>
-                    </div>
-                `;
-                setTimeout(() => {
-                    initializeCharts(cet, puc, rankData);
-                    initializeTilt();
-                }, 300); // Increased delay for DOM rendering
-            } catch (err) {
-                console.error('Update breakdown error:', err);
-                document.getElementById('breakdown-content').innerHTML = `
-                    <div class="text-center py-10">
-                        <h3 class="text-xl font-medium text-red-600">Error Loading Breakdown</h3>
-                        <p class="text-base text-gray-500">Please try recalculating.</p>
-                    </div>
-                `;
-            }
-        }
-
-        function initializeCharts(cet, puc, rankData) {
-            try {
-                const trendCanvas = document.getElementById('trend-chart');
-                const rangeCanvas = document.getElementById('range-chart');
-                const radarCanvas = document.getElementById('radar-chart');
-                if (!trendCanvas || !rangeCanvas || !radarCanvas) {
-                    throw new Error('One or more chart canvases not found');
-                }
-                updateTrendChart(cet, puc, rankData);
-                updateRangeChart(rankData);
-                updateRadarChart(cet, puc);
-            } catch (err) {
-                console.error('Initialize charts error:', err);
-            }
-        }
-
-        function updateTrendChart(cet, puc, rankData) {
-            try {
-                const ctx = document.getElementById('trend-chart');
-                if (!ctx) throw new Error('Trend chart canvas not found');
-                if (trendChartInstance) trendChartInstance.destroy();
-                const index = rankTable.findIndex(entry => entry.rank === rankTable.find(e => Math.abs(rankData.composite - e.score) <= 10)?.rank) || 0;
-                const ranks = [
-                    { year: '2022', rank: trendData[2022][index] || rankTable[index].rank },
-                    { year: '2023', rank: trendData[2023][index] || rankTable[index].rank },
-                    { year: '2024', rank: rankTable[index].rank }
-                ];
-                trendChartInstance = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['2022', '2023', '2024'],
-                        datasets: [{
-                            label: 'Rank Trend',
-                            data: ranks.map(r => r.rank),
-                            backgroundColor: '#6d28d9',
-                            borderRadius: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true, title: { display: true, text: 'Rank' } }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            title: { display: true, text: 'Rank Trend (2022–2024)', font: { size: 16 } }
-                        }
-                    }
-                });
-            } catch (err) {
-                console.error('Trend chart error:', err);
-            }
-        }
-
-        function updateRangeChart(rankData) {
-            try {
-                const ctx = document.getElementById('range-chart');
-                if (!ctx) throw new Error('Range chart canvas not found');
-                if (rangeChartInstance) rangeChartInstance.destroy();
-                rangeChartInstance = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Low', 'Predicted', 'High'],
-                        datasets: [{
-                            label: 'Rank Range',
-                            data: [rankData.low, rankData.medium, rankData.high],
-                            backgroundColor: ['#10b981', '#6d28d9', '#ec4899'],
-                            borderColor: ['#0d8c6a', '#5b21b6', '#db2777'],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                suggestedMax: rankData.high * 1.5,
-                                title: { display: true, text: 'Rank' }
-                            }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            title: { display: true, text: 'Rank Range', font: { size: 16 } }
-                        }
-                    }
-                });
-            } catch (err) {
-                console.error('Range chart error:', err);
-            }
-        }
-
-        function updateRadarChart(cet, puc) {
-            try {
-                const ctx = document.getElementById('radar-chart');
-                if (!ctx) throw new Error('Radar chart canvas not found');
-                if (radarChartInstance) radarChartInstance.destroy();
-                const assumedPhysics = cet / 3;
-                const assumedChemistry = cet / 3;
-                const assumedMaths = cet / 3;
-                radarChartInstance = new Chart(ctx, {
-                    type: 'radar',
-                    data: {
-                        labels: ['Physics', 'Chemistry', 'Maths', 'PUC'],
-                        datasets: [{
-                            label: 'Performance',
-                            data: [assumedPhysics, assumedChemistry, assumedMaths, puc],
-                            backgroundColor: 'rgba(109, 40, 217, 0.2)',
-                            borderColor: '#6d28d9',
-                            pointBackgroundColor: '#ec4899'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            r: { beginAtZero: true, max: 100 }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            title: { display: true, text: 'Subject-wise Performance', font: { size: 16 } }
-                        }
-                    }
-                });
-            } catch (err) {
-                console.error('Radar chart error:', err);
-            }
-        }
-
-        function downloadBreakdownPNG() {
-            try {
-                const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
-                const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
-                const rankData = predictKCETRank(cet, puc);
-                const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
-                const college = getCollegeSuggestions(rankData.medium, category);
-                const percentile = calculatePercentile(rankData.medium);
-
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = 500;
-                canvas.height = 350;
-
-                ctx.fillStyle = '#6d28d9';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-                ctx.fillRect(20, 20, 460, 310);
-                ctx.strokeStyle = '#6d28d9';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(20, 20, 460, 310);
-
-                ctx.fillStyle = '#6d28d9';
-                ctx.font = 'bold 28px Poppins';
-                ctx.textAlign = 'center';
-                ctx.fillText('KCET 2025 Rank Card', 250, 60);
-
-                ctx.font = 'bold 40px Poppins';
-                ctx.fillStyle = '#ec4899';
-                ctx.fillText(`${rankData.medium.toLocaleString()}`, 250, 110);
-
-                ctx.font = '16px Poppins';
-                ctx.fillStyle = '#1e1b4b';
-                ctx.textAlign = 'left';
-                ctx.fillText(`Rank Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`, 50, 150);
-                ctx.fillText(`KCET Score: ${cet}/180 (${((cet / 180) * 100).toFixed(1)}%)`, 50, 180);
-                ctx.fillText(`PUC PCM: ${puc}%`, 50, 210);
-                ctx.fillText(`Percentile: ${percentile}%`, 50, 240);
-                ctx.fillText(`Category: ${category.toUpperCase()}`, 50, 270);
-                ctx.fillText(`Likely Colleges: ${college.name}`, 50, 300);
-
-                ctx.font = 'italic 12px Poppins';
-                ctx.fillStyle = '#666';
-                ctx.textAlign = 'center';
-                ctx.fillText('Generated by KCET Elite Predictor', 250, 330);
-
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/png');
-                link.download = `KCET_2025_Rank_${rankData.medium}.png`;
-                link.click();
-            } catch (err) {
-                console.error('Download PNG error:', err);
-                alert('Failed to download PNG. Please try again.');
-            }
-        }
-
-        function generateRankCard(cet, puc, rankData, category) {
-            try {
-                console.log('Initializing jsPDF...');
-                const { jsPDF } = window.jspdf;
-                if (!jsPDF) throw new Error('jsPDF library not loaded');
-                const doc = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-
-                console.log('Creating PDF content...');
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const pageHeight = doc.internal.pageSize.getHeight();
-                const margin = 20;
-
-                // Solid purple background
-                doc.setFillColor(109, 40, 217); // RGB for #6d28d9
-                doc.rect(0, 0, pageWidth, pageHeight, 'F');
-
-                // White card with rounded corners
-                doc.setFillColor(255, 255, 255, 0.95);
-                doc.roundedRect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin, 10, 10, 'F');
-                doc.setLineWidth(0.5);
-                doc.setDrawColor(109, 40, 217);
-                doc.roundedRect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin, 10, 10, 'S');
-
-                // Title
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(24);
-                doc.setTextColor(109, 40, 217);
-                doc.text('KCET 2025 Rank Card', pageWidth / 2, 40, { align: 'center' });
-
-                // Rank
-                doc.setFontSize(36);
-                doc.setTextColor(236, 72, 153); // #ec4899
-                doc.text(`${rankData.medium.toLocaleString()}`, pageWidth / 2, 70, { align: 'center' });
-
-                // Details
-                const college = getCollegeSuggestions(rankData.medium, category);
-                const percentile = calculatePercentile(rankData.medium);
-                doc.setFontSize(12);
-                doc.setTextColor(30, 27, 75); // #1e1b4b
-                const details = [
-                    `Rank Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`,
-                    `KCET Score: ${cet}/180 (${((cet / 180) * 100).toFixed(1)}%)`,
-                    `PUC PCM: ${puc}%`,
-                    `Percentile: ${percentile}%`,
-                    `Category: ${category.toUpperCase()}`,
-                    `Likely Colleges: ${college.name} (${college.branch})`
-                ];
-                let y = 100;
-                details.forEach(line => {
-                    doc.text(line, margin + 20, y);
-                    y += 10;
-                });
-
-                // Footer
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'italic');
-                doc.setTextColor(100, 100, 100);
-                doc.text('Generated by KCET Elite Predictor', pageWidth / 2, pageHeight - 15, { align: 'center' });
-
-                console.log('Saving PDF...');
-                doc.save(`KCET_2025_Rank_${rankData.medium}.pdf`);
-                console.log('PDF generated successfully');
-            } catch (err) {
-                console.error('Generate PDF error:', err);
-                alert('Failed to generate PDF. Please try again.');
-            }
-        }
-
-        function saveResult(cet, puc, rankData, category) {
-            try {
-                const results = JSON.parse(safeLocalStorage('get', 'kcet_results') || '[]');
-                results.push({
-                    cet,
-                    puc,
-                    rank: rankData.medium,
-                    range: `${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`,
-                    category,
-                    timestamp: new Date().toISOString()
-                });
-                safeLocalStorage('set', 'kcet_results', JSON.stringify(results.slice(-10))); // Keep last 10 results
-            } catch (err) {
-                console.error('Save result error:', err);
-            }
-        }
-
-        function loadSavedResults() {
-            try {
-                const container = document.getElementById('progress-content');
-                const results = JSON.parse(safeLocalStorage('get', 'kcet_results') || '[]');
-                if (results.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center py-10">
-                            <div class="inline-block p-5 bg-white rounded-full mb-3 animate__animated animate__pulse">
-                                <i class="fas fa-history text-3xl text-blue-600"></i>
-                            </div>
-                            <h3 class="text-xl font-medium text-gray-600 mb-2">No Predictions Yet</h3>
-                            <p class="text-base text-gray-500">Calculate your rank to track progress!</p>
-                        </div>
-                    `;
-                    return;
-                }
-                container.innerHTML = `
-                    <div class="glass-card p-6 animate__animated animate__fadeIn">
-                        <h3 class="text-xl font-semibold mb-5 gradient-text">Recent Predictions</h3>
-                        <div class="space-y-4">
-                            ${results.reverse().map((result, index) => `
-                                <div class="flex justify-between items-center p-4 bg-white rounded-xl shadow-sm border border-gray-200">
-                                    <div>
-                                        <p class="text-base font-medium">Rank: ${result.rank.toLocaleString()}</p>
-                                        <p class="text-sm text-gray-500">KCET: ${result.cet} | PUC: ${result.puc}% | ${result.category.toUpperCase()}</p>
-                                        <p class="text-sm text-gray-400">${new Date(result.timestamp).toLocaleString()}</p>
-                                    </div>
-                                    <button class="text-red-500 hover:text-red-700 text-sm" onclick="deleteResult(${index})"><i class="fas fa-trash"></i></button>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-                updateProgressChart(results);
-            } catch (err) {
-                console.error('Load saved results error:', err);
-                container.innerHTML = `
-                    <div class="text-center py-10">
-                        <h3 class="text-xl font-medium text-red-600">Error Loading Results</h3>
-                        <p class="text-base text-gray-500">Please try again.</p>
-                    </div>
-                `;
-            }
-        }
-
-        function deleteResult(index) {
-            try {
-                const results = JSON.parse(safeLocalStorage('get', 'kcet_results') || '[]');
-                results.splice(results.length - 1 - index, 1); // Reverse index for display order
-                safeLocalStorage('set', 'kcet_results', JSON.stringify(results));
-                loadSavedResults();
-                playSound('click');
-            } catch (err) {
-                console.error('Delete result error:', err);
-            }
-        }
-
-        function updateProgressChart(results) {
-            try {
-                const ctx = document.getElementById('progress-chart');
-                if (!ctx) throw new Error('Progress chart canvas not found');
-                if (progressChartInstance) progressChartInstance.destroy();
-                const labels = results.map((_, i) => `Attempt ${i + 1}`);
-                const ranks = results.map(r => r.rank);
-                progressChartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: 'Rank Progress',
-                            data: ranks,
-                            borderColor: '#6d28d9',
-                            backgroundColor: 'rgba(109, 40, 217, 0.2)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true, title: { display: true, text: 'Rank' } }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            title: { display: true, text: 'Rank Progress', font: { size: 16 } }
-                        }
-                    }
-                });
-            } catch (err) {
-                console.error('Update progress chart error:', err);
-            }
-        }
-
-        function triggerConfetti() {
-            try {
-                setTimeout(() => {
-                    if (typeof confetti === 'function') {
-                        confetti({
-                            particleCount: 100,
-                            spread: 70,
-                            origin: { y: 0.6 }
-                        });
-                    } else {
-                        console.warn('Confetti library not loaded');
-                        alert('Celebration effect unavailable. Your rank is still awesome!');
-                    }
-                }, 500);
-            } catch (err) {
-                console.error('Confetti error:', err);
-            }
-        }
-
-        function initializeTilt() {
-            try {
-                VanillaTilt.init(document.querySelectorAll('[data-tilt]'), {
-                    max: 10,
-                    speed: 400,
-                    glare: true,
-                    'max-glare': 0.2
-                });
-            } catch (err) {
-                console.error('Tilt initialization error:', err);
-            }
-        }
-
-        function initializeParticles() {
-            try {
-                particlesJS('particles-js', {
-                    particles: {
-                        number: { value: 80, density: { enable: true, value_area: 800 } },
-                        color: { value: '#6d28d9' },
-                        shape: { type: 'circle' },
-                        opacity: { value: 0.5, random: true },
-                        size: { value: 3, random: true },
-                        line_linked: { enable: true, distance: 150, color: '#a78bfa', opacity: 0.4, width: 1 },
-                        move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out' }
-                    },
-                    interactivity: {
-                        detect_on: 'canvas',
-                        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
-                        modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
-                    },
-                    retina_detect: true
-                });
-            } catch (err) {
-                console.error('Particles initialization error:', err);
-            }
-        }
-
-        function startDisclaimerTimer() {
-            try {
-                let timeLeft = 10;
-                const timerDisplay = document.getElementById('disclaimer-timer');
-                const unlockBtn = document.getElementById('unlock-btn');
-                if (currentTimer) clearInterval(currentTimer);
-                currentTimer = setInterval(() => {
-                    timeLeft--;
-                    timerDisplay.textContent = `Unlock in ${timeLeft}s...`;
-                    if (timeLeft <= 0) {
-                        clearInterval(currentTimer);
-                        timerDisplay.textContent = 'Ready to unlock!';
-                        unlockBtn.disabled = false;
-                        unlockBtn.classList.add('animate__pulse');
-                    }
-                }, 1000);
-            } catch (err) {
-                console.error('Disclaimer timer error:', err);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                initializeParticles();
+                </div>
+                <div class="mt-8 animate__animated animate__fadeIn">
+                    <canvas id="trend-chart" class="trend-canvas"></canvas>
+                </div>
+                <div class="mt-8 animate__animated animate__fadeIn">
+                    <canvas id="range-chart" class="range-canvas"></canvas>
+                </div>
+                <div class="mt-8 animate__animated animate__fadeIn">
+                    <canvas id="radar-chart" class="radar-canvas"></canvas>
+                </div>
+            `;
+            setTimeout(() => {
+                initializeCharts(cet, puc, rankData);
                 initializeTilt();
-                startDisclaimerTimer();
+            }, 300);
+        } catch (err) {
+            console.error('Update breakdown error:', err);
+            document.getElementById('breakdown-content').innerHTML = `
+                <div class="text-center py-10">
+                    <h3 class="text-xl font-medium text-red-600">Error Loading Breakdown</h3>
+                    <p class="text-base text-gray-500">Please try recalculating.</p>
+                </div>
+            `;
+        }
+    }
 
-                const savedTheme = safeLocalStorage('get', 'theme') || 'light';
-                setTheme(savedTheme);
+    function initializeCharts(cet, puc, rankData) {
+        try {
+            const trendCanvas = document.getElementById('trend-chart');
+            const rangeCanvas = document.getElementById('range-chart');
+            const radarCanvas = document.getElementById('radar-chart');
+            if (!trendCanvas || !rangeCanvas || !radarCanvas) {
+                throw new Error('One or more chart canvases not found');
+            }
+            updateTrendChart(cet, puc, rankData);
+            updateRangeChart(rankData);
+            updateRadarChart(cet, puc);
+        } catch (err) {
+            console.error('Initialize charts error:', err);
+        }
+    }
 
-                document.getElementById('unlock-btn').addEventListener('click', () => {
-                    disclaimerAccepted = true;
+    function updateTrendChart(cet, puc, rankData) {
+        try {
+            const ctx = document.getElementById('trend-chart');
+            if (!ctx) throw new Error('Trend chart canvas not found');
+            if (trendChartInstance) trendChartInstance.destroy();
+            const index = rankTable.findIndex(entry => entry.rank === rankTable.find(e => Math.abs(rankData.composite - e.score) <= 10)?.rank) || 0;
+            const ranks = [
+                { year: '2022', rank: trendData[2022][index] || rankTable[index].rank },
+                { year: '2023', rank: trendData[2023][index] || rankTable[index].rank },
+                { year: '2024', rank: rankTable[index].rank }
+            ];
+            trendChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['2022', '2023', '2024'],
+                    datasets: [{
+                        label: 'Rank Trend',
+                        data: ranks.map(r => r.rank),
+                        backgroundColor: '#6d28d9',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Rank' } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Rank Trend (2022–2024)', font: { size: 16 } }
+                    }
+                }
+            });
+        } catch (err) {
+            console.error('Trend chart error:', err);
+        }
+    }
+
+    function updateRangeChart(rankData) {
+        try {
+            const ctx = document.getElementById('range-chart');
+            if (!ctx) throw new Error('Range chart canvas not found');
+            if (rangeChartInstance) rangeChartInstance.destroy();
+            rangeChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Low', 'Predicted', 'High'],
+                    datasets: [{
+                        label: 'Rank Range',
+                        data: [rankData.low, rankData.medium, rankData.high],
+                        backgroundColor: ['#10b981', '#6d28d9', '#ec4899'],
+                        borderColor: ['#0d8c6a', '#5b21b6', '#db2777'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: rankData.high * 1.5,
+                            title: { display: true, text: 'Rank' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Rank Range', font: { size: 16 } }
+                    }
+                }
+            });
+        } catch (err) {
+            console.error('Range chart error:', err);
+        }
+    }
+
+    function updateRadarChart(cet, puc) {
+        try {
+            const ctx = document.getElementById('radar-chart');
+            if (!ctx) throw new Error('Radar chart canvas not found');
+            if (radarChartInstance) radarChartInstance.destroy();
+            const assumedPhysics = cet / 3;
+            const assumedChemistry = cet / 3;
+            const assumedMaths = cet / 3;
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Physics', 'Chemistry', 'Maths', 'PUC'],
+                    datasets: [{
+                        label: 'Performance',
+                        data: [assumedPhysics, assumedChemistry, assumedMaths, puc],
+                        backgroundColor: 'rgba(109, 40, 217, 0.2)',
+                        borderColor: '#6d28d9',
+                        pointBackgroundColor: '#ec4899'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: { beginAtZero: true, max: 100 }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Subject-wise Performance', font: { size: 16 } }
+                    }
+                }
+            });
+        } catch (err) {
+            console.error('Radar chart error:', err);
+        }
+    }
+
+    function downloadBreakdownPNG() {
+        try {
+            const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
+            const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
+            const rankData = predictKCETRank(cet, puc);
+            const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
+            const college = getCollegeSuggestions(rankData.medium, category);
+            const percentile = calculatePercentile(rankData.medium);
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 500;
+            canvas.height = 350;
+
+            ctx.fillStyle = '#6d28d9';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.fillRect(20, 20, 460, 310);
+            ctx.strokeStyle = '#6d28d9';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(20, 20, 460, 310);
+
+            ctx.fillStyle = '#6d28d9';
+            ctx.font = 'bold 28px Poppins';
+            ctx.textAlign = 'center';
+            ctx.fillText('KCET 2025 Rank Card', 250, 60);
+
+            ctx.font = 'bold 40px Poppins';
+            ctx.fillStyle = '#ec4899';
+            ctx.fillText(`${rankData.medium.toLocaleString()}`, 250, 110);
+
+            ctx.font = '16px Poppins';
+            ctx.fillStyle = '#1e1b4b';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Rank Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`, 50, 150);
+            ctx.fillText(`KCET Score: ${cet}/180 (${((cet / 180) * 100).toFixed(1)}%)`, 50, 180);
+            ctx.fillText(`PUC PCM: ${puc}%`, 50, 210);
+            ctx.fillText(`Percentile: ${percentile}%`, 50, 240);
+            ctx.fillText(`Category: ${category.toUpperCase()}`, 50, 270);
+            ctx.fillText(`Likely Colleges: ${college.name}`, 50, 300);
+
+            ctx.font = 'italic 12px Poppins';
+            ctx.fillStyle = '#666';
+            ctx.textAlign = 'center';
+            ctx.fillText('Generated by KCET Elite Predictor', 250, 330);
+
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = `KCET_2025_Rank_${rankData.medium}.png`;
+            link.click();
+        } catch (err) {
+            console.error('Download PNG error:', err);
+            alert('Failed to download PNG. Please try again.');
+        }
+    }
+
+    function generateRankCard(cet, puc, rankData, category) {
+        try {
+            const { jsPDF } = window.jspdf;
+            if (!jsPDF) throw new Error('jsPDF library not loaded');
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 20;
+
+            // Background
+            doc.setFillColor(109, 40, 217); // #6d28d9
+            doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+            // Card
+            doc.setFillColor(255, 255, 255, 0.95);
+            doc.roundedRect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin, 10, 10, 'F');
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(109, 40, 217);
+            doc.roundedRect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin, 10, 10, 'S');
+
+            // Title
+            doc.setFont('helvetica', 'bold'); // Fallback to helvetica if Poppins unavailable
+            doc.setFontSize(24);
+            doc.setTextColor(109, 40, 217);
+            doc.text('KCET 2025 Elite Rank Card', pageWidth / 2, margin + 20, { align: 'center' });
+
+            // Rank
+            doc.setFontSize(36);
+            doc.setTextColor(236, 72, 153); // #ec4899
+            doc.text(`${rankData.medium.toLocaleString()}`, pageWidth / 2, margin + 50, { align: 'center' });
+
+            // Details
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(12);
+            doc.setTextColor(30, 27, 75); // #1e1b4b
+            const college = getCollegeSuggestions(rankData.medium, category);
+            const percentile = calculatePercentile(rankData.medium);
+            const details = [
+                `Rank Range: ${rankData.low.toLocaleString()}–${rankData.high.toLocaleString()}`,
+                `KCET Score: ${cet}/180 (${((cet / 180) * 100).toFixed(1)}%)`,
+                `PUC PCM: ${puc}%`,
+                `Percentile: ${percentile}%`,
+                `Category: ${category.toUpperCase()}`,
+                `Likely Colleges: ${college.name} (${college.branch})`
+            ];
+            details.forEach((line, i) => {
+                doc.text(line, margin + 20, margin + 80 + i * 10);
+            });
+
+            // Footer
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'italic');
+            doc.setTextColor(100, 100, 100);
+            doc.text('Generated by KCET Elite Predictor | Not an official KEA result', pageWidth / 2, pageHeight - margin - 10, { align: 'center' });
+
+            doc.save(`KCET_2025_Rank_${rankData.medium}.pdf`);
+        } catch (err) {
+            console.error('Download PDF error:', err);
+            alert('Failed to download PDF. Please try again.');
+        }
+    }
+
+    function saveResult(cet, puc, rankData, category) {
+        try {
+            const results = JSON.parse(safeLocalStorage('get', 'kcetResults') || '[]');
+            results.push({
+                cet,
+                puc,
+                rank: rankData.medium,
+                range: `${rankData.low}–${rankData.high}`,
+                percentile: calculatePercentile(rankData.medium),
+                category,
+                timestamp: new Date().toISOString()
+            });
+            safeLocalStorage('set', 'kcetResults', JSON.stringify(results.slice(-10)));
+            loadSavedResults();
+        } catch (err) {
+            console.error('Save result error:', err);
+        }
+    }
+
+    function loadSavedResults() {
+        try {
+            const results = JSON.parse(safeLocalStorage('get', 'kcetResults') || '[]');
+            const progressContent = document.getElementById('progress-content');
+            if (results.length === 0) {
+                progressContent.innerHTML = `
+                    <div class="text-center py-10">
+                        <div class="inline-block p-5 bg-white rounded-full mb-3 animate__animated animate__pulse">
+                            <i class="fas fa-history text-3xl text-blue-600"></i>
+                        </div>
+                        <h3 class="text-xl font-medium text-gray-600 mb-2">No Predictions Yet</h3>
+                        <p class="text-base text-gray-500">Calculate your rank to track progress!</p>
+                    </div>
+                `;
+                updateProgressChart([]);
+                return;
+            }
+            progressContent.innerHTML = `
+                <div class="space-y-4">
+                    ${results.reverse().map((res, i) => `
+                        <div class="glass-card p-4 animate__animated animate__fadeIn animate__delay-${i}s" data-tilt data-tilt-max="8">
+                            <p class="text-base">Rank: ${res.rank.toLocaleString()} (Range: ${res.range})</p>
+                            <p class="text-base">KCET: ${res.cet}/180 | PUC: ${res.puc}%</p>
+                            <p class="text-base">Percentile: ${res.percentile}% | Category: ${res.category.toUpperCase()}</p>
+                            <p class="text-sm text-gray-500">${new Date(res.timestamp).toLocaleString()}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            updateProgressChart(results);
+            setTimeout(initializeTilt, 300);
+        } catch (err) {
+            console.error('Load saved results error:', err);
+            progressContent.innerHTML = `
+                <div class="text-center py-10">
+                    <h3 class="text-xl font-medium text-red-600">Error Loading Progress</h3>
+                    <p class="text-base text-gray-500">Please try again.</p>
+                </div>
+            `;
+        }
+    }
+
+    function updateProgressChart(results) {
+        try {
+            const ctx = document.getElementById('progress-chart');
+            if (!ctx) throw new Error('Progress chart canvas not found');
+            if (progressChartInstance) progressChartInstance.destroy();
+            progressChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: results.map((_, i) => `Attempt ${i + 1}`),
+                    datasets: [{
+                        label: 'Rank',
+                        data: results.map(r => r.rank),
+                        borderColor: '#6d28d9',
+                        backgroundColor: 'rgba(109, 40, 217, 0.2)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, reverse: true, title: { display: true, text: 'Rank' } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Rank Progress', font: { size: 16 } }
+                    }
+                }
+            });
+        } catch (err) {
+            console.error('Progress chart error:', err);
+        }
+    }
+
+    function triggerConfetti() {
+        try {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#6d28d9', '#ec4899', '#a78bfa']
+            });
+        } catch (err) {
+            console.error('Confetti error:', err);
+        }
+    }
+
+    function initializeTilt() {
+        try {
+            VanillaTilt.init(document.querySelectorAll('[data-tilt]'), {
+                max: 10,
+                speed: 400,
+                glare: true,
+                'max-glare': 0.3
+            });
+        } catch (err) {
+            console.error('Tilt initialization error:', err);
+        }
+    }
+
+    function initializeParticles() {
+        try {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: ['#6d28d9', '#ec4899', '#a78bfa'] },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: '#a78bfa', opacity: 0.4, width: 1 },
+                    move: { enable: true, speed: 2, direction: 'none', random: true, straight: false, out_mode: 'out', bounce: false }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                    modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            });
+        } catch (err) {
+            console.error('Particles initialization error:', err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            initializeParticles();
+            initializeTilt();
+
+            // Theme setup
+            const savedTheme = safeLocalStorage('get', 'theme') || 'light';
+            setTheme(savedTheme);
+
+            // Disclaimer timer
+            let timeLeft = 10;
+            const timerDisplay = document.getElementById('disclaimer-timer');
+            const unlockBtn = document.getElementById('unlock-btn');
+            currentTimer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `Unlock in ${timeLeft}s...`;
+                if (timeLeft <= 0) {
+                    clearInterval(currentTimer);
+                    timerDisplay.textContent = 'Ready to unlock!';
+                    unlockBtn.disabled = false;
+                    unlockBtn.classList.remove('disabled:opacity-50');
+                }
+            }, 1000);
+
+            // Event listeners
+            document.getElementById('unlock-btn').addEventListener('click', () => {
+                disclaimerAccepted = true;
+                document.getElementById('disclaimer-overlay').classList.add('animate__fadeOut');
+                setTimeout(() => {
+                    document.getElementById('disclaimer-overlay').style.display = 'none';
+                    document.getElementById('main-content').style.pointerEvents = 'auto';
+                    document.getElementById('main-content').style.opacity = '1';
+                }, 500);
+            });
+
+            document.getElementById('close-disclaimer').addEventListener('click', () => {
+                if (disclaimerAccepted) {
                     document.getElementById('disclaimer-overlay').classList.add('animate__fadeOut');
                     setTimeout(() => {
                         document.getElementById('disclaimer-overlay').style.display = 'none';
-                        document.getElementById('main-content').style.pointerEvents = 'auto';
-                        document.getElementById('main-content').style.opacity = '1';
                     }, 500);
-                    playSound('unlock');
+                }
+            });
+
+            document.getElementById('reread-disclaimer').addEventListener('click', () => {
+                document.getElementById('disclaimer-overlay').style.display = 'flex';
+                document.getElementById('disclaimer-overlay').classList.remove('animate__fadeOut');
+                document.getElementById('disclaimer-overlay').classList.add('animate__fadeIn');
+            });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            });
+
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.addEventListener('click', () => setTheme(opt.dataset.theme));
+            });
+
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
                 });
+            });
 
-                document.getElementById('close-disclaimer').addEventListener('click', () => {
-                    if (disclaimerAccepted) {
-                        document.getElementById('disclaimer-overlay').classList.add('animate__fadeOut');
-                        setTimeout(() => {
-                            document.getElementById('disclaimer-overlay').style.display = 'none';
-                            document.getElementById('main-content').style.pointerEvents = 'auto';
-                            document.getElementById('main-content').style.opacity = '1';
-                        }, 500);
-                        playSound('click');
-                    }
-                });
+            document.getElementById('kcet-total').addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value) || 0;
+                updateMark('kcet', value);
+            });
 
-                document.getElementById('reread-disclaimer').addEventListener('click', () => {
-                    document.getElementById('disclaimer-overlay').style.display = 'flex';
-                    document.getElementById('disclaimer-overlay').classList.remove('animate__fadeOut');
-                    document.getElementById('disclaimer-overlay').classList.add('animate__fadeIn');
-                    document.getElementById('main-content').style.pointerEvents = 'none';
-                    document.getElementById('main-content').style.opacity = '0.5';
-                    if (!disclaimerAccepted) startDisclaimerTimer();
-                    playSound('click');
-                });
+            document.getElementById('puc-percentage').addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value) || 0;
+                updateMark('puc', value);
+            });
 
-                document.querySelectorAll('.tab-btn').forEach(btn => {
-                    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-                });
+            document.getElementById('quick-cet').addEventListener('input', () => updateRankLive('quick'));
+            document.getElementById('quick-puc').addEventListener('input', () => updateRankLive('quick'));
 
-                document.querySelectorAll('.theme-option').forEach(opt => {
-                    opt.addEventListener('click', () => setTheme(opt.dataset.theme));
-                });
+            document.getElementById('recalculate-btn').addEventListener('click', () => switchTab('predictor'));
 
-                document.querySelectorAll('.category-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        playSound('click');
-                    });
-                });
+            document.getElementById('download-png-btn').addEventListener('click', downloadBreakdownPNG);
 
-                document.getElementById('kcet-total').addEventListener('input', e => {
-                    const value = parseFloat(e.target.value) || 0;
-                    if (value >= 0 && value <= 180) updateMark('kcet', value);
-                });
+            document.getElementById('download-pdf-btn').addEventListener('click', () => {
+                const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
+                const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
+                const rankData = predictKCETRank(cet, puc);
+                const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
+                generateRankCard(cet, puc, rankData, category);
+            });
 
-                document.getElementById('puc-percentage').addEventListener('input', e => {
-                    const value = parseFloat(e.target.value) || 0;
-                    if (value >= 0 && value <= 100) updateMark('puc', value);
-                });
-
-                document.getElementById('quick-cet').addEventListener('input', () => updateRankLive('quick'));
-                document.getElementById('quick-puc').addEventListener('input', () => updateRankLive('quick'));
-
-                document.getElementById('recalculate-btn').addEventListener('click', calculateRank);
-                document.getElementById('download-png-btn').addEventListener('click', downloadBreakdownPNG);
-                document.getElementById('download-pdf-btn').addEventListener('click', () => {
-                    const cet = parseFloat(document.getElementById('kcet-total').value) || 0;
-                    const puc = parseFloat(document.getElementById('puc-percentage').value) || 0;
-                    const rankData = predictKCETRank(cet, puc);
-                    const category = document.querySelector('.category-btn.active')?.dataset.category || 'general';
-                    generateRankCard(cet, puc, rankData, category);
-                });
-
-                // Initialize with default values for KCET 141, PUC 94
-                document.getElementById('kcet-total').value = 141;
-                document.getElementById('puc-percentage').value = 94;
-                updateMark('kcet', 141);
-                updateMark('puc', 94);
-            } catch (err) {
-                console.error('DOM load error:', err);
-            }
-        });
-    </script>
+            // Initialize default values
+            updateMark('kcet', parseFloat(document.getElementById('kcet-total').value));
+            updateMark('puc', parseFloat(document.getElementById('puc-percentage').value));
+        } catch (err) {
+            console.error('Initialization error:', err);
+            alert('An error occurred while loading the predictor. Please refresh the page.');
+        }
+    });
+</script>
 </body>
 </html>
